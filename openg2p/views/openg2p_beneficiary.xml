@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Top menu item -->
+        <menuitem
+                id="menu_openg2p_root"
+                name="Beneficiaries"
+                groups="group_openg2p_manager,group_openg2p_officer"
+                web_icon="openg2p,static/description/icon.png"
+                sequence="10"/>
+
+        <menuitem
+                id="menu_openg2p_reporting_beneficiary"
+                name="Reporting"
+                parent="menu_openg2p_root"
+                groups="group_openg2p_manager,group_openg2p_officer"
+                sequence="99"/>
+
+        <menuitem
+                id="menu_openg2p_configuration"
+                name="Configuration"
+                parent="menu_openg2p_root"
+                groups="group_openg2p_manager"
+                sequence="100"/>
+
+
+        <!-- Beneficiary -->
+        <record id="view_beneficiary_tree" model="ir.ui.view">
+            <field name="name">openg2p.beneficiary.tree</field>
+            <field name="model">openg2p.beneficiary</field>
+            <field name="arch" type="xml">
+                <tree string="Beneficiaries" decoration-bf="message_needaction==True"
+                      decoration-muted="active == False">
+                    <field name="display_name" string="Name"/>
+                    <field name="phone" class="o_force_ltr"/>
+                    <field name="location_id" options="{'no_create_edit': True}"/>
+                    <field name="category_id" widget="many2many_tags"
+                           options="{'color_field': 'color', 'no_create_edit': True}"
+                           placeholder="Tags..."/>
+                    <field name="country_id" invisible="1"/>
+                    <field name="active" invisible="1"/>
+                    <field name="message_needaction" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_beneficiary_form" model="ir.ui.view">
+            <field name="name">openg2p.beneficiary.form</field>
+            <field name="model">openg2p.beneficiary</field>
+            <field name="priority" eval="1"/>
+            <field name="arch" type="xml">
+                <form string="Beneficiary" duplicate="0">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button"
+                                    icon="fa-book"
+                                    name="action_get_attachment_tree_view"
+                                    type="object">
+                                <field name="documents_count" widget="statinfo" string="Documents"/>
+                            </button>
+                            <button name="toggle_active" type="object" groups="openg2p.group_openg2p_manager"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                       options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <field name="image" widget='image' class="oe_avatar"
+                               options='{"preview_image": "image_medium", "size": [90, 90]}'/>
+                        <div class="oe_title">
+                            <h1>
+                                <div class="o_row">
+                                    <field name="firstname" colspan="2" default_focus="1" placeholder="First Name"/>
+                                    <field name="lastname" colspan="2" placeholder="Last Name"/>
+                                </div>
+                            </h1>
+                            <div class="o_row">
+                                <h3>
+                                    <field name="ref" placeholder="Internal Reference"
+                                           attrs="{'readonly': [('id', '!=', False)]}"/>
+                                </h3>
+                            </div>
+                        </div>
+
+                        <group>
+                            <group>
+                                <field name="location_id" placeholder="Location" domain="[('child_ids','=', False)]"
+                                       options="{'no_create_edit': True}"/>
+                                <label for="street" string="Address"/>
+                                <div class="o_address_format">
+                                    <div class="oe_edit_only">
+                                        <b>Residential Address:</b>
+                                    </div>
+                                    <field name="street" placeholder="Street..." class="o_address_street"/>
+                                    <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                    <field name="city" placeholder="City" class="o_address_city"/>
+                                    <field name="state_id" class="o_address_state" placeholder="State"
+                                           options='{"no_open": True, "no_create_edit": True}'
+                                           context="{'country_id': country_id, 'zip': zip}"/>
+                                    <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                    <field name="country_id" placeholder="Country" class="o_address_country"
+                                           options='{"no_open": True, "no_create": True}'/>
+                                </div>
+                            </group>
+                            <group>
+                                <field name="othernames" placeholder="Other Names"/>
+                                <field name="phone" widget="phone"/>
+                                <field name="mobile" widget="phone"/>
+                                <field name="email" widget="email" context="{'gravatar_image': True}"/>
+                                <field name="category_id" widget="many2many_tags"
+                                       options="{'color_field': 'color', 'no_create_edit': True}"
+                                       placeholder="Tags..."/>
+                            </group>
+                        </group>
+                        <notebook colspan="4">
+                            <page name='personal' string="Personal Information">
+                                <group name="container_row_2">
+                                    <group string="Identifications" name="identification" priority="1">
+                                        <field name="national_id"/>
+                                        <field name="ssn"/>
+                                        <field name="passport_id"/>
+                                    </group>
+                                    <group string="Social" name="social" priority="2">
+                                        <field name="title" options='{"no_open": True}'/>
+                                        <field name="gender"/>
+                                        <field name="marital"/>
+                                        <field name="emergency_contact"/>
+                                        <field name="emergency_phone"/>
+                                        <field name="lang"/>
+                                    </group>
+                                    <group string="Birth">
+                                        <field name="birthday"/>
+                                        <field name="age"/>
+                                        <field name="birth_city"/>
+                                        <field name="birth_state_id" context="{'country_id': birth_country_id}"
+                                               options="{'no_create_edit': True}"/>
+                                        <field name="birth_country_id" options="{'no_create_edit': True}"/>
+                                    </group>
+                                    <group string="Misc">
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Identities" name="identities">
+                                <field name="identities" colspan="4" nolabel="1"
+                                       widget="one2many_list"/>
+                            </page>
+                            <page name='internal_notes' string="Internal Info">
+                                <group>
+                                    <group name="internal_notes_left">
+                                        <field name="create_date" widget="date" string="Created On"/>
+                                    </group>
+                                    <group name="internal_notes_right">
+
+                                    </group>
+                                </group>
+                                <field name="comment" placeholder="Internal note..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="o_attachment_preview"/>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_openg2p_beneficiary_filter" model="ir.ui.view">
+            <field name="name">openg2p.beneficiary.select</field>
+            <field name="model">openg2p.beneficiary</field>
+            <field name="arch" type="xml">
+                <search string="Search Beneficiary">
+                    <field name="name" context="{'active_test': False}"
+                           filter_domain="['|','|', '|','|', ('firstname','ilike',self), ('firstname','%',self), ('lastname','ilike',self), ('lastname','%',self), ('ref','=',self)]"/>
+                    <separator/>
+                    <field name="national_id" string="National ID"/>
+                    <field name="passport_id" string="Passport No."/>
+                    <field name="ssn" string="Social Security No."/>
+                    <separator/>
+                    <field name="identities" string="All Identity Numbers"/>
+                    <separator/>
+                    <field name="phone" string="Mobile/Phone"
+                           filter_domain="['|',('phone','ilike',self),('mobile','ilike',self)]"/>
+                    <field name="display_address" string="Address" filter_domain="[('display_address','%',self)]"/>
+                    <separator/>
+                    <field name="location_id"/>
+                    <separator/>
+                    <field name="category_id" string="Tag" filter_domain="[('category_id','ilike', self)]"/>
+                    <field name="search_no_category_id" string="Without This Tag"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <separator/>
+                    <group expand="0" name="group_by" string="Group By">
+                        <filter name="location" string="Location" domain="[]" context="{'group_by' : 'location_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Beneficiary Kanban View -->
+        <record model="ir.ui.view" id="openg2p_beneficiary_kanban_view">
+            <field name="name">openg2p.beneficiary.kanban</field>
+            <field name="model">openg2p.beneficiary</field>
+            <field name="arch" type="xml">
+                <kanban class="o_res_beneficiary_kanban" duplicate="0">
+                    <field name="id"/>
+                    <field name="display_name"/>
+                    <field name="name"/>
+                    <field name="title"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="street"/>
+                    <field name="street2"/>
+                    <field name="zip"/>
+                    <field name="city"/>
+                    <field name="country_id"/>
+                    <field name="mobile"/>
+                    <field name="category_id"/>
+                    <field name="image_small"/>
+                    <field name="image_medium"/>
+                    <field name="location_id"/>
+                    <field name="ref"/>
+                    <templates>
+                        <searchpanel>
+                            <field name="location_id" icon="fa-building"/>
+                            <field name="category_id" select="multi" icon="fa-tags"/>
+                        </searchpanel>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                                <t t-if="record.image_small.raw_value">
+                                    <!-- Medium employee's picture -->
+                                    <div class="o_kanban_image_fill_left d-none d-md-block"
+                                         t-attf-style="background-image: url(#{kanban_image('openg2p.beneficiary', 'image_medium', record.id.raw_value)})"
+                                         role="img"/>
+                                    <!-- Employee's picture optimized for mobile -->
+                                    <div class="o_kanban_image d-md-none rounded-circle"
+                                         t-attf-style="background-image: url(#{kanban_image('openg2p.beneficiary', 'image_small', record.id.raw_value)})"
+                                         role="img"/>
+                                </t>
+                                <t t-else="">
+                                    <img class="o_kanban_image" alt="Avatar"
+                                         t-att-src='_s + "/openg2p/static/src/img/default_image.png"'/>
+                                </t>
+
+                                <div class="oe_kanban_details">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="name"/>
+                                            </strong>
+                                            <span t-if="record.ref.raw_value" class="o_kanban_record_subtitle">
+                                                <field name="ref"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <field name="category_id" widget="many2many_tags"
+                                           options="{'color_field': 'color'}"/>
+                                    <ul>
+                                        <li t-if="record.location_id.raw_value">
+                                            <field name="location_id"/>
+                                        </li>
+                                    </ul>
+                                    <ul>
+                                        <li t-if="record.phone.raw_value and !record.mobile.raw_value"
+                                            class="o_text_overflow">
+                                            <field name="phone"/>
+                                        </li>
+                                        <li t-if="record.mobile.raw_value and !record.phone.raw_value"
+                                            class="o_text_overflow">
+                                            <field name="mobile"/>
+                                        </li>
+                                        <li t-if="record.mobile.raw_value and record.phone.raw_value"
+                                            class="o_text_overflow">
+                                            <field name="mobile"/>, <field name="phone"/>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="action_beneficiary_form" model="ir.actions.act_window">
+            <field name="name">Beneficiaries</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">openg2p.beneficiary</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="search_view_id" ref="view_openg2p_beneficiary_filter"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Enter a beneficiary into your database
+                </p>
+                <p>
+                    Helps you easily track disbursement, issues, and activities related to a beneficiary.
+                </p>
+            </field>
+        </record>
+
+        <record id="act_beneficiary_from_department" model="ir.actions.act_window">
+            <field name="name">Beneficiaries</field>
+            <field name="res_model">openg2p.beneficiary</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,activity</field>
+            <field name="search_view_id" ref="view_openg2p_beneficiary_filter"/>
+            <field name="context">{
+                "search_default_location_id": [active_id],
+                "default_location_id": active_id}
+            </field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Enter a beneficiary into your database
+                </p>
+                <p>
+                    Helps you easily track disbursement, issues, and activities related to a beneficiary.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                action="action_beneficiary_form"
+                id="menu_beneficiary_tree"
+                parent="menu_openg2p_root"
+                sequence="2"
+                groups="base.group_user"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Wizard view -->
+        <record id="batch_notification_wiz" model="ir.ui.view">
+            <field name="name">batch.notification.wiz.form</field>
+            <field name="model">batch.notification.wiz</field>
+            <field name="arch" type="xml">
+                <form string="Print Contribution Register">
+                    <group>
+                        <group string="Send By SMS">
+                            <field name="send_sms"/>
+                            <field name="sms_template"
+                                   attrs="{'required': [('send_sms', '=', True)], 'invisible': [('send_sms', '=', False)]}"/>
+                        </group>
+                        <group string="Send By Email">
+                            <field name="send_email"/>
+                            <field name="email_template"
+                                   attrs="{'required': [('send_email', '=', True)], 'invisible': [('send_email', '=', False)]}"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="execute"
+                                string="Send Notification" type="object"
+                                class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link"
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Wizard action -->
+        <act_window name="Notify Beneficiaries"
+                    res_model="batch.notification.wiz"
+                    src_model="openg2p.disbursement.batch"
+                    view_mode="form"
+                    target="new"
+                    id="send_disbursement_notification"
+        />
+
+    </data>
+</odoo>

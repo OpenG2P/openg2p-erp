@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_reconcile">
+        <t t-set="data_report_landscape" t-value="True"/>
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h3>Disbursement Reconciliation Report</h3>
+                    <h5>Summary</h5>
+
+                    <table class="table table-sm mb32 mt16" style="width:40%">
+                        <tr>
+                            <td>
+                                <strong><span t-esc="data['current_batch']"/> (Current)</strong>
+                            </td>
+                            <td class="text-right">
+                                <span t-esc="data['current_net']"
+                                      t-options='{"widget": "monetary", "display_currency": currency}'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong><span t-esc="data['previous_batch']"/> (Other)</strong>
+                            </td>
+                            <td class="text-right">
+                                <span t-esc="data['previous_net']"
+                                      t-options='{"widget": "monetary", "display_currency": currency}'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Net Difference</strong>
+                            </td>
+                            <td class="text-right">
+                                <span t-esc="data['difference_net']"
+                                      t-options='{"widget": "monetary", "display_currency": currency}'/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <h5>Details</h5>
+                    <table class="table table-sm o_main_table table-striped" border="0">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>Beneficiary</th>
+                                <th>Location</th>
+                                <th>Rule</th>
+                                <th class="text-right">Current</th>
+                                <th class="text-right">Other</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="data['modifications']"
+                                t-as="row">
+                                <td>
+                                    <span t-esc="row[0]"/>
+                                </td>
+                                <td>
+                                    <span t-esc="row[1]"/>
+                                </td>
+                                <td>
+                                    <span t-esc="row[3]"/>
+                                </td>
+                                <td>
+                                    <span t-esc="row[4]"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="row[5]"
+                                          t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="row[6]"
+                                          t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

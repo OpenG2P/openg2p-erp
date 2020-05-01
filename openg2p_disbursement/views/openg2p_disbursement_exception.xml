@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="view_disbursement_exception_tree">
+            <field name="name">Disbursement Exception</field>
+            <field name="model">openg2p.disbursement.exception</field>
+            <field name="arch" type="xml">
+                <tree string="Disbursement exception" decoration-danger="severity=='high'" edit="0" create="0"
+                      import="0">
+                    <field name="name"/>
+                    <field name="beneficiary_id"/>
+                    <field name="slip_id"/>
+                    <field name="batch_id"/>
+                    <field name="severity"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_disbursement_exception_form">
+            <field name="name">Disbursement Exception</field>
+            <field name="model">openg2p.disbursement.exception</field>
+            <field name="arch" type="xml">
+                <form string="Disbursement exception" edit="0" create="0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="beneficiary_id"/>
+
+                            </group>
+                            <group>
+                                <field name="slip_id"/>
+                                <field name="batch_id"/>
+                                <field name="severity"/>
+                            </group>
+                        </group>
+                        <separator string="Description"/>
+                        <field name="note" nolabel="1"/>
+
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_openg2p_disbursement_exception_filter" model="ir.ui.view">
+            <field name="name">openg2p.disbursement.exception.select</field>
+            <field name="model">openg2p.disbursement.exception</field>
+            <field name="arch" type="xml">
+                <search string="Search Alerts">
+                    <field name="name"/>
+                    <field name="beneficiary_id"/>
+                    <field name="rule_id"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="rule_id" string="Rule" domain="[]" context="{'group_by' : 'rule_id'}"/>
+                        <filter name="severity" string="Severity" domain="[]" context="{'group_by' : 'severity'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_disbursement_exception">
+            <field name="name">Disbursement Alerts</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">openg2p.disbursement.exception</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+    </data>
+</odoo>

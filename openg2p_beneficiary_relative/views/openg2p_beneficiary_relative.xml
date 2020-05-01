@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--
+      Copyright (C) 2018 Brainbean Apps (https://brainbeanapps.com)
+      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+    -->
+
+    <record id="openg2p_beneficiary_relative_view_tree" model="ir.ui.view">
+        <field name="name">openg2p.beneficiary.relative.view.tree</field>
+        <field name="model">openg2p.beneficiary.relative</field>
+        <field name="arch" type="xml">
+            <tree string="Beneficiary Relatives" editable="bottom">
+                <field name="relation_id" options="{'no_open': True, 'no_create_edit': True}"/>
+                <field name="name"/>
+                <field name="gender"/>
+                <field name="phone"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

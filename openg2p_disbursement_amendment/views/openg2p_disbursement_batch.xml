@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="openg2p_disbursement_slip_run_form" model="ir.ui.view">
+            <field name="name">openg2p.disbursement.batch.form</field>
+            <field name="model">openg2p.disbursement.batch</field>
+            <field name="inherit_id" ref="openg2p_disbursement.openg2p_disbursement_slip_run_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <div name="button_box" position="inside">
+                        <button name="view_batch_amendments"
+                                class="oe_stat_button" icon="fa-exchange"
+                                type="object">
+                            <field name="amendment_count"
+                                   widget="statinfo" string="Amends"/>
+                        </button>
+                    </div>
+
+                    <group name="other" position="inside">
+                        <field name="unassigned_amendment_count" string="Unassigned Amendments"
+                               attrs="{'invisible': [('state', 'not in', ('pending', 'draft', 'approved'))]}"/>
+                    </group>
+                </data>
+            </field>
+        </record>
+    </data>
+</odoo>

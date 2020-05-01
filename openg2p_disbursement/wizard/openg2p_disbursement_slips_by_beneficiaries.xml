@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_openg2p_disbursement_slip_by_beneficiaries" model="ir.ui.view">
+        <field name="name">openg2p_disbursement_slip_beneficiaries</field>
+        <field name="model">openg2p.disbursement.slip.beneficiaries</field>
+        <field name="arch" type="xml">
+            <form string="Slips by Beneficiaries">
+                <group>
+                    <span colspan="4" nolabel="1">This wizard will generate slips for all selected beneficiary(s) based
+                        on the program and dates specified on the batch.</span>
+                </group>
+                <group colspan="4">
+                    <separator string="Beneficiaries" colspan="4"/>
+                    <newline/>
+                    <field name="beneficiary_ids" nolabel="1" required="1" options="{'no_create_edit': True}"/>
+                </group>
+                <footer>
+                    <button icon="fa-cogs" string="Generate" name="compute_sheet" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_openg2p_disbursement_slip_by_beneficiaries" model="ir.actions.act_window">
+        <field name="name">Generate Slips</field>
+        <field name="res_model">openg2p.disbursement.slip.beneficiaries</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_openg2p_disbursement_slip_by_beneficiaries"/>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

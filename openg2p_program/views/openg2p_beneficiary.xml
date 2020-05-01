@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="openg2p__beneficiary_view_form2" model="ir.ui.view">
+        <field name="name">openg2p.beneficiary.view.form2</field>
+        <field name="model">openg2p.beneficiary</field>
+        <field name="inherit_id" ref="openg2p.view_beneficiary_form"/>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//button[@name='toggle_active']" position="before">
+                    <button name="%(act_openg2p_beneficiary_2_openg2p_program_registration)d"
+                            class="oe_stat_button"
+                            icon="fa-newspaper-o"
+                            type="action">
+                        <field name="program_registrations_count" widget="statinfo" string="Programs"/>
+                    </button>
+                </xpath>
+
+                <field name="location_id" position="before">
+                    <field name="program_ids" widget="many2many_tags"/>
+                </field>
+            </data>
+        </field>
+    </record>
+
+    <record id="openg2p_beneficiary_view_search" model="ir.ui.view">
+        <field name="name">openg2p.beneficiary.search.inherit</field>
+        <field name="model">openg2p.beneficiary</field>
+        <field name="inherit_id" ref="openg2p.view_openg2p_beneficiary_filter"/>
+        <field name="arch" type="xml">
+            <field name="location_id" position="before">
+                <field name="program_ids"/>
+                <filter name="without_contract_beneficiary"
+                        string="Not Registered to Program"
+                        domain="[('program_ids', '=', False)]"/>
+            </field>
+        </field>
+    </record>
+
+
+    <record id="openg2p_beneficiary_kanban_view" model="ir.ui.view">
+        <field name="name">openg2p.beneficiary.kanban</field>
+        <field name="model">openg2p.beneficiary</field>
+        <field name="inherit_id" ref="openg2p.openg2p_beneficiary_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//searchpanel/field[@name='location_id']" position="before">
+                <field name="program_ids" select="multi" icon="fa-newspaper-o"/>
+            </xpath>
+
+            <field name="category_id" position="before">
+                <field name="program_ids" widget="many2many_tags"
+                       options="{'color_field': 'color'}"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_beneficiary_tree" model="ir.ui.view">
+        <field name="name">openg2p.beneficiary.tree</field>
+        <field name="model">openg2p.beneficiary</field>
+        <field name="inherit_id" ref="openg2p.view_beneficiary_tree"/>
+        <field name="arch" type="xml">
+            <field name="location_id" position="before">
+                <field name="program_ids" widget="many2many_tags"
+                       options="{'color_field': 'color'}"/>
+            </field>
+        </field>
+    </record>
+
+
+</odoo>
+

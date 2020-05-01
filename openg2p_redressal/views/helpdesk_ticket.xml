@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="helpdesk_ticket_view_search" model="ir.ui.view">
+        <field name="name">view.helpdesk.form</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.helpdesk_ticket_view_search"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="replace">
+                <field name="partner_id" invisible="1"/>
+                <field name="beneficiary_id"/>
+                <field name="program_id"/>
+            </field>
+
+            <filter name="group_partner" position="replace">
+                <filter name="group_partner" invisible="1"/>
+                <filter string="Beneficiary" name="group_beneficiary" domain="[]"
+                        context="{'group_by':'beneficiary_id'}"/>
+            </filter>
+
+        </field>
+    </record>
+
+    <record id="ticket_view_form" model="ir.ui.view">
+        <field name="name">view.helpdesk.form</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.ticket_view_form"/>
+        <field name="arch" type="xml">
+
+            <field name="category_id" position="replace">
+                <field name="category_id" domain="[('program_id', '=', program_id), ('program_id', '=', False)]"
+                       options="{'no_create_edit': True}"/>
+            </field>
+
+            <field name="name" position="replace">
+                <field name="name" placeholder="Short Summary..."/>
+
+            </field>
+            <field name="team_id" position="before">
+                <field name="program_id" options="{'no_create_edit': True}" required="1"/>
+            </field>
+
+            <field name="partner_id" position="replace">
+                <field name="partner_id" invisible="1"/>
+                <field name="beneficiary_id" options="{'no_create_edit': True}" required="1"/>
+            </field>
+
+            <field name="partner_name" position="replace">
+                <field name="partner_name" invisible="1"/>
+            </field>
+
+            <field name="partner_email" position="replace">
+                <field name="partner_email" invisible="1"/>
+            </field>
+
+
+        </field>
+    </record>
+
+    <record id="ticket_view_tree" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.view.tree</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.ticket_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="partner_name" position="replace">
+                <field name="partner_name" invisible="1"/>
+                <field name="beneficiary_id"/>
+                <field name="program_id"/>
+            </field>
+        </field>
+    </record>
+
+
+    <record id="view_helpdesk_ticket_kanban" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.kanban</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="priority" eval="100"/>
+        <field name="inherit_id" ref="helpdesk_mgmt.view_helpdesk_ticket_kanban"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="partner_id" invisible="1"/>
+                <field name="beneficiary_id"/>
+                <field name="program_id"/>
+            </field>
+
+
+        </field>
+    </record>
+
+</odoo>

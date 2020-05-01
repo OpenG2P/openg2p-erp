@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Program -->
+    <record id="edit_program" model="ir.ui.view">
+        <field name="name">openg2p.program.form</field>
+        <field name="model">openg2p.program</field>
+        <field name="arch" type="xml">
+            <form string="Program">
+                <header>
+                    <button name="action_activate" type="object" states="draft" string="Activate" class="oe_highlight"
+                            groups="openg2p.group_openg2p_manager"/>
+                    <button name="action_done" type="object" states="active" string="Close" confirm="Closing this program with also end all active beneficiary registrations to this program"
+                            groups="openg2p.group_openg2p_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,done"/>
+                </header>
+                <sheet string="Program">
+                    <div class="oe_button_box" name="button_box" groups="base.group_user">
+                        <button class="oe_stat_button"
+                                name="%(act_program_category_list)d"
+                                icon="fa-bars"
+                                type="action">
+                            <field name="category_count" widget="statinfo" string="Categories"/>
+                        </button>
+
+                        <button class="oe_stat_button" name="action_get_attachment_tree_view" type="object" icon="fa-files-o">
+                            <field string="Documents" name="documents_count" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Program Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="type"/>
+                        </group>
+                        <group>
+                            <label for="date_start" string="Period"/>
+                            <div>
+                                <field name="date_start" class="oe_inline" placeholder="Starts On..."/>
+                                -
+                                <field name="date_end" class="oe_inline" placeholder="Ends On..."/>
+                            </div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="notes" string="Description">
+                            <field name="note" nolabel="1" placeholder="Description of program..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"
+                           help="Follow this program to automatically track the events associated to tasks and issues of this program."
+                           groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_openg2p_program_filter" model="ir.ui.view">
+        <field name="name">openg2p.program.select</field>
+        <field name="model">openg2p.program</field>
+        <field name="arch" type="xml">
+            <search string="Search Program">
+                <field name="name" string="Program Name"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                <group expand="0" string="Group By">
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_program" model="ir.ui.view">
+        <field name="name">openg2p.program.tree</field>
+        <field name="model">openg2p.program</field>
+        <field name="arch" type="xml">
+            <tree decoration-bf="message_needaction==True" decoration-muted="active == False" string="Programs">
+                <field name="message_needaction" invisible="1"/>
+                <field name="active" invisible="1"/>
+                <field name="name" string="Program Name"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="open_view_program_all_config" model="ir.actions.act_window">
+        <field name="name">Programs</field>
+        <field name="res_model">openg2p.program</field>
+        <field name="view_type">form</field>
+        <field name="domain">[]</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_openg2p_program_filter"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                Create a new program
+            </p>
+            <p>
+                Manage payments to beneficiaries and redressal mechanism
+            </p>
+        </field>
+    </record>
+
+    <menuitem action="open_view_program_all_config" id="menu_programs_config" name="Programs"
+              parent="openg2p.menu_openg2p_configuration" sequence="1"/>
+
+</odoo>

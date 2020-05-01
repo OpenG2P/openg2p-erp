@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Beneficiary View -->
+    <record id="disbursement_openg2p_beneficiary_view_form" model="ir.ui.view">
+        <field name="name">disbursement.openg2p.beneficiary.view.form</field>
+        <field name="model">openg2p.beneficiary</field>
+        <field name="inherit_id" ref="openg2p.view_beneficiary_form"/>
+        <field name="arch" type="xml">
+            <button name="toggle_active" position="before">
+                <button name="%(act_openg2p_beneficiary_slip_list)d"
+                        class="oe_stat_button"
+                        icon="fa-money"
+                        type="action"
+                        groups="openg2p_disbursement.group_openg2p_disbursement_user">
+                    <field name="slip_count" widget="statinfo" string="Slips"/>
+                </button>
+            </button>
+        </field>
+    </record>
+</odoo>

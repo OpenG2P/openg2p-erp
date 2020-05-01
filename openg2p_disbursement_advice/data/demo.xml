@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="res.partner.bank" id="bank_acc_1">
+            <field name="acc_number">60-16-13 31926119</field>
+            <field name="beneficiary_id" ref="openg2p.openg2p_beneficiary_1"/>
+            <field name="bank_id" ref="base.bank_bnp"/>
+        </record>
+
+        <record id="openg2p.openg2p_beneficiary_1" model="openg2p.beneficiary">
+            <field name="bank_account_id" ref="bank_acc_1"/>
+        </record>
+
+        <record model="res.partner.bank" id="bank_acc_2">
+            <field name="acc_number">60-16-13 21926219</field>
+            <field name="beneficiary_id" ref="openg2p.openg2p_beneficiary_2"/>
+            <field name="bank_id" ref="base.bank_bnp"/>
+        </record>
+
+        <record id="openg2p.openg2p_beneficiary_2" model="openg2p.beneficiary">
+            <field name="bank_account_id" ref="bank_acc_2"/>
+        </record>
+
+        <record model="res.partner.bank" id="bank_acc_3">
+            <field name="acc_number">60-16-13 31916319</field>
+            <field name="beneficiary_id" ref="openg2p.openg2p_beneficiary_3"/>
+            <field name="bank_id" ref="base.bank_bnp"/>
+        </record>
+
+        <record id="openg2p.openg2p_beneficiary_3" model="openg2p.beneficiary">
+            <field name="bank_account_id" ref="bank_acc_3"/>
+        </record>
+
+        <record model="res.partner.bank" id="bank_acc_4">
+            <field name="acc_number">60-16-13 31926319</field>
+            <field name="beneficiary_id" ref="openg2p.openg2p_beneficiary_4"/>
+            <field name="bank_id" ref="base.bank_ing"/>
+        </record>
+
+        <record id="openg2p.openg2p_beneficiary_4" model="openg2p.beneficiary">
+            <field name="bank_account_id" ref="bank_acc_4"/>
+        </record>
+
+        <record model="res.partner.bank" id="bank_acc_5">
+            <field name="acc_number">60-16-13 21926019</field>
+            <field name="beneficiary_id" ref="openg2p.openg2p_beneficiary_10"/>
+            <field name="bank_id" ref="base.bank_ing"/>
+        </record>
+
+        <record id="openg2p.openg2p_beneficiary_10" model="openg2p.beneficiary">
+            <field name="bank_account_id" ref="bank_acc_5"/>
+        </record>
+
+
+    </data>
+</odoo>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Wizard view -->
+        <record id="print_batch_contrib_register_form" model="ir.ui.view">
+            <field name="name">print.batch.contrib_register.form</field>
+            <field name="model">print.batch.contrib_register</field>
+            <field name="arch" type="xml">
+                <form string="Print Contribution Register">
+                    <group>
+                        <separator colspan="4" string="Contribution Registers"/>
+                        <field name="register_ids" nolabel="1"/>
+                    </group>
+                    <footer>
+                        <button name="print_contrib_register"
+                                string="Print Registers" type="object"
+                                class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link"
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Wizard action -->
+        <act_window name="Contribution Registers"
+                    res_model="print.batch.contrib_register"
+                    src_model="openg2p.disbursement.batch"
+                    view_mode="form"
+                    target="new"
+                    id="send_disbursement_notification"
+        />
+
+
+    </data>
+</odoo>

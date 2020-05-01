@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <menuitem
+                name="Enrollment"
+                id="menu_openg2p_enrollment_root"
+                web_icon="openg2p_enrollment,static/description/icon.png"
+                groups="openg2p_enrollment.group_openg2p_enrollment_user,openg2p.group_openg2p_manager,openg2p.group_openg2p_officer"
+                sequence="80"/>
+
+        <menuitem id="menu_openg2p_enrollment_configuration" name="Configuration" parent="menu_openg2p_enrollment_root"
+                  sequence="100"/>
+
+
+    </data>
+</odoo>

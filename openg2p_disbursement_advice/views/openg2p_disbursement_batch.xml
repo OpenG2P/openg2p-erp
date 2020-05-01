@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="openg2p_disbursement_batch_form_inherit" model="ir.ui.view">
+            <field name="name">openg2p.disbursement.batch.form.inherit</field>
+            <field name="model">openg2p.disbursement.batch</field>
+            <field name="inherit_id"
+                   ref="openg2p_disbursement.openg2p_disbursement_slip_run_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <button name="approve_slip_run" position="after">
+                        <button name="create_advice" type="object" string="Recompute Advices" states="disbursing"
+                                groups="openg2p_disbursement.group_openg2p_disbursement_manager"/>
+                    </button>
+                    <group name="secondary" position="after">
+                        <group string="Payment Instructions" states="approved,disbursing,done">
+                            <field name="no_advice_bank" attrs="{'readonly':[('state','!=','approved')]}"/>
+                            <field name="count_advised_slips" widget="progressbar"
+                                   string="&#37; of Slips Adviced"
+                                   options="{'current_value': 'count_advised_slips', 'max_value': 'slip_count'}"/>
+                            <button name="action_view_exempted" class="oe_link" type="object"
+                                    string=" -> View Excluded"/>
+                        </group>
+                    </group>
+
+                    <div name="button_box" position="inside">
+                        <button name="%(action_view_openg2p_bank_advice_run)d"
+                                class="oe_stat_button" icon="fa-money"
+                                type="action">
+                            <field name="advice_count"
+                                   widget="statinfo" string="Advices"/>
+                        </button>
+                    </div>
+                </data>
+            </field>
+        </record>
+
+    </data>
+</odoo>

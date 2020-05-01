@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report
+            id="action_contribution_register"
+            model="openg2p.disbursement.contribution.register"
+            string="Contribution Register Report"
+            report_type="qweb-pdf"
+            name="openg2p_disbursement.report_contributionregister"
+            file="openg2p_disbursement.report_contributionregister"
+            menu="False"
+    />
+    <report
+            id="action_report_slip"
+            model="openg2p.disbursement.slip"
+            string="Disbursement Slip"
+            report_type="qweb-pdf"
+            name="openg2p_disbursement.report_slip"
+            file="openg2p_disbursement.report_slip"
+            print_report_name="'Disbursement Slip - %s' % (object.beneficiary_id.name)"
+    />
+
+    <report
+            id="slip_details_report"
+            model="openg2p.disbursement.slip"
+            string="Disbursement Slip Details"
+            report_type="qweb-pdf"
+            name="openg2p_disbursement.report_slipdetails"
+            file="openg2p_disbursement.report_slipdetails"
+            print_report_name="'Disbursement Slip Details - %s' % (object.beneficiary_id.name)"
+    />
+</odoo>

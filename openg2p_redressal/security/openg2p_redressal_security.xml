@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="openg2p.group_openg2p_manager" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('helpdesk_mgmt.group_helpdesk_manager'))]"/>
+        </record>
+
+        <record id="openg2p.group_openg2p_officer" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('helpdesk_mgmt.group_helpdesk_user'))]"/>
+        </record>
+
+    </data>
+
+</odoo>

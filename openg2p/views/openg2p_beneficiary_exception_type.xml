@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Categories -->
+        <record id="view_beneficiary_exception_type_list" model="ir.ui.view">
+            <field name="name">Alert Reasons</field>
+            <field name="model">openg2p.beneficiary.exception.type</field>
+            <field eval="6" name="priority"/>
+            <field name="arch" type="xml">
+                <tree string="Alert Reasons" editable="top" import="0">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_beneficiary_exception_type_form" model="ir.actions.act_window">
+            <field name="name">Alert Reasons</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">openg2p.beneficiary.exception.type</field>
+            <field name="view_type">form</field>
+        </record>
+
+        <menuitem
+                action="action_beneficiary_exception_type_form"
+                id="menu_beneficiary_exception_type_tree"
+                parent="menu_openg2p_configuration"
+                sequence="99"/>
+
+    </data>
+</odoo>

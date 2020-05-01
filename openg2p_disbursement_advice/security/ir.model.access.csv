@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_openg2p_disbursement_advice_system,openg2p.disbursement.advice.system,model_openg2p_disbursement_advice,base.group_user,1,0,0,0
+access_openg2p_disbursement_advice_line_system,openg2p.disbursement.advice.system,model_openg2p_disbursement_advice_line,base.group_user,1,0,0,0
+access_openg2p_disbursement_advice_user,openg2p.disbursement.advice.user,model_openg2p_disbursement_advice,group_openg2p_disbursement_advice_user,1,1,1,1
+access_openg2p_disbursement_advice_line_manager.user,openg2p.disbursement.advice.line.user,model_openg2p_disbursement_advice_line,group_openg2p_disbursement_advice_user,1,1,1,1
+

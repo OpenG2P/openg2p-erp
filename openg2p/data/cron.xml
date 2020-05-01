@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="ir_cron_openg2p_beneficiary_duplicate_check" model="ir.cron">
+            <field name="name">Check Beneficiary List for Duplicate</field>
+            <field name="model_id" ref="model_openg2p_beneficiary"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_deduplicate()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 02:00:00')"/>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+        </record>
+
+    </data>
+
+</odoo>

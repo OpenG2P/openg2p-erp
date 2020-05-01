@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="overpay_amend" model="openg2p.disbursement.amendment.category">
+            <field name="name">Overpayment Deduction</field>
+            <field name="code">OVERPAY</field>
+            <field name="type">subtract</field>
+            <field name="struct_id" ref="openg2p_disbursement.structure_base"/>
+            <field name="in_report" eval="True"/>
+            <field name="note">Accounts for adjusting current cycle payment for overpayment in past</field>
+        </record>
+
+        <record id="underpay_amend" model="openg2p.disbursement.amendment.category">
+            <field name="name">Underpayment Addition</field>
+            <field name="code">UNDERPAY</field>
+            <field name="type">add</field>
+            <field name="struct_id" ref="openg2p_disbursement.structure_base"/>
+            <field name="in_report" eval="True"/>
+            <field name="note">Accounts for adjusting current cycle payment for underpayment in past</field>
+        </record>
+
+    </data>
+</odoo>

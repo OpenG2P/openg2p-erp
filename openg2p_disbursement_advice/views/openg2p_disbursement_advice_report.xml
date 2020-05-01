@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <report
+                id="disbursement_advice"
+                model="openg2p.disbursement.advice"
+                string="Print Manual Advice"
+                report_type="qweb-pdf"
+                attachment_use="True"
+                attachment="object.number + '.pdf'"
+                print_report_name="object.name"
+                menu="False"
+                name="openg2p_disbursement_advice.report_disbursement_advice"
+                file="openg2p_disbursement_advice.report_disbursement_advice"/>
+
+    </data>
+</odoo>

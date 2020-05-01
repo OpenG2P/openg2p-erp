@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Disbursement Slip Line -->
+    <record id="view_openg2p_disbursement_slip_line_tree" model="ir.ui.view">
+        <field name="name">openg2p.disbursement.slip.line.tree</field>
+        <field name="model">openg2p.disbursement.slip.line</field>
+        <field name="arch" type="xml">
+            <tree string="Disbursement Slip Line" decoration-info="total == 0" create="0" edit="0">
+                <field name="category_id"/>
+                <field name="beneficiary_id" invisible="1"/>
+                <field name="sequence"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="quantity"/>
+                <field name="rate"/>
+                <field name="amount"/>
+                <field name="total"/>
+                <field name="amount_select" invisible="1"/>
+                <field name="register_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_openg2p_disbursement_slip_line_form" model="ir.ui.view">
+        <field name="name">openg2p.disbursement.slip.line.form</field>
+        <field name="model">openg2p.disbursement.slip.line</field>
+        <field name="arch" type="xml">
+            <form string="Disbursement Slip Line" create="0" edit="0">
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="slip_id"/>
+                        <field name="beneficiary_id"/>
+                    </group>
+                    <group string="Calculations">
+                        <field name="category_id"/>
+                        <field name="amount_select"/>
+                        <field name="amount_fix" attrs="{'readonly':[('amount_select','!=','fix')]}"/>
+                        <field name="amount_percentage" attrs="{'readonly':[('amount_select','!=','percentage')]}"/>
+                        <field name="sequence"/>
+                    </group>
+                    <field name="note"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_openg2p_disbursement_slip_line_filter" model="ir.ui.view">
+        <field name="name">openg2p.disbursement.slip.line.select</field>
+        <field name="model">openg2p.disbursement.slip.line</field>
+        <field name="arch" type="xml">
+            <search string="Search Disbursement Slip Lines">
+                <field name="name" string="Disbursement Slip Lines"
+                       filter_domain="['|',('name','ilike',self),('code','ilike',self)]"/>
+                <field name="amount_select"/>
+                <field name="slip_id"/>
+                <group col="8" colspan="4" expand="0" string="Group By">
+                    <filter string="Program" name="program_id" context="{'group_by':'program_id'}"/>
+                    <filter string="Disbursement Rule Category" name="category_id"
+                            context="{'group_by':'category_id'}"/>
+                    <filter string="Contribution Register" name="register_id" context="{'group_by':'register_id'}"/>
+                    <filter string="Amount Type" name="amount_select" context="{'group_by':'amount_select'}"/>
+                    <filter string="Beneficiaries" name="beneficiary_id" context="{'group_by':'beneficiary_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+</odoo>

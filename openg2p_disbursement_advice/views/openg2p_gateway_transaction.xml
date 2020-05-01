@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.actions.act_window" id="act_open_openg2p_gateway_transaction_view">
+            <field name="name">Payment Transaction</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">openg2p.gateway.transaction</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('res_model', '=', 'openg2p.disbursement.advice.line')]</field>
+        </record>
+        <menuitem
+                action="act_open_openg2p_gateway_transaction_view"
+                id="openg2p_menu_disbursement_transactions"
+                sequence="5"
+                parent="menu_openg2p_disbursement_advice_main"
+        />
+    </data>
+</odoo>

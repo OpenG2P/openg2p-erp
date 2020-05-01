@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_openg2p_applicant_system,openg2p.applicant.system,model_openg2p_applicant,base.group_user,1,0,0,0
+access_openg2p_applicant_user,openg2p.applicant.user,model_openg2p_applicant,group_openg2p_enrollment_user,1,1,1,1
+access_openg2p_enrollment_system,openg2p.enrollment.stage.system,model_openg2p_enrollment_stage,base.group_user,1,0,0,0
+access_openg2p_enrollment_stage_manager,openg2p.enrollment.stage.manager,model_openg2p_enrollment_stage,openg2p.group_openg2p_manager,1,1,1,1
+access_openg2p_applicant_category,openg2p.applicant_category,model_openg2p_applicant_category,,1,0,0,0
+access_openg2p_applicant_category_manager,openg2p.applicant_category,model_openg2p_applicant_category,openg2p.group_openg2p_manager,1,1,1,1
+openg2p.access_openg2p_beneficiary_user,openg2p.beneficiaryuser,model_openg2p_beneficiary,openg2p.group_openg2p_officer,1,1,0,0
+access_openg2p_applicant_identity_system,openg2p.applicant.identity.system,model_openg2p_applicant_identity,base.group_user,1,0,0,0
+access_openg2p_applicant_identity_user,openg2p.applicant.identity.user,model_openg2p_applicant_identity,group_openg2p_enrollment_user,1,1,1,1

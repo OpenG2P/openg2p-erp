@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="view_disbursement_exception_rule_form">
+            <field name="name">Disbursement Exception Rule</field>
+            <field name="model">openg2p.disbursement.exception.rule</field>
+            <field name="arch" type="xml">
+                <form string="Disbursement Exception Rule">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="sequence"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="severity"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Additional">
+                                <group col="4">
+                                    <field name="condition_python" groups="base.group_no_one"/>
+                                    <newline/>
+                                    <field name="note"/>
+                                    <newline/>
+
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_disbursement_exception_rule_tree">
+            <field name="name">Disbursement Exception Rule</field>
+            <field name="model">openg2p.disbursement.exception.rule</field>
+            <field name="arch" type="xml">
+                <tree string="Disbursement Exception Rule">
+                    <field name="name"/>
+                    <field name="severity"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window"
+                id="action_disbursement_exception_rule">
+            <field name="name">Disbursement Exception Rule</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">openg2p.disbursement.exception.rule</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem name="Disbursement Exception Rule"
+                  action="action_disbursement_exception_rule" sequence="29"
+                  id="menu_disbursement_exception_rule"
+                  groups="base.group_no_one"
+                  parent="openg2p_disbursement.menu_openg2p_disbursement_configuration"/>
+
+    </data>
+</odoo>

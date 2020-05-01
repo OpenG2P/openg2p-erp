@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_openg2p_bank_advice_line_tree" model="ir.ui.view">
+            <field name="name">openg2p.disbursement.advice.line.tree</field>
+            <field name="model">openg2p.disbursement.advice.line</field>
+            <field name="arch" type="xml">
+                <tree string="Disbursement Instructions" create="0" edit="0">
+                    <field name="acc_holder_name"/>
+                    <field name="name"/>
+                    <field name="amount"/>
+                    <field name="receipt_confirmed"/>
+                    <field name="advice_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_advice_line_form" model="ir.ui.view">
+            <field name="name">advice.line.form</field>
+            <field name="model">openg2p.disbursement.advice.line</field>
+            <field name="arch" type="xml">
+                <form string="Disbursement Instructions" create="0" edit="0">
+                    <sheet>
+                        <label for="advice_id" class="oe_edit_only"/>
+                        <h1>
+                            <field name="advice_id"/>
+                        </h1>
+                        <group>
+                            <group>
+                                <field name="beneficiary_id"/>
+                                <field name="acc_holder_name"/>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="amount"/>
+                                <field name="receipt_confirmed"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+
+    <record id="view_openg2p_disbursement_advice_line_filter" model="ir.ui.view">
+        <field name="name">openg2p.disbursement.advice.line.select</field>
+        <field name="model">openg2p.disbursement.advice.line</field>
+        <field name="arch" type="xml">
+            <search string="Search Disbursement Instructions">
+                <field name="name"/>
+                <field name="advice_id"/>
+                <field name="beneficiary_id" string="Account Holder"
+                       filter_domain="['|', ('beneficiary_id','ilike', self), ('acc_holder_name','ilike', self)]"/>
+
+                <filter string="Receipt Pending" name="receipt_confirmed_false"
+                        domain="[('receipt_confirmed','=', False)]"/>
+                <filter string="Receipt Confirmed" name="receipt_confirmed_true"
+                        domain="[('receipt_confirmed','=',True)]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Receipt States" name="receipt_confirmed"
+                            context="{'group_by':'receipt_confirmed'}"/>
+                    <filter string="Advice" name="group_advice_id"
+                            context="{'group_by':'advice_id'}"/>
+                    <filter string="Beneficiary" name="group_beneficiary_id"
+                            context="{'group_by':'beneficiary_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_view_openg2p_bank_advice_line_tree"
+            model="ir.actions.act_window">
+        <field name="name">Disbursement Instructions</field>
+        <field name="res_model">openg2p.disbursement.advice.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            action="action_view_openg2p_bank_advice_line_tree"
+            id="openg2p_menu_disbursement_advice_line"
+            sequence="2"
+            parent="menu_openg2p_disbursement_advice_main"
+    />
+</odoo>

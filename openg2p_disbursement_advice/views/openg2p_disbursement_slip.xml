@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_openg2p_disbursement_slip_form" model="ir.ui.view">
+            <field name="name">openg2p.disbursement.slip.form</field>
+            <field name="model">openg2p.disbursement.slip</field>
+            <field name="inherit_id" ref="openg2p_disbursement.view_openg2p_disbursement_slip_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <field name="total" position="after">
+                        <field name="advice_line_id"/>
+                    </field>
+                </data>
+            </field>
+        </record>
+    </data>
+</odoo>
