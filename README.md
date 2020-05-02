@@ -21,7 +21,7 @@ Usage
 
 Contributing 
 ------------
-See our verion 1 [release checklist](https://github.com/OpenG2P/openg2p-erp/issues/17) also help with our [backlog](https://github.com/OpenG2P/openg2p-erp/issues) and [documentation](https://github.com/OpenG2P/openg2p.github.io)
+See our verion 1 [release checklist](https://github.com/OpenG2P/openg2p-erp/issues/17). Also help with our [backlog](https://github.com/OpenG2P/openg2p-erp/issues) and [documentation](https://github.com/OpenG2P/openg2p.github.io)
 
 @TODO
 
