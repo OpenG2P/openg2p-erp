@@ -48,6 +48,7 @@
         'field_image_preview',
         'base_currency_iso_4217',
         'base_rest',
+        'eradicate_quick_create'
     ],
     'data': [
         'data/base.xml',
