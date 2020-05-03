@@ -15,7 +15,6 @@
         "component",
         "queue_job",
         "keychain",
-        "base_suspend_security",
     ],
     "data": [
         "views/res_bank.xml",

@@ -12,7 +12,6 @@ class QueueJobBatch(models.Model):
             batch = self.env['openg2p.disbursement.batch'].search([('job_batch_id', 'in', self.ids)])
             batch.ensure_one()
             if batch.job_failed_count:
-                batch.write({'state': 'failed'})
+                batch.batch_notify_failed()
             else:
-                batch.write({'state': 'draft'})
-                batch.post_generate_run(json.loads(batch.intended_beneficiaries))
+                batch.batch_notify_success()

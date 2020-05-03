@@ -241,32 +241,29 @@ class SlipBatch(models.Model):
         if redo:
             self.slip_ids.filtered(lambda r: r.beneficiary_id.id in beneficiaries).unlink()  # @TODO potential optimization point
 
-        if len(beneficiaries) < BATCH_SIZE:
-            self._generate_run_split_job(beneficiaries)
-            self.post_generate_run(beneficiaries)
-            return True
-        else:
-            batch = self.env['queue.job.batch'].sudo().get_new_batch("Disbursement Batch: " + self.name)
-            count = 0
-            for chunk in chunks(beneficiaries, BATCH_SIZE):
-                count += 1
-                self.sudo().with_context(job_batch=batch).with_delay(
-                    priority=0,
-                    description="Disbursement Batch: %s  Part: %s" % (self.name, str(count)),
-                    max_retries=1
-                )._generate_run_split_job(chunk)
-            batch.enqueue()
-            self.write({
-                'state': 'generating',
-                'job_batch_id': batch.id,
-                'intended_beneficiaries': json.dumps(beneficiaries)
-            })
-            return {  # use this to signal that it was queued @TODO fix prev window not closing
-                'type': 'ir.actions.act_window.message',
-                'title': _('Disbursement Batch Queued'),
-                'message': _(
-                    'Generation of the batch has been queued for processing; you will be notified when completed'),
-            }
+        # we use suspend security to we can run batch with the same user
+        batch = self.env['queue.job.batch'].suspend_security().get_new_batch("Disbursement Batch: " + self.name)
+        count = 0
+        for chunk in chunks(beneficiaries, BATCH_SIZE):
+            count += 1
+            self.suspend_security().with_context(job_batch=batch).with_delay(
+                priority=0,
+                description="Disbursement Batch: %s  Part: %s" % (self.name, str(count)),
+                max_retries=1
+            )._generate_run_split_job(chunk)
+        batch.enqueue()
+        self.write({
+            'state': 'generating',
+            'job_batch_id': batch.id,
+            'intended_beneficiaries': json.dumps(beneficiaries)
+        })
+        self.env.user.notify_info(
+            title=_('Disbursement Batch Queued'),
+            message=_('Generation of the batch has been queued for processing; you will be notified when completed')
+        )
+        return {
+            'type': 'ir.actions.close_wizard_refresh_view'
+        }
 
     @api.multi
     def post_generate_run(self, beneficiaries):
@@ -368,6 +365,25 @@ class SlipBatch(models.Model):
     def state_approved(self):
         self.ensure_one()
         return self.state in ('approved', 'disbursing', 'done')
+
+    @api.multi
+    def batch_notify_success(self):
+        self.ensure_one()
+        self.write({'state': 'draft'})
+        self.post_generate_run(json.loads(self.intended_beneficiaries))
+        self.env.user.notify_success(
+            title=_('Disbursement Processing Successful'),
+            message=_('Successfully computed slips for ' + self.name)
+        )
+
+    @api.multi
+    def batch_notify_failed(self):
+        self.ensure_one()
+        self.write({'state': 'failed'})
+        self.env.user.notify_info(
+            title=_('Disbursement Processing Failed'),
+            message=_('Encountered an error while computing slips for ' + self.name)
+        )
 
     @api.one
     @api.depends('state')

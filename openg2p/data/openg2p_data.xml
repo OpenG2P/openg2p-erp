@@ -45,5 +45,15 @@
             <field name="beneficiary_id_sequence" ref="seq_openg2p_beneficiary_id"/>
         </record>
 
+        <record id="web_m2x_options_create" model="ir.config_parameter">
+            <field name="key">web_m2x_options.create</field>
+            <field name="value">False</field>
+        </record>
+
+        <record id="web_m2x_options_create_edit" model="ir.config_parameter">
+            <field name="key">web_m2x_options.create_edit</field>
+            <field name="value">False</field>
+        </record>
+
     </data>
 </odoo>
