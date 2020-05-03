@@ -1,7 +1,3 @@
-.. image:: https://img.shields.io/badge/licence-AGPL--3-blue.svg
-   :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
-   :alt: License: AGPL-3
-
 OpenG2P ERP
 ===========
 
@@ -21,6 +17,12 @@ However if you know what you are doing, these install like any odoo addons and d
 
 Usage
 -----
+@TODO
+
+Contributing 
+------------
+See our verion 1 [release checklist](https://github.com/OpenG2P/openg2p-erp/issues/17). Also help with our [backlog](https://github.com/OpenG2P/openg2p-erp/issues) and [documentation](https://github.com/OpenG2P/openg2p.github.io)
+
 @TODO
 
 Links
