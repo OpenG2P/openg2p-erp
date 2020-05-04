@@ -21,5 +21,5 @@
     ],
     'demo': ['data/openg2p_program_demo.xml'],
     'installable': True,
-    'auto_install': False,
+    'auto_install': True,
 }

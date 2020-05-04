@@ -17,4 +17,5 @@
         'report/openg2p_disbursement_reconciliation_report.xml'
     ],
     'installable': True,
+    'auto_install': True,
 }

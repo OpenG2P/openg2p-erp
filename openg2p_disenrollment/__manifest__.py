@@ -18,4 +18,5 @@
         'views/openg2p_disenrollment.xml',
         'views/openg2p_disenrollment_reason.xml'
     ],
+    'auto_install': True,
 }
