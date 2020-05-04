@@ -23,5 +23,5 @@ class ResConfigSettings(models.TransientModel):
     )
     disbursement_slip_model_id = fields.Many2one(
         'ir.model',
-        default=lambda r: r.env.ref('openg2p_disbursement.model_openg2p_disbursement_slip'),
+        default=lambda r: r.env.ref('openg2p_disbursement.model_openg2p_disbursement_slip', False),
     )

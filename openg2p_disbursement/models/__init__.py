@@ -6,7 +6,6 @@
 from . import queue_job
 from . import queue_job_batch
 from . import res_company
-from . import res_config_settings
 from . import openg2p_beneficiary
 from . import openg2p_disbursement_batch
 from . import openg2p_disbursement_contribution_register
@@ -21,3 +20,4 @@ from . import openg2p_disbursement_slip_line
 from . import openg2p_disbursement_structure
 from . import openg2p_program_registration
 from . import openg2p_program_registration_category
+from . import res_config_settings

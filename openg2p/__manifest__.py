@@ -32,7 +32,7 @@
         'web_advanced_search',
         'web_edit_user_filter',
         'web_export_view',
-        'web_listview_sticky_header',
+      #  'web_listview_sticky_header', # throws error in docker in the disbursement batch list
         'web_m2x_options',
         'base_search_fuzzy',
         'web_ir_actions_act_window_message',
