@@ -259,7 +259,8 @@ class SlipBatch(models.Model):
         })
         self.env.user.notify_info(
             title=_('Disbursement Batch Queued'),
-            message=_('Generation of the batch has been queued for processing; you will be notified when completed')
+            message=_('Generation of the batch has been queued; you will be notified when completed'),
+            sticky=True
         )
         return {
             'type': 'ir.actions.close_wizard_refresh_view'
@@ -373,16 +374,18 @@ class SlipBatch(models.Model):
         self.post_generate_run(json.loads(self.intended_beneficiaries))
         self.env.user.notify_success(
             title=_('Disbursement Processing Successful'),
-            message=_('Successfully computed slips for ' + self.name)
+            message=_('Successfully computed slips for ' + self.name),
+            sticky=True
         )
 
     @api.multi
     def batch_notify_failed(self):
         self.ensure_one()
         self.write({'state': 'failed'})
-        self.env.user.notify_info(
+        self.env.user.notify_danger(
             title=_('Disbursement Processing Failed'),
-            message=_('Encountered an error while computing slips for ' + self.name)
+            message=_('Encountered an error while computing slips for ' + self.name),
+            sticky=True
         )
 
     @api.one
