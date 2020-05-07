@@ -4,7 +4,7 @@ OpenG2P CRM
 The “OpenG2P” framework is a set of building blocks based on revamped versions of digital tools employed by the Government of Sierra Leone to pay 30,000 Ebola frontline and health workers at the height of the West African Ebola Crisis.
 By open sourcing these tools, we aim to provide others with an easily-extensible out-of-the-box solution that incorporates key lessons from the Sierra Leone Ebola payment case.
 
-The CRM is based on OCB port of [Odoo](https://www.odoo.com/). This repository houses the set of Odoo addons that constitutes the OpenG2P CRM.
+The CRM is based on OCB port of [Odoo 12](https://www.odoo.com/). This repository houses the set of Odoo addons that constitutes the OpenG2P CRM.
 
 Installation
 ------------
