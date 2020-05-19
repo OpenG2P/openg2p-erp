@@ -24,11 +24,13 @@
         'security/ir.model.access.csv',
 
         'views/menu.xml',
+        'views/openg2p_applicant_reject_reason.xml',
         'views/openg2p_beneficiary.xml',
         'views/openg2p_applicant.xml',
         'views/openg2p_applicant_category.xml',
         'views/openg2p_enrollment_stage.xml',
         'views/openg2p_location.xml',
+        'wizard/reject_reason.xml',
         #    'views/digest_views.xml',
     ],
     'demo': [
