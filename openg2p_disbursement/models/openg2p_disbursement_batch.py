@@ -372,7 +372,7 @@ class SlipBatch(models.Model):
         self.ensure_one()
         self.write({'state': 'draft'})
         self.post_generate_run(json.loads(self.intended_beneficiaries))
-        self.env.user.notify_success(
+        self.job_batch_id.user_id.notify_success(
             title=_('Disbursement Processing Successful'),
             message=_('Successfully computed slips for ' + self.name),
             sticky=True
@@ -382,7 +382,7 @@ class SlipBatch(models.Model):
     def batch_notify_failed(self):
         self.ensure_one()
         self.write({'state': 'failed'})
-        self.env.user.notify_danger(
+        self.job_batch_id.user_id.notify_danger(
             title=_('Disbursement Processing Failed'),
             message=_('Encountered an error while computing slips for ' + self.name),
             sticky=True
