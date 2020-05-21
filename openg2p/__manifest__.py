@@ -14,6 +14,7 @@
         'base',
         'base_setup',
         'phone_validation',
+        'document',
         'mail',
         'resource',
         'web',

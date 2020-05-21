@@ -2,8 +2,7 @@
 <odoo>
     <data noupdate="1">
         <record id="exception_rule_no_basic" model="openg2p.disbursement.exception.rule">
-            <field name="name">Basic is negative or less than zero Salary
-            </field>
+            <field name="name">Base disbursement amount (BASE) is negative or less than zero</field>
             <field name="condition_python"><![CDATA[
 line = slip.line_ids.filtered(lambda r: r.disbursement_rule_id.code == 'BASE')
 result = line.total <= 0
@@ -11,7 +10,7 @@ result = line.total <= 0
         </record>
 
         <record id="exception_rule_no_net" model="openg2p.disbursement.exception.rule">
-            <field name="name">NET is negative or less than zero Salary</field>
+            <field name="name">Final disbursement amount (NET) is negative or less than zero</field>
             <field name="condition_python"><![CDATA[
 line = slip.line_ids.filtered(lambda r: r.disbursement_rule_id.code == 'NET')
 result = line.total <= 0
@@ -23,16 +22,16 @@ result = line.total <= 0
         </record>
 
         <record id="exception_rule_active_alert" model="openg2p.disbursement.exception.rule">
-            <field name="name">Active alert associated with beneficiary</field>
+            <field name="name">An active alert/investigation workflow exist invovling beneficiary</field>
         </record>
 
         <record id="exception_rule_active_registration" model="openg2p.disbursement.exception.rule">
-            <field name="name">Could not determine active program registration</field>
+            <field name="name">Could not find an active registration for program</field>
             <field name="severity">high</field>
         </record>
 
         <record id="exception_rule_unknown_error" model="openg2p.disbursement.exception.rule">
-            <field name="name">Error generating slip and so skipped</field>
+            <field name="name">Error generating slip for beneficiary and so skipped</field>
             <field name="severity">high</field>
         </record>
 

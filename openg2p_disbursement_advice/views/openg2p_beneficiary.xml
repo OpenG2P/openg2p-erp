@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <data>
                 <group name="internal_notes_right" position="inside">
-                    <field name="bank_account_id" domain="[('beneficiary_id', '=', id)]"/>
+                    <field name="bank_account_id" domain="[('beneficiary_id', '=', id), ('beneficiary_id', '!=', False)]" options="{'limit': 10, 'create': True, 'create_edit': True}"/>
                 </group>
             </data>
         </field>

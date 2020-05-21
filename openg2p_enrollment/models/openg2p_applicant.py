@@ -234,9 +234,12 @@ class Applicant(models.Model):
                 vals['last_stage_id'] = applicant.stage_id.id
 
                 next_stage = self.env['openg2p.enrollment.stage'].browse(vals['stage_id'])
-                if not applicant.stage_id.fold and next_stage.fold and next_stage.sequence > 1 and applicant.active \
-                        and not applicant.beneficiary_id:  # ending stage
-                    raise UserError(_('You need to create beneficiary before moving applicant to this stage.'))
+                if not applicant.stage_id.fold and next_stage.fold and next_stage.sequence > 1 and applicant.active:  # ending stage
+                    if not applicant.beneficiary_id:
+                        raise UserError(_('You need to create beneficiary before moving application to this stage.'))
+                    if not applicant.beneficiary_id.program_ids:
+                        raise UserError(_('Beneficiary needs to be registerd into a program before moving application'
+                                          ' to this stage.'))
 
                 if applicant.stage_id.sequence > next_stage.sequence and applicant.beneficiary_id:
                     raise UserError(_('You cannot move application back as beneficiary already created.'))

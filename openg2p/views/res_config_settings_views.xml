@@ -85,7 +85,7 @@
                     </div>
 
                     <h2>Configurations</h2>
-                    <div class="row mt16 o_settings_container">
+                    <div class="row mt16 o_settings_container configuration_id_settings">
                         <div class="col-12 col-lg-6 o_setting_box">
                             <div class="o_setting_right_pane">
                                 <span class="o_form_label">Country and Currency</span>
@@ -108,77 +108,80 @@
                             </div>
                         </div>
 
-                            <div class="col-12 col-lg-6 o_setting_box">
-                                <div class="o_setting_left_pane"/>
-                                <div class="o_setting_right_pane">
-                                    <span class="o_form_label">Organization Detail</span>
-                                    <div class="text-muted">
-                                        Configure details about your organization including, name, currency, and contact
-                                    </div>
-                                    <div class="content-group">
-                                        <div class="mt16">
-                                            <button name="open_main_company"
-                                                    string="Configure Organization Detail" type="object" class="oe_link"
-                                                    icon="fa-arrow-right"/>
-                                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Organization Detail</span>
+                                <div class="text-muted">
+                                    Configure details about your organization including, name, currency, and contact
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <button name="open_main_company"
+                                                string="Configure Organization Detail" type="object" class="oe_link"
+                                                icon="fa-arrow-right"/>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-lg-6 o_setting_box">
-                                <div class="o_setting_left_pane"/>
-                                <div class="o_setting_right_pane">
-                                    <span class="o_form_label">States/Districts</span>
-                                    <div class="text-muted">
-                                        Enter the list of administrative states/districts in your country. This is used
-                                        for
-                                        beneficiary addresses
-                                    </div>
-                                    <div class="content-group">
-                                        <div class="mt16">
-                                            <button name="open_states"
-                                                    string="Add States/Districts" type="object" class="oe_link"
-                                                    icon="fa-arrow-right"/>
-                                        </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">States/Districts</span>
+                                <div class="text-muted">
+                                    Enter the list of administrative states/districts in your country. This is used
+                                    for
+                                    beneficiary addresses
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <button name="open_states"
+                                                string="Add States/Districts" type="object" class="oe_link"
+                                                icon="fa-arrow-right"/>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
                         <div class="col-12 col-lg-6 o_setting_box">
-                                <div class="o_setting_left_pane"/>
-                                <div class="o_setting_right_pane">
-                                    <span class="o_form_label">Beneficiary Locations</span>
-                                    <div class="text-muted">
-                                        Locations are places were beneficiaries are situated. Can be an address, e.g. health center for health workers payment workers or a place, e.g Saffau Village for a rural safe net programs
-                                    </div>
-                                    <div class="content-group">
-                                        <div class="mt16">
-                                            <button name="open_locations"
-                                                    string="Add Locations" type="object" class="oe_link"
-                                                    icon="fa-arrow-right"/>
-                                        </div>
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Beneficiary Locations</span>
+                                <div class="text-muted">
+                                    Locations are places were beneficiaries are situated. Can be an address, e.g. health
+                                    center for health workers payment workers or a place, e.g Saffau Village for a rural
+                                    safe net programs
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <button name="open_locations"
+                                                string="Add Locations" type="object" class="oe_link"
+                                                icon="fa-arrow-right"/>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                         <div class="col-12 col-lg-6 o_setting_box">
-                                <div class="o_setting_left_pane"/>
-                                <div class="o_setting_right_pane">
-                                    <span class="o_form_label">Financial Institutions</span>
-                                    <div class="text-muted">
-                                        Enter the list of financial institutions, banks, mobile money provides, etc you support.
-                                    </div>
-                                    <div class="content-group">
-                                        <div class="mt16">
-                                            <button name="open_banks"
-                                                    string="Add Financial Institution" type="object" class="oe_link"
-                                                    icon="fa-arrow-right"/>
-                                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Financial Institutions</span>
+                                <div class="text-muted">
+                                    Enter the list of financial institutions, banks, mobile money provides, etc you
+                                    support.
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <button name="open_banks"
+                                                string="Add Financial Institution" type="object" class="oe_link"
+                                                icon="fa-arrow-right"/>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                     </div>
 
-                    <h2>Beneficiary Identifier</h2>
+                    <h2>Beneficiary Identification</h2>
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 col-lg-6 o_setting_box">
                             <div class="o_setting_right_pane">
@@ -188,7 +191,7 @@
                                       groups="base.group_multi_company"/>
                                 <div class="row">
                                     <div class="text-muted col-lg-8">
-                                        Select &amp; configure default beneficiary identifier generation scheme
+                                        Select &amp; configure default beneficiary internal identifier generation scheme
                                     </div>
                                 </div>
                                 <div class="content-group">
@@ -219,8 +222,24 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                        <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label">External Identification</span>
+                            <div class="text-muted">
+                                Configure the list of external IDs, example govt. ID, recognized by your program. Please only use unique ID schemes
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <button name="open_external_ids"
+                                            string="Add External Identification" type="object" class="oe_link"
+                                            icon="fa-arrow-right"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
 
                 </div>
             </xpath>

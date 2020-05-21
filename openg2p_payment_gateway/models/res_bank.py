@@ -11,12 +11,13 @@ class Bank(models.Model):
     _inherit = 'res.bank'
 
     provider = fields.Selection(
-        selection='_selection_provider'
+        selection='_selection_provider',
+        string="Payment Initiator"
     )
     provider_account = fields.Many2one(
         comodel_name='keychain.account',
         domain=[('namespace', '!=', False)],
-        string="Provider Credentials"
+        string="Payment Initiator Credentials"
     )
     execute_method = fields.Selection(
         selection='_selection_execute_method',

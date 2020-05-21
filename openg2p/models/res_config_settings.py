@@ -81,6 +81,17 @@ class ResConfigSettings(models.TransientModel):
         }
 
     @api.multi
+    def open_external_ids(self):
+        return {
+            'name': _("External Identifications"),
+            'type': 'ir.actions.act_window',
+            'res_model': "openg2p.beneficiary.id_category",
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'context': dict(self.env.context),
+        }
+
+    @api.multi
     def open_states(self):
         context = dict(self.env.context)
         country = self.env.ref("base.main_company").country_id

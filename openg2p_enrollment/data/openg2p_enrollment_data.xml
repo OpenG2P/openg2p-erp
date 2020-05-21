@@ -34,12 +34,20 @@
             <field name="sequence">0</field>
         </record>
         <record model="openg2p.enrollment.stage" id="stage_enroll2">
-            <field name="name">In Review</field>
-            <field name="sequence">2</field>
+            <field name="name">Deduplicated</field>
+            <field name="sequence">1</field>
         </record>
         <record model="openg2p.enrollment.stage" id="stage_enroll3">
-            <field name="name">Approved</field>
+            <field name="name">Verified</field>
+            <field name="sequence">2</field>
+        </record>
+        <record model="openg2p.enrollment.stage" id="stage_enroll4">
+            <field name="name">In Review</field>
             <field name="sequence">3</field>
+        </record>
+        <record model="openg2p.enrollment.stage" id="stage_enroll5">
+            <field name="name">Approved</field>
+            <field name="sequence">4</field>
             <field name="can_create_beneficiary" eval="True"/>
         </record>
         <record model="openg2p.enrollment.stage" id="stage_enroll5">
