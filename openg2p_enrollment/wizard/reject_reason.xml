@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="add_reject_reason_form">
+            <field name="name">add.applicant.reject.reason</field>
+            <field name="model">wiz.openg2p.applicant.reject.reason</field>
+            <field name="arch" type="xml">
+                <form string="Applicant Reject Reason">
+                    <h5>Select reason to refuse the applicant.</h5>
+                    <group>
+                        <field name="reject_reason_id"/>
+                    </group>
+                    <footer groups="base.group_user">
+                        <button name="action_reject" type="object" string="Refuse" class="oe_highlight"/>
+                        <button string="Cancel" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_add_reject_reason">
+            <field name="name">Refuse Application</field>
+            <field name="res_model">wiz.openg2p.applicant.reject.reason</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="add_reject_reason_form"/>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

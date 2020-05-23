@@ -138,6 +138,9 @@
                                 <field name="identity_national"/>
                                 <field name="identity_passport"/>
                             </group>
+                            <group string="Rejection" name="rejection" attrs="{'invisible': [('reject_reason_id', '=', False)]}">
+                                <field name="reject_reason_id"/>
+                            </group>
                         </group>
                         <separator string="Application Summary"/>
                         <field name="description" placeholder="Details of Applications..."/>

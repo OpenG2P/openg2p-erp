@@ -173,6 +173,10 @@ class Applicant(models.Model):
         "openg2p.applicant.identity",
         'applicant_id'
     )
+    reject_reason_id = fields.Many2one(
+        'openg2p.applicant.reject.reason',
+        "Reason"
+    )
 
     @api.depends('date_open', 'date_closed')
     @api.one
@@ -350,7 +354,8 @@ class Applicant(models.Model):
         for applicant in self:
             if applicant.beneficiary_id:
                 raise UserError(_("You can not archive an application for which a beneficiary has been created"))
-        self.write({'active': False})
+        [reject_reason_action] = self.env.ref('openg2p_enrollment.action_add_reject_reason').read()
+        return reject_reason_action
 
     @api.multi
     def reset_applicant(self):

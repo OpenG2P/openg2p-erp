@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+        <!-- Reject Reason Tree View -->
+        <record id="openg2p_applicant_reject_reason_view_tree" model="ir.ui.view">
+            <field name="name">openg2p.applicant.reject.reason.tree</field>
+            <field name="model">openg2p.applicant.reject.reason</field>
+            <field name="arch" type="xml">
+                <tree string="Application Reject Reason">
+                    <field name="name"/>
+                    <field name="desc"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Reject Reason Form View -->
+        <record id="openg2p_applicant_reject_reason_view_form" model="ir.ui.view">
+            <field name="name">openg2p.applicant.reject.reason.form</field>
+            <field name="model">openg2p.applicant.reject.reason</field>
+            <field name="arch" type="xml">
+                <form string="Application Reject Reason">
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="desc"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tag Action -->
+        <record id="openg2p_applicant_reject_reason_action" model="ir.actions.act_window">
+            <field name="name">Application Reject Reasons</field>
+            <field name="res_model">openg2p.applicant.reject.reason</field>
+            <field name="view_type">form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add a new Application Reject Reason
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="openg2p_applicant_reject_reason_menu"
+                parent="menu_openg2p_enrollment_configuration"
+                action="openg2p_applicant_reject_reason_action"
+                sequence="3"
+                name="Application Reject Reason"/>
+
+    </data>
+</odoo>
