@@ -31,6 +31,13 @@ class RegisterWizard(models.TransientModel):
         'Auto Confirm Registrations',
         default=True
     )
+    selected_record_count = fields.Integer('Selected Record Count', compute="_compute_selected_record")
+    all_record_count = fields.Integer('All Record Count', compute="_compute_selected_record")
+
+    @api.depends('use_active_domain')
+    def _compute_selected_record(self):
+        self.all_record_count = self.env['openg2p.beneficiary'].search_count([])
+        self.selected_record_count = len(self.env.context.get('active_ids'))
 
     @api.multi
     def action_apply(self):
