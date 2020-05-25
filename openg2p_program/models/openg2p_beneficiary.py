@@ -10,31 +10,31 @@ class Beneficiary(models.Model):
     program_ids = fields.Many2many(
         'openg2p.program',
         string='Active Programs',
-        help="Active programs registered to",
+        help="Active programs enrolled to",
         readonly=True,
         track_visibility='onchange',
         compute="_compute_active_programs",
         store=True,
     )
-    program_registration_ids = fields.One2many(
-        'openg2p.program.registration',
+    program_enrollment_ids = fields.One2many(
+        'openg2p.program.enrollment',
         'beneficiary_id',
-        string='Registration History',
+        string='Enrollment History',
         track_visibility='onchange'
     )
-    program_registrations_count = fields.Integer(
-        compute='_compute_program_registrations_count',
-        string='Registration Count'
+    program_enrollments_count = fields.Integer(
+        compute='_compute_program_enrollments_count',
+        string='Enrollment Count'
     )
 
     @api.multi
     @job
-    def program_register(self, program_id, category_id, date_start=fields.Date.today(), confirm=False,
+    def program_enroll(self, program_id, category_id, date_start=fields.Date.today(), confirm=False,
                          raise_error=True):
-        # TODO smarter way to check and skip or notify if registration exists now it just fails + use savepoints
-        regs = self.env['openg2p.program.registration']
+        # TODO smarter way to check and skip or notify if enrollment exists now it just fails + use savepoints
+        regs = self.env['openg2p.program.enrollment']
         for rec in self:
-            regs += self.env['openg2p.program.registration'].create({
+            regs += self.env['openg2p.program.enrollment'].create({
                 'program_id': program_id,
                 'beneficiary_id': rec.id,
                 'category_id': category_id,
@@ -43,18 +43,18 @@ class Beneficiary(models.Model):
         if confirm:
             regs.action_activate()
 
-    def _compute_program_registrations_count(self):
-        # read_group as sudo, since program registration count is displayed on form view
-        program_registration_data = self.env['openg2p.program.registration'].sudo().read_group(
+    def _compute_program_enrollments_count(self):
+        # read_group as sudo, since program enrollment count is displayed on form view
+        program_enrollment_data = self.env['openg2p.program.enrollment'].sudo().read_group(
             [('beneficiary_id', 'in', self.ids)],
             ['beneficiary_id'], ['beneficiary_id'])
-        result = dict((data['beneficiary_id'][0], data['beneficiary_id_count']) for data in program_registration_data)
+        result = dict((data['beneficiary_id'][0], data['beneficiary_id_count']) for data in program_enrollment_data)
         for beneficiary in self:
-            beneficiary.program_registrations_count = result.get(beneficiary.id, 0)
+            beneficiary.program_enrollments_count = result.get(beneficiary.id, 0)
 
     @api.multi
-    @api.depends('program_registration_ids', 'program_registration_ids.state')
+    @api.depends('program_enrollment_ids', 'program_enrollment_ids.state')
     def _compute_active_programs(self):
         for record in self:
-            record.program_ids = record.program_registration_ids.filtered(
+            record.program_ids = record.program_enrollment_ids.filtered(
                 lambda i: i.state == 'open').mapped('program_id.id')

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <menuitem
+                name="Registration"
+                id="menu_openg2p_registration_root"
+                web_icon="openg2p_registration,static/description/icon.png"
+                groups="openg2p_registration.group_openg2p_registration_user,openg2p.group_openg2p_manager,openg2p.group_openg2p_officer"
+                sequence="80"/>
+
+        <menuitem id="menu_openg2p_registration_configuration" name="Configuration" parent="menu_openg2p_registration_root"
+                  sequence="100"/>
+
+
+    </data>
+</odoo>

@@ -18,6 +18,6 @@ from . import openg2p_disbursement_slip
 from . import openg2p_disbursement_slip_input
 from . import openg2p_disbursement_slip_line
 from . import openg2p_disbursement_structure
-from . import openg2p_program_registration
-from . import openg2p_program_registration_category
+from . import openg2p_program_enrollment
+from . import openg2p_program_enrollment_category
 from . import res_config_settings

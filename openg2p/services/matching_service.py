@@ -50,7 +50,7 @@ class MatchingService(AbstractComponent):
 
 class MatchingServiceExactIdentities(Component):
     """
-    performs exactness match against recorded identities. Runs only for 'openg2p.beneficiary' and 'openg2p.applicant'
+    performs exactness match against recorded identities. Runs only for 'openg2p.beneficiary' and 'openg2p.registration'
     models
     """
     _inherit = 'matching.service'
@@ -66,7 +66,7 @@ class MatchingServiceExactIdentities(Component):
 
     def match(self, query):
         query.ensure_one()
-        if not isinstance(query, models.Model) and query._name not in ('openg2p.beneficiary', 'openg2p.applicant'):
+        if not isinstance(query, models.Model) and query._name not in ('openg2p.beneficiary', 'openg2p.registration'):
             return False
 
         identities = query.get_identities()

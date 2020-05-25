@@ -165,7 +165,7 @@
                         <page string="Details">
                             <group>
                                 <field name="id" invisible="1"/>
-                                <group name="checklist" string="Checklist" attrs="{'invisible': [('id', '=', False)]}">>
+                                <group name="checklist" string="Checklist" attrs="{'invisible': [('id', '=', False)]}">
                                     <field name="has_checklist_draft" invisible="1"/>
                                     <div name="checklist_draft" colspan="2"
                                          attrs="{'invisible': [('has_checklist_draft', '=', False)]}">

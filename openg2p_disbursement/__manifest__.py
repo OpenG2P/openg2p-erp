@@ -20,7 +20,7 @@
     'data': [
         'security/openg2p_disbursement_security.xml',
         'security/ir.model.access.csv',
-        'views/openg2p_program_registration.xml',
+        'views/openg2p_program_enrollment.xml',
         'views/openg2p_disbursement_structure.xml',
         'views/openg2p_disbursement_rule_category.xml',
         'views/openg2p_disbursement_contribution_register.xml',
@@ -33,7 +33,7 @@
         'views/report_contributionregister_templates.xml',
         'views/report_slip_templates.xml',
         'views/report_slipdetails_templates.xml',
-        'views/openg2p_program_registration_category.xml',
+        'views/openg2p_program_enrollment_category.xml',
         'wizard/openg2p_disbursement_contribution_register_report.xml',
         'wizard/openg2p_disbursement_slips_by_beneficiaries.xml',
         'views/openg2p_disbursement_batch.xml',

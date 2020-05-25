@@ -208,7 +208,7 @@ class SlipBatch(models.Model):
         date_from = self.date_start
         program = self.program_id
 
-        # a registration is valid if it ends between the given dates
+        # a enrollment is valid if it ends between the given dates
         clause_1 = ['&', ('date_end', '<=', date_to), ('date_end', '>=', date_from)]
         # OR if it starts between the given dates
         clause_2 = ['&', ('date_start', '<=', date_to), ('date_start', '>=', date_from)]
@@ -219,7 +219,7 @@ class SlipBatch(models.Model):
                         '|'] + clause_1 + clause_2 + clause_3
 
         return [i['beneficiary_id'][0] for i in
-                self.env['openg2p.program.registration'].search_read(clause_final, ['beneficiary_id'])]
+                self.env['openg2p.program.enrollment'].search_read(clause_final, ['beneficiary_id'])]
 
     @api.multi
     def action_generate_run(self):
@@ -283,7 +283,7 @@ class SlipBatch(models.Model):
         beneficiary_obj = self.env['openg2p.beneficiary']
         from_date = self.date_start
         to_date = self.date_end
-        non_active_registration_rule = self.env.ref('openg2p_disbursement.exception_rule_active_registration')
+        non_active_enrollment_rule = self.env.ref('openg2p_disbursement.exception_rule_active_enrollment')
         unknown_error_rule = self.env.ref('openg2p_disbursement.exception_rule_unknown_error')
 
         # let's remove existing exceptions for beneficiaries we are generating slips for
@@ -299,13 +299,13 @@ class SlipBatch(models.Model):
                 'beneficiary_id': beneficiary.id,
                 'name': slip_data['value'].get('name'),
                 'struct_id': slip_data['value'].get('struct_id'),
-                'registration_id': slip_data['value'].get('registration_id'),
+                'enrollment_id': slip_data['value'].get('enrollment_id'),
                 'batch_id': self.id,
                 'input_line_ids': [(0, 0, x) for x in slip_data['value'].get('input_line_ids')],
                 'date_from': from_date,
                 'date_to': to_date
             }
-            if res['registration_id']:
+            if res['enrollment_id']:
                 try:
                     with self.env.cr.savepoint():  # let's have save point here so we can recover from errors
                         slip_obj.create(res).compute_sheet()
@@ -317,9 +317,9 @@ class SlipBatch(models.Model):
                         'beneficiary_id': beneficiary.id,
                         'note': str(e)
                     })
-            else:  # if we are here we could not figure out the active registration so let us report this
+            else:  # if we are here we could not figure out the active enrollment so let us report this
                 self.env['openg2p.disbursement.exception'].create({
-                    'rule_id': non_active_registration_rule.id,
+                    'rule_id': non_active_enrollment_rule.id,
                     'batch_id': self.id,
                     'beneficiary_id': beneficiary.id
                 })

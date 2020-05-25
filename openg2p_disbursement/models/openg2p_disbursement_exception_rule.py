@@ -13,7 +13,7 @@ CONDITION_HELP = '''
 # Available variables:
 #----------------------
 # slip: object containing the disbursement slip
-# registration: openg2p.program.registration object
+# enrollment: openg2p.program.enrollment object
 # beneficiary: openg2p.beneficiary object
 
 # Note: returned value have to be set in the variable 'result'
@@ -56,7 +56,7 @@ class Openg2pDisbursementExceptionRule(models.Model):
         exception_model = self.env['openg2p.disbursement.exception']
         localdict = dict(
             beneficiary=slip.beneficiary_id,
-            registeration=slip.registration_id,
+            registration=slip.enrollment_id,
             slip=slip,
             result=None,
         )

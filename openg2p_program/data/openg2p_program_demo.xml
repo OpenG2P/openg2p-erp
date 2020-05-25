@@ -22,53 +22,53 @@
         <!--
        Setup programs categories
        -->
-        <record id="program_category_0" model="openg2p.program.registration_category">
+        <record id="program_category_0" model="openg2p.program.enrollment_category">
             <field name="program_id" ref="openg2p_program.program_0"/>
             <field name="name">Contact Tracers</field>
         </record>
 
-        <record id="program_category_1" model="openg2p.program.registration_category">
+        <record id="program_category_1" model="openg2p.program.enrollment_category">
             <field name="program_id" ref="openg2p_program.program_0"/>
             <field name="name">Burial Team</field>
         </record>
 
-        <record id="program_category_2" model="openg2p.program.registration_category">
+        <record id="program_category_2" model="openg2p.program.enrollment_category">
             <field name="program_id" ref="openg2p_program.program_0"/>
             <field name="name">Surveillance Team</field>
         </record>
 
         <!--
-        Do registrations
+        Do enrollments
         -->
-        <record id="program_registration_0" model="openg2p.program.registration">
+        <record id="program_enrollment_0" model="openg2p.program.enrollment">
             <field name="program_id" ref="openg2p_program.program_0"/>
             <field name="beneficiary_id" ref="openg2p.openg2p_beneficiary_1"/>
             <field name="category_id" ref="openg2p_program.program_category_0"/>
             <field name="state">open</field>
         </record>
 
-        <record id="program_registration_1" model="openg2p.program.registration">
+        <record id="program_enrollment_1" model="openg2p.program.enrollment">
             <field name="program_id" ref="openg2p_program.program_0"/>
             <field name="beneficiary_id" ref="openg2p.openg2p_beneficiary_2"/>
             <field name="category_id" ref="openg2p_program.program_category_0"/>
             <field name="state">open</field>
         </record>
 
-        <record id="program_registration_2" model="openg2p.program.registration">
+        <record id="program_enrollment_2" model="openg2p.program.enrollment">
             <field name="program_id" ref="openg2p_program.program_0"/>
             <field name="beneficiary_id" ref="openg2p.openg2p_beneficiary_3"/>
             <field name="category_id" ref="openg2p_program.program_category_1"/>
             <field name="state">open</field>
         </record>
 
-        <record id="program_registration_3" model="openg2p.program.registration">
+        <record id="program_enrollment_3" model="openg2p.program.enrollment">
             <field name="program_id" ref="openg2p_program.program_0"/>
             <field name="beneficiary_id" ref="openg2p.openg2p_beneficiary_4"/>
             <field name="category_id" ref="openg2p_program.program_category_2"/>
             <field name="state">open</field>
         </record>
 
-        <record id="program_registration_4" model="openg2p.program.registration">
+        <record id="program_enrollment_4" model="openg2p.program.enrollment">
             <field name="program_id" ref="openg2p_program.program_0"/>
             <field name="beneficiary_id" ref="openg2p.openg2p_beneficiary_10"/>
             <field name="category_id" ref="openg2p_program.program_category_0"/>

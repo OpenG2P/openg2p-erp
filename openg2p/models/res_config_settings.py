@@ -10,7 +10,7 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     module_openg2p_beneficiary_relative = fields.Boolean(string="Record Beneficiaries Relatives Data")
-    module_openg2p_enrollment = fields.Boolean(string="Track Beneficiary Enrollments")
+    module_openg2p_registration = fields.Boolean(string="Track Beneficiary Registrations")
     module_openg2p_security = fields.Boolean(string="Advanced User Security Measures")
     module_openg2p_disbursement = fields.Boolean(string="Manage Disbursements to Beneficiaries")
     module_openg2p_disbursement_advice = fields.Boolean(string="Manage Digital Payments to Beneficiaries")

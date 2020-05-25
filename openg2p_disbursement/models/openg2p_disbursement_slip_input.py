@@ -32,14 +32,14 @@ class SlipInput(models.Model):
     amount = fields.Float(
         help="It is used in computation. For e.g. A rule for sales having "
              "1% commission of basic disbursement for per product can defined in expression "
-             "like result = inputs.SALEURO.amount * registration.wage*0.01."
+             "like result = inputs.SALEURO.amount * enrollment.wage*0.01."
     )
-    registration_id = fields.Many2one(
-        'openg2p.program.registration',
-        related="slip_id.registration_id",
+    enrollment_id = fields.Many2one(
+        'openg2p.program.enrollment',
+        related="slip_id.enrollment_id",
         store=True,
         readonly=True,
-        string='Registration',
+        string='Enrollment',
         required=True,
-        help="The registration for which applied this input"
+        help="The enrollment for which applied this input"
     )

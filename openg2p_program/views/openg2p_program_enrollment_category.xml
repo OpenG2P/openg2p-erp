@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="openg2p_program_enrollment_category_view_tree" model="ir.ui.view">
+        <field name="name">openg2p.program.enrollment_category.tree</field>
+        <field name="model">openg2p.program.enrollment_category</field>
+        <field name="arch" type="xml">
+            <tree string="Program Category">
+                <field name="sequence" widget="handle"/>
+                <field colspan="4" name="name"/>
+                <field name="program_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="openg2p_program_enrollment_category_view_form" model="ir.ui.view">
+        <field name="name">openg2p.program.enrollment_category.form</field>
+        <field name="model">openg2p.program.enrollment_category</field>
+        <field name="arch" type="xml">
+            <form string="Program Category">
+
+                <group>
+                    <group>
+                        <field name="name"/>
+
+                    </group>
+                    <group>
+                        <field name="program_id" readonly="1"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="openg2p_program_enrollment_category_view_search" model="ir.ui.view">
+        <field name="name">openg2p.program.enrollment_category.search</field>
+        <field name="model">openg2p.program.enrollment_category</field>
+        <field name="arch" type="xml">
+            <search string="Search Program Categories">
+                <field name="name" string="Program Classification"/>
+                <field name="program_id"/>
+                <field name="sequence" string="Sequence"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_openg2p_program_enrollment_category" model="ir.actions.act_window">
+        <field name="name">Program Categories</field>
+        <field name="res_model">openg2p.program.enrollment_category</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="openg2p_program_enrollment_category_view_search"/>
+    </record>
+
+    <record id="act_program_category_list" model="ir.actions.act_window">
+        <field name="name">Program Categories</field>
+        <field name="res_model">openg2p.program.enrollment_category</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('program_id','=', active_id)]</field>
+        <field name="context">{'search_default_program_id': active_id, 'default_program_id': active_id}</field>
+        <field name="search_view_id" ref="openg2p_program_enrollment_category_view_search"/>
+    </record>
+</odoo>

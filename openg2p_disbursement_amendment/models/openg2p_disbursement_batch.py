@@ -32,7 +32,7 @@ class Openg2pDisbursementBatch(models.Model):
             x = self.env['openg2p.disbursement.amendment'].search_count(
                 [('batch_id', '=', False), ('date', '<=', rec.date_end), ('state', 'in', ('draft', 'validate')),
                  ('program_id', '=', rec.program_id.id)])
-            rec.active_disenrollment_count = self.env['openg2p.disbursement.amendment'].search_count(
+            rec.active_deregistration_count = self.env['openg2p.disbursement.amendment'].search_count(
                 [('batch_id', '=', False), ('date', '<=', rec.date_end), ('state', 'in', ('draft', 'validate')),
                  ('program_id', '=', rec.program_id.id)])
 

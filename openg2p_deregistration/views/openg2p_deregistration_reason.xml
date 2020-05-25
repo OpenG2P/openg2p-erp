@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <record id="openg2p_deregistration_reason_tree_view" model="ir.ui.view">
+            <field name="name">openg2p.deregistration.reason.tree</field>
+            <field name="model">openg2p.deregistration.reason</field>
+            <field name="arch" type="xml">
+                <tree string="Deregistration Reasons" import="false" editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="open_termination_reason" model="ir.actions.act_window">
+            <field name="name">Deregistration Reasons</field>
+            <field name="res_model">openg2p.deregistration.reason</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+        </record>
+        <menuitem id="menu_openg2p_deregistration_reason"
+                  action="open_termination_reason"
+                  parent="openg2p_registration.menu_openg2p_registration_configuration"
+                  sequence="5"/>
+
+    </data>
+</odoo>

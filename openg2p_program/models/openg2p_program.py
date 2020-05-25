@@ -91,7 +91,7 @@ class Program(models.Model):
         default=lambda self: randint(1, 6)
     )
     category_ids = fields.One2many(
-        'openg2p.program.registration_category',
+        'openg2p.program.enrollment_category',
         'program_id'
     )
     category_count = fields.Integer(
@@ -115,6 +115,6 @@ class Program(models.Model):
 
     @api.multi
     def action_done(self):
-        self.env['openg2p.program.registration'].search(
+        self.env['openg2p.program.enrollment'].search(
             ('program_id', 'in', self.ids), ('state', 'in', ('open', 'draft'))).toggle_active()
         self.write({'state': 'done'})

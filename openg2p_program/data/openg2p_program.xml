@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <record id="seq_registration_ref" model="ir.sequence">
-            <field name="name">Program Registration Reference</field>
-            <field name="code">openg2p.program.registration.ref</field>
+        <record id="seq_enrollment_ref" model="ir.sequence">
+            <field name="name">Program Enrollment Reference</field>
+            <field name="code">openg2p.program.enrollment.ref</field>
             <field name="prefix">%(year)s/%(month)s/</field>
             <field name="padding">8</field>
         </record>
 
-        <!-- Program Registration-related subtypes for messaging / Chatter -->
-        <record id="mt_program_registration_pending" model="mail.message.subtype">
+        <!-- Program Enrollment-related subtypes for messaging / Chatter -->
+        <record id="mt_program_enrollment_pending" model="mail.message.subtype">
             <field name="name">To Renew</field>
-            <field name="res_model">openg2p.program.registration</field>
+            <field name="res_model">openg2p.program.enrollment</field>
             <field name="default" eval="True"/>
-            <field name="description">Program Registration about to expire</field>
+            <field name="description">Program Enrollment about to expire</field>
         </record>
-        <record id="mt_program_registration_close" model="mail.message.subtype">
+        <record id="mt_program_enrollment_close" model="mail.message.subtype">
             <field name="name">Expired</field>
-            <field name="res_model">openg2p.program.registration</field>
+            <field name="res_model">openg2p.program.enrollment</field>
             <field name="default" eval="False"/>
-            <field name="description">Program Registration expired</field>
+            <field name="description">Program Enrollment expired</field>
         </record>
         <!-- Location-related (parent) subtypes for messaging / Chatter -->
-        <record id="mt_location_program_registration_pending" model="mail.message.subtype">
-            <field name="name">Program Registration to Renew</field>
+        <record id="mt_location_program_enrollment_pending" model="mail.message.subtype">
+            <field name="name">Program Enrollment to Renew</field>
             <field name="res_model">openg2p.location</field>
             <field name="default" eval="False"/>
-            <field name="parent_id" eval="ref('mt_program_registration_pending')"/>
+            <field name="parent_id" eval="ref('mt_program_enrollment_pending')"/>
             <field name="relation_field">location_id</field>
-            <field name="description">Program Registration about to expire</field>
+            <field name="description">Program Enrollment about to expire</field>
         </record>
 
         <!-- Expired Soon -->
-        <record id="ir_cron_data_program_registration_update_state" model="ir.cron">
-            <field name="name">HR Program Registration: update state</field>
-            <field name="model_id" ref="model_openg2p_program_registration"/>
+        <record id="ir_cron_data_program_enrollment_update_state" model="ir.cron">
+            <field name="name">HR Program Enrollment: update state</field>
+            <field name="model_id" ref="model_openg2p_program_enrollment"/>
             <field name="type">ir.actions.server</field>
             <field name="state">code</field>
             <field name="code">model.update_state()</field>

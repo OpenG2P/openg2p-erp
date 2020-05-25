@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="openg2p_registration_1" model="openg2p.registration">
+            <field name="firstname">Norphel</field>
+            <field name="lastname">Jacobs</field>
+            <field name="street">5 Staten Drive</field>
+            <field name="street2">View Station</field>
+            <field name="city">Kenema</field>
+            <field name="zip">85340</field>
+            <field name="state_id" ref="openg2p.state_sl"/>
+            <field name="country_id" ref="base.sl"/>
+            <field name="email">sjsally@@example.com</field>
+            <field name="phone">(623)-853-7197</field>
+            <field name="marital">single</field>
+            <field name="gender">male</field>
+            <field name="birthday">1990-01-01</field>
+            <field name="identity_national">7sdsd56589sd484</field>
+            <field name="identity_passport">9sdsd8553</field>
+            <field name="emergency_contact">Steven Jackson</field>
+            <field name="emergency_phone">+23265765875</field>
+            <field name="location_id" ref="openg2p.location_0"/>
+            <field name="image" type="base64" file="openg2p_registration/static/img/employee_vad-image.jpg"/>
+        </record>
+
+        <record id="openg2p_registration_2" model="openg2p.registration">
+            <field name="firstname">Vidal</field>
+            <field name="lastname">Vucinic</field>
+            <field name="street">6 Flaten Avenue</field>
+            <field name="street2">Wilberforce</field>
+            <field name="city">Bo</field>
+            <field name="zip">85340</field>
+            <field name="state_id" ref="openg2p.state_sl"/>
+            <field name="country_id" ref="base.sl"/>
+            <field name="email">zlatan@@example.com</field>
+            <field name="phone">(683)-753-7197</field>
+            <field name="marital">single</field>
+            <field name="gender">male</field>
+            <field name="birthday">1990-01-01</field>
+            <field name="identity_national">75ee6589484</field>
+            <field name="identity_passport">2298553</field>
+            <field name="emergency_contact">Michael Jackson</field>
+            <field name="emergency_phone">+23265765875</field>
+            <field name="location_id" ref="openg2p.location_2"/>
+            <field name="image" type="base64" file="openg2p_registration/static/img/employee_qdp-image.png"/>
+        </record>
+
+        <record id="openg2p_registration_3" model="openg2p.registration">
+            <field name="firstname">Lian</field>
+            <field name="lastname">Vucinic</field>
+            <field name="street">6 Flaten Avenue</field>
+            <field name="street2">Wilberforce</field>
+            <field name="city">Bo</field>
+            <field name="zip">85340</field>
+            <field name="state_id" ref="openg2p.state_sl"/>
+            <field name="country_id" ref="base.sl"/>
+            <field name="email">llatan@@example.com</field>
+            <field name="phone">(683)-753-7197</field>
+            <field name="marital">single</field>
+            <field name="gender">male</field>
+            <field name="birthday">1990-01-01</field>
+            <field name="identity_national">74456589484</field>
+            <field name="identity_passport">9448553</field>
+            <field name="emergency_contact">Michael Jackson</field>
+            <field name="emergency_phone">+23265765875</field>
+            <field name="location_id" ref="openg2p.location_2"/>
+            <field name="image" type="base64" file="openg2p_registration/static/img/employee_stw-image.jpg"/>
+        </record>
+
+    </data>
+</odoo>

@@ -10,7 +10,7 @@ class SlipLine(models.Model):
     _name = 'openg2p.disbursement.slip.line'
     _inherit = 'openg2p.disbursement.rule'
     _description = 'Disbursement Slip Line'
-    _order = 'registration_id, sequence'
+    _order = 'enrollment_id, sequence'
 
     slip_id = fields.Many2one(
         'openg2p.disbursement.slip',
@@ -38,9 +38,9 @@ class SlipLine(models.Model):
         string='Beneficiary',
         required=True
     )
-    registration_id = fields.Many2one(
-        'openg2p.program.registration',
-        string='Registration',
+    enrollment_id = fields.Many2one(
+        'openg2p.program.enrollment',
+        string='Enrollment',
         required=True,
         index=True
     )
@@ -71,11 +71,11 @@ class SlipLine(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for values in vals_list:
-            if 'beneficiary_id' not in values or 'registration_id' not in values:
+            if 'beneficiary_id' not in values or 'enrollment_id' not in values:
                 slip = self.env['openg2p.disbursement.slip'].browse(values.get('slip_id'))
                 values['beneficiary_id'] = values.get('beneficiary_id') or slip.beneficiary_id.id
-                values['registration_id'] = values.get(
-                    'registration_id') or slip.registration_id and slip.registration_id.id
-                if not values['registration_id']:
-                    raise UserError(_('You must set a registration to create a disbursement slip line.'))
+                values['enrollment_id'] = values.get(
+                    'enrollment_id') or slip.enrollment_id and slip.enrollment_id.id
+                if not values['enrollment_id']:
+                    raise UserError(_('You must set a enrollment to create a disbursement slip line.'))
         return super(SlipLine, self).create(vals_list)

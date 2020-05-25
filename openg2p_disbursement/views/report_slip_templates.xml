@@ -13,13 +13,13 @@
                                 <td><strong>Name</strong></td>
                                 <td><span t-field="o.beneficiary_id"/></td>
                                 <td><strong>Category</strong></td>
-                                <td><span t-field="o.registration_id.category_id"/></td>
+                                <td><span t-field="o.enrollment_id.category_id"/></td>
                             </tr>
                             <tr>
                                 <td><strong>Program</strong></td>
-                                <td><span t-field="o.registration_id.program_id"/></td>
-                                <td><strong>Registration</strong></td>
-                                <td><span t-field="o.registration_id"/></td>
+                                <td><span t-field="o.enrollment_id.program_id"/></td>
+                                <td><strong>Enrollment</strong></td>
+                                <td><span t-field="o.enrollment_id"/></td>
                             </tr>
                             <tr>
                                 <td><strong>Address</strong></td>

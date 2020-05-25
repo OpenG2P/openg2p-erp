@@ -1,0 +1,52 @@
+<odoo>
+    <!--OpenG2P Location Inherit Kanban view-->
+    <record id="openg2p_location_view_kanban" model="ir.ui.view">
+        <field name="name">openg2p.location.kanban.inherit</field>
+        <field name="model">openg2p.location</field>
+        <field name="inherit_id" ref="openg2p.openg2p_location_view_kanban"/>
+        <field name="groups_id" eval="[(4,ref('openg2p_registration.group_openg2p_registration_user'))]"/>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//templates" position="before">
+                    <field name="new_registration_count"/>
+                    <field name="new_registered_beneficiary"/>
+                    <field name="expected_beneficiary"/>
+                </xpath>
+
+                <xpath expr="//div[hasclass('o_kanban_primary_right')]" position="inside">
+                    <div t-if="record.new_registration_count.raw_value > 0" class="row">
+                        <div class="col-9">
+                            <a name="%(openg2p_registration_action_from_location)d" type="action">
+                                New Registrations
+                            </a>
+                        </div>
+                        <div class="col-3">
+                            <field name="new_registration_count"/>
+                        </div>
+                    </div>
+                </xpath>
+
+                <xpath expr="//div[hasclass('o_kanban_manage_to_do')]" position="inside">
+                    <div class="row">
+                        <div class="col-12 text-left">
+                            <a name="%(openg2p_registration_action_from_location)d" type="action">
+                                <t t-esc="record.new_registration_count.raw_value or 0"/> New Registrations
+                            </a>
+                        </div>
+                    </div>
+                </xpath>
+
+                <xpath expr="//div[hasclass('o_kanban_manage_reports')]" position="inside">
+                    <div class="row">
+                        <div class="col-12 text-left">
+                            <a name="%(action_openg2p_registration_report_filtered_location)d" type="action">
+                                Registrations
+                            </a>
+                        </div>
+                    </div>
+                </xpath>
+
+            </data>
+        </field>
+    </record>
+</odoo>

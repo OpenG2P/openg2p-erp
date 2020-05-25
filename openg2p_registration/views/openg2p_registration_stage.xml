@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+        <!-- Stage -->
+        <record id="openg2p_beneficiary_stage_act" model="ir.actions.act_window">
+            <field name="name">Registration / Registrations Stages</field>
+            <field name="res_model">openg2p.registration.stage</field>
+            <field name="view_type">form</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add a new stage in the registration process
+                </p><p>
+                Define here your stages of the registration process, for example:
+                qualification call, first interview, second interview, refused,
+                registered.
+            </p>
+            </field>
+        </record>
+
+        <!-- Stage Tree View -->
+        <record model="ir.ui.view" id="openg2p_registration_stage_tree">
+            <field name="name">openg2p.registration.stage.tree</field>
+            <field name="model">openg2p.registration.stage</field>
+            <field name="arch" type="xml">
+                <tree string="Stages">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="fold"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Stage Kanban View -->
+        <record id="view_openg2p_registration_stage_kanban" model="ir.ui.view">
+            <field name="name">openg2p.registration.stage.kanban</field>
+            <field name="model">openg2p.registration.stage</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="name"/>
+                    <field name="fold"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div>
+                                    <strong>
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                                <div>
+                                    <span>Folded in Registration Pipe:</span>
+                                    <field name="fold" widget="boolean"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Stage Form View -->
+        <record model="ir.ui.view" id="openg2p_registration_stage_form">
+            <field name="name">openg2p.registration.stage.form</field>
+            <field name="model">openg2p.registration.stage</field>
+            <field name="arch" type="xml">
+                <form string="Stage">
+                    <group string="Stage Definition">
+                        <group>
+                            <field name="name"/>
+                            <field name="sequence"/>
+
+                        </group>
+                        <group>
+                            <field name="fold"/>
+                            <field name="action" />
+                        </group>
+                    </group>
+                    <group string="Tooltips">
+                        <p class="text-muted" colspan="2">
+                            You can define here the labels that will be displayed for the kanban state instead
+                            of the default labels.
+                        </p>
+                        <label for="legend_normal" string=" " class="o_status"/>
+                        <field name="legend_normal" nolabel="1"/>
+                        <label for="legend_blocked" string=" " class="o_status o_status_red"/>
+                        <field name="legend_blocked" nolabel="1"/>
+                        <label for="legend_done" string=" " class="o_status o_status_green"/>
+                        <field name="legend_done" nolabel="1"/>
+                    </group>
+                    <separator string="Requirements"/>
+                    <field name="requirements"/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Stage Action -->
+        <record id="openg2p_registration_stage_act" model="ir.actions.act_window">
+            <field name="name">Stages</field>
+            <field name="res_model">openg2p.registration.stage</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="view_id" ref="openg2p_registration_stage_tree"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add a new stage in the registration process
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_openg2p_registration_stage"
+                name="Stages"
+                parent="menu_openg2p_registration_configuration"
+                action="openg2p_registration_stage_act"
+                sequence="1"/>
+
+    </data>
+</odoo>

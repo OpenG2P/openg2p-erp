@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="exception_rule_deregistration_started" model="openg2p.disbursement.exception.rule">
+            <field name="name">An active deregistration exists for beneficiary
+            </field>
+            <field name="severity">low</field>
+        </record>
+    </data>
+</odoo>

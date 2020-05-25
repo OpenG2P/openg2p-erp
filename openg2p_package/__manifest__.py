@@ -13,12 +13,12 @@
         'openg2p_disbursement_advice',
         # 'openg2p_disbursement_amendment',
         'openg2p_disbursement_reconciliation',
-        'openg2p_disenrollment',
-        'openg2p_enrollment',
+        'openg2p_deregistration',
+        'openg2p_registration',
         'openg2p_program',
         'openg2p_redressal',
       #  'openg2p_security',
-        'openg2p_bridge_disbursement_disenrollment',
-        'openg2p_bridge_disbursement_enrollment',
+        'openg2p_bridge_disbursement_deregistration',
+        'openg2p_bridge_disbursement_registration',
     ]
 }

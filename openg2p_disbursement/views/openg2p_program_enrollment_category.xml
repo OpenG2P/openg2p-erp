@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Enrollment View -->
+    <record id="openg2p_program_enrollment_category_view_form_inherit" model="ir.ui.view">
+        <field name="name">openg2p.program.enrollment.category.view.form.inherit</field>
+        <field name="model">openg2p.program.enrollment_category</field>
+        <field name="inherit_id" ref="openg2p_program.openg2p_program_enrollment_category_view_form"/>
+        <field name="arch" type="xml">
+            <field name="program_id" position="after">
+                <field name="struct_id" string="Structure" required="1"/>
+                <field name="disbursement_amount" required="1"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

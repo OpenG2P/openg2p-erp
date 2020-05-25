@@ -70,7 +70,7 @@ class Openg2pDisbursementRule(models.Model):
     )
     condition_range = fields.Char(
         string='Range Based on',
-        default='registration.disbursement_amount',
+        default='enrollment.disbursement_amount',
         help='This will be used to compute the % fields values; in general it is on basic, '
              'but you can also use categories code fields in lowercase as a variable names '
              '(hra, ma, lta, etc.) and the variable basic.'
@@ -83,7 +83,7 @@ class Openg2pDisbursementRule(models.Model):
                     #----------------------
                     # slip: object containing the slips
                     # beneficiary: openg2p.beneficiary object
-                    # registration: openg2p.program.registration object
+                    # enrollment: openg2p.program.enrollment object
                     # rules: object containing the rules code (previously computed)
                     # categories: object containing the computed disbursement rule categories (sum of amount of all rules belonging to that category).
                     # inputs: object containing the computed inputs
@@ -129,14 +129,14 @@ class Openg2pDisbursementRule(models.Model):
                     #----------------------
                     # slip: object containing the slips
                     # beneficiary: openg2p.beneficiary object
-                    # registration: openg2p.program.registration object
+                    # enrollment: openg2p.program.enrollment object
                     # rules: object containing the rules code (previously computed)
                     # categories: object containing the computed disbursement rule categories (sum of amount of all rules belonging to that category).
                     # inputs: object containing the computed inputs.
 
                     # Note: returned value have to be set in the variable 'result'
 
-                    result = registration.disbursement_amount * 0.10'''
+                    result = enrollment.disbursement_amount * 0.10'''
     )
     amount_percentage_base = fields.Char(
         string='Percentage based on',
@@ -212,8 +212,8 @@ class Openg2pDisbursementRule(models.Model):
     @api.multi
     def _satisfy_condition(self, localdict):
         """
-        @param registration_id: id of openg2p.program.registration to be tested
-        @return: returns True if the given rule match the condition for the given registration. Return False otherwise.
+        @param enrollment_id: id of openg2p.program.enrollment to be tested
+        @return: returns True if the given rule match the condition for the given enrollment. Return False otherwise.
         """
         self.ensure_one()
 

@@ -25,8 +25,8 @@ result = line.total <= 0
             <field name="name">An active alert/investigation workflow exist invovling beneficiary</field>
         </record>
 
-        <record id="exception_rule_active_registration" model="openg2p.disbursement.exception.rule">
-            <field name="name">Could not find an active registration for program</field>
+        <record id="exception_rule_active_enrollment" model="openg2p.disbursement.exception.rule">
+            <field name="name">Could not find an active enrollment for program</field>
             <field name="severity">high</field>
         </record>
 

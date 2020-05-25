@@ -7,11 +7,11 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//button[@name='toggle_active']" position="before">
-                    <button name="%(act_openg2p_beneficiary_2_openg2p_program_registration)d"
+                    <button name="%(act_openg2p_beneficiary_2_openg2p_program_enrollment)d"
                             class="oe_stat_button"
                             icon="fa-newspaper-o"
                             type="action">
-                        <field name="program_registrations_count" widget="statinfo" string="Programs"/>
+                        <field name="program_enrollments_count" widget="statinfo" string="Programs"/>
                     </button>
                 </xpath>
 
@@ -30,7 +30,7 @@
             <field name="location_id" position="before">
                 <field name="program_ids"/>
                 <filter name="without_contract_beneficiary"
-                        string="Not Registered to Program"
+                        string="Not Enrolled to Program"
                         domain="[('program_ids', '=', False)]"/>
             </field>
         </field>

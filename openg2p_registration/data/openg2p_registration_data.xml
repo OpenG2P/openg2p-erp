@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="mail_alias_registers" model="mail.alias">
+            <field name="alias_name">registers</field>
+            <field name="alias_model_id" ref="model_openg2p_registration"/>
+            <field name="alias_user_id" ref="base.user_admin"/>
+        </record>
+
+        <!-- Registration-related subtypes for messaging / Chatter -->
+        <record id="mt_registration_new" model="mail.message.subtype">
+            <field name="name">New Registration</field>
+            <field name="res_model">openg2p.registration</field>
+            <field name="default" eval="False"/>
+            <field name="hidden" eval="True"/>
+            <field name="description">Registration created</field>
+        </record>
+        <record id="mt_registration_stage_changed" model="mail.message.subtype">
+            <field name="name">Stage Changed</field>
+            <field name="res_model">openg2p.registration</field>
+            <field name="default" eval="False"/>
+            <field name="description">Stage changed</field>
+        </record>
+        <record id="mt_registration_registered" model="mail.message.subtype">
+            <field name="name">Registration Registered</field>
+            <field name="res_model">openg2p.registration</field>
+            <field name="default" eval="True"/>
+            <field name="description">Registration registered</field>
+        </record>
+
+        <record model="openg2p.registration.stage" id="stage_register1">
+            <field name="name">New</field>
+            <field name="sequence">0</field>
+        </record>
+        <record model="openg2p.registration.stage" id="stage_register2">
+            <field name="name">Deduplicating</field>
+            <field name="sequence">1</field>
+        </record>
+        <record model="openg2p.registration.stage" id="stage_register3">
+            <field name="name">Verifying</field>
+            <field name="sequence">2</field>
+        </record>
+        <record model="openg2p.registration.stage" id="stage_register4">
+            <field name="name">Assessing</field>
+            <field name="sequence">3</field>
+        </record>
+        <record model="openg2p.registration.stage" id="stage_register5">
+            <field name="name">Approving</field>
+            <field name="sequence">4</field>
+        </record>
+        <record model="openg2p.registration.stage" id="stage_register6">
+            <field name="name">Registering</field>
+            <field name="sequence">5</field>
+            <field name="action">create_beneficiary</field>
+        </record>
+        <record model="openg2p.registration.stage" id="stage_register7">
+            <field name="name">Completed</field>
+            <field name="sequence">6</field>
+            <field name="fold" eval="True"/>
+        </record>
+    </data>
+</odoo>

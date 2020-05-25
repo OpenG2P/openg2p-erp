@@ -3,4 +3,4 @@
 # @author: Salton Massally <saltonmassally@gmail.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from . import register_beneficiary
+from . import enroll_beneficiary

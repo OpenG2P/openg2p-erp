@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+
+        <!-- Tag Form View -->
+        <record id="openg2p_registration_category_view_form" model="ir.ui.view">
+            <field name="name">openg2p.registration.category.form</field>
+            <field name="model">openg2p.registration.category</field>
+            <field name="arch" type="xml">
+                <form string="Tags">
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="color"/>
+                        </group>
+
+
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tag Action -->
+        <record id="openg2p_registration_category_action" model="ir.actions.act_window">
+            <field name="name">Tags</field>
+            <field name="res_model">openg2p.registration.category</field>
+            <field name="view_type">form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add a new tag
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="openg2p_registration_category_menu"
+                parent="menu_openg2p_registration_configuration"
+                action="openg2p_registration_category_action"
+                sequence="2"/>
+
+    </data>
+</odoo>
