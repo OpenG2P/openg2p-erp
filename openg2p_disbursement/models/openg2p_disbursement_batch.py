@@ -161,6 +161,18 @@ class SlipBatch(models.Model):
     has_checklist_draft = fields.Boolean()
     note = fields.Text()
 
+    filter_location_id = fields.Many2one(
+        'openg2p.location',
+        'Filter By Location'
+    )
+
+    filter_category_ids = fields.Many2many(
+        'openg2p.beneficiary.category',
+        string="Filter By Tags",
+        track_visibility='onchange',
+        index=True
+    )
+
     @api.multi
     def _compute_can_generate(self):
         self.ensure_one()
@@ -217,6 +229,13 @@ class SlipBatch(models.Model):
         clause_3 = ['&', ('date_start', '<=', date_from), '|', ('date_end', '=', False), ('date_end', '>=', date_to)]
         clause_final = [('program_id', '=', program.id), ('state', '=', 'open'), '|',
                         '|'] + clause_1 + clause_2 + clause_3
+
+
+        # filter the beneficiaries by location and tags
+        if self.filter_location_id:
+            clause_final.insert(0, ('beneficiary_id.location_id', '=', self.filter_location_id.id))
+        if self.filter_category_ids:
+            clause_final.insert(0, ('beneficiary_id.category_id', 'in', self.filter_category_ids.mapped('id')))
 
         return [i['beneficiary_id'][0] for i in
                 self.env['openg2p.program.enrollment'].search_read(clause_final, ['beneficiary_id'])]

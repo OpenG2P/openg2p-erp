@@ -183,6 +183,10 @@
                                     <field name="job_state" string="State"/>
                                     <field name="job_completeness" widget="progressbar"/>
                                 </group>
+                                <group name="filter" string="Filter">
+                                    <field name="filter_location_id"/>
+                                    <field name="filter_category_ids" widget="many2many_tags"/>
+                                </group>
                             </group>
                         </page>
                         <page name="notes" string="Internal Note">
