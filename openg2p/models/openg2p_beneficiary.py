@@ -17,12 +17,17 @@ from odoo.addons.base.models.res_partner import ADDRESS_FIELDS
 from odoo.exceptions import ValidationError, UserError
 from odoo.modules.module import get_module_resource
 from odoo.addons.openg2p.services.matching_service import MATCH_MODE_NORMAL
+import odoo
+
+logging.basicConfig(format='%(asctime)-15s %(clientip)s %(user)-8s %(message)s')
 
 _logger = logging.getLogger(__name__)
+
 
 @api.model
 def _lang_get(self):
     return self.env['res.lang'].get_installed()
+
 
 _PARTNER_FIELDS = ['firstname', 'lastname', 'street', 'street2', 'zip', 'state', 'city', 'country_id']
 
@@ -169,7 +174,8 @@ class Beneficiary(models.Model):
             ('other', 'Other')
         ],
         track_visibility='onchange',
-        required=True
+        required=True,
+        store=True,
     )
     birth_city = fields.Char(
         track_visibility='onchange'
@@ -195,7 +201,9 @@ class Beneficiary(models.Model):
     age = fields.Integer(
         string="Age",
         readonly=True,
-        compute="_compute_age"
+        track_visibility='onchange',
+        compute="_compute_age",
+        search=lambda s, *a: s._search_age(*a),
     )
     identities = fields.One2many(
         comodel_name='openg2p.beneficiary.id_number',
@@ -234,6 +242,14 @@ class Beneficiary(models.Model):
         readonly=True,
         index=True
     )
+    # kyc = fields.Selection(
+    #     [
+    #         ('national_id', 'National ID'),
+    #         ('passport_id', 'Passport ID')
+    #     ],
+    #     track_visibility='onchange',
+    #     store=True,
+    # )
     ssn = fields.Char(
         string='Social Security #',
         track_visibility='onchange',
@@ -432,11 +448,43 @@ class Beneficiary(models.Model):
                     fields.Date.today(),
                     record.birthday,
                 ).years
-            record.age = age
+            record.age = age + 1
 
     def _search_no_tag_id(self, operator, value):
         with_tags = self.search([('category_id', operator, value)])
         return [('id', 'not in', with_tags.mapped('id'))]
+
+    @api.depends("birthday")
+    def _search_age(self, operator, value):
+        filtered = None
+        print("AGE_SEARCH_ARGS: ", operator, value)
+        print("AGE_SEARCH_SELF", self)
+        vals = self.env['openg2p.beneficiary'].search([])
+        print('AGE_SEARCH_VALS', vals)
+        for record in vals:
+            print("AGE_RECORD_TYPE: " + str(type(record)))
+            age = 0
+            if record.birthday:
+                print("AGE_SEARCH_BDAY: " + str(record.birthday))
+                age = relativedelta(
+                    fields.Date.today(),
+                    record.birthday,
+                ).years
+            value = int(value)
+            print("AGE_SEARCH_VAL: " + str(value))
+            # logging.warning('{} {} {} {}'.format(record.id, age, operator, value))
+            if (operator == '=' and age == value) or (operator == '>=' and age >= value) or \
+                    (operator == '<=' and age <= value) or (operator == '<' and age < value) or \
+                    (operator == '>' and age > value) or (operator == '!=' and age != value):
+                if filtered is None:
+                    filtered = record
+                    filtered.ids = []
+                filtered.ids.append(record.id)
+                print('AGE_SEARCH_ID: ' + str(record.id))
+        print('SEARCH_AGE_IDS: ' + str(type(filtered.ids)))
+        print('SEARCH_AGE_VALS', vals)
+        print('SEARCH_AGE_FILTERED', filtered)
+        return filtered
 
     def _compute_search_no_category(self):
         """
