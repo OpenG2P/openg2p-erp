@@ -5,6 +5,9 @@ from odoo.addons.queue_job.job import job
 from odoo import api, fields, models, SUPERUSER_ID
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.translate import _
+import requests
+import json
+
 
 AVAILABLE_PRIORITIES = [
     ('0', 'Urgent'),
@@ -181,17 +184,20 @@ class Registration(models.Model):
         if self.date_open:
             date_create = self.create_date
             date_open = self.date_open
-            self.day_open = (date_open - date_create).total_seconds() / (24.0 * 3600)
+            self.day_open = (
+                date_open - date_create).total_seconds() / (24.0 * 3600)
 
         if self.date_closed:
             date_create = self.create_date
             date_closed = self.date_closed
-            self.day_close = (date_closed - date_create).total_seconds() / (24.0 * 3600)
+            self.day_close = (
+                date_closed - date_create).total_seconds() / (24.0 * 3600)
             self.delay_close = self.day_close - self.day_open
 
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):
-        stage_ids = stages._search([], order=order, access_rights_uid=SUPERUSER_ID)
+        stage_ids = stages._search(
+            [], order=order, access_rights_uid=SUPERUSER_ID)
         return stages.browse(stage_ids)
 
     @api.onchange('stage_id')
@@ -208,16 +214,74 @@ class Registration(models.Model):
             return {'value': {'date_closed': fields.datetime.now()}}
         return {'value': {'date_closed': False}}
 
+    @api.onchange('stage_id')
+    def check_duplicates(self):
+        print(self.stage_id.id)
+        if int(self.stage_id.id) == 2:
+            print("Inside if")
+            search_data = {
+                "attributes":
+                {
+                    "first_name": self.firstname,
+                    "last_name": self.lastname,
+                    "phone": self.phone,
+                    "email": self.email
+                }
+            }
+            search_url = "http://localhost:8080/index/search"
+            r = requests.post(search_url, data=search_data)
+            if r.status_code == 200:
+                print(r.content)
+            else:
+                index_data = {
+                    'id': int(self.partner_id.id),
+                    'firstname': self.firstname,
+                    'lastname': self.lastname,
+                    'othernames': self.othernames,
+                    'location_id': int(self.location_id.id),
+                    'street': self.street,
+                    'street2': self.street2,
+                    'city': self.city,
+                    'state_id': int(self.state_id.id),
+                    'zip': self.zip,
+                    'country_id': int(self.country_id.id),
+                    'phone': self.phone,
+                    'mobile': self.mobile,
+                    'email': self.email,
+                    'title': int(self.title.id),
+                    'lang': self.lang,
+                    'gender': self.gender,
+                    'birthday': self.birthday,
+                    'marital': self.marital,
+                    'national_id': self.identity_national,
+                    'passport_id': self.identity_passport,
+                    'emergency_contact': self.emergency_contact,
+                    'emergency_phone': self.emergency_phone
+                }
+                print("Reading data")
+                print(index_data)
+                index_data = json.dumps(index_data)
+                loaded_r = json.loads(index_data)
+                url_endpoint = "http://localhost:8080/index"
+                print(url_endpoint)
+                r = requests.post(url_endpoint, data=loaded_r)
+                print(r.status_code)
+                print("Read Success")
+
     @api.model
     def create(self, vals):
         if vals.get('location_id') and not self._context.get('default_location_id'):
-            self = self.with_context(default_location_id=vals.get('location_id'))
+            self = self.with_context(
+                default_location_id=vals.get('location_id'))
         if vals.get('user_id'):
             vals['date_open'] = fields.Datetime.now()
         if 'stage_id' in vals:
-            vals.update(self._onchange_stage_id_internal(vals.get('stage_id'))['value'])
-        res = super(Registration, self.with_context(mail_create_nolog=True)).create(vals)
-        res.sudo().with_delay().ensure_unique(mode=MATCH_MODE_COMPREHENSIVE)  # let's queue uniqueness check
+            vals.update(self._onchange_stage_id_internal(
+                vals.get('stage_id'))['value'])
+        res = super(Registration, self.with_context(
+            mail_create_nolog=True)).create(vals)
+        res.sudo().with_delay().ensure_unique(
+            mode=MATCH_MODE_COMPREHENSIVE)  # let's queue uniqueness check
         return res
 
     @api.multi
@@ -228,22 +292,26 @@ class Registration(models.Model):
         # stage_id: track last stage before update
         if 'stage_id' in vals:
             vals['date_last_stage_update'] = fields.Datetime.now()
-            vals.update(self._onchange_stage_id_internal(vals.get('stage_id'))['value'])
+            vals.update(self._onchange_stage_id_internal(
+                vals.get('stage_id'))['value'])
             if 'kanban_state' not in vals:
                 vals['kanban_state'] = 'normal'
             for registration in self:
                 vals['last_stage_id'] = registration.stage_id.id
 
-                next_stage = self.env['openg2p.registration.stage'].browse(vals['stage_id'])
+                next_stage = self.env['openg2p.registration.stage'].browse(
+                    vals['stage_id'])
                 if not registration.stage_id.fold and next_stage.fold and next_stage.sequence > 1 and registration.active:  # ending stage
                     if not registration.beneficiary_id:
-                        raise UserError(_('You need to create beneficiary before moving registration to this stage.'))
+                        raise UserError(
+                            _('You need to create beneficiary before moving registration to this stage.'))
                     if not registration.beneficiary_id.program_ids:
                         raise UserError(_('Beneficiary needs to be registerd into a program before moving registration'
                                           ' to this stage.'))
 
                 if registration.stage_id.sequence > next_stage.sequence and registration.beneficiary_id:
-                    raise UserError(_('You cannot move registration back as beneficiary already created.'))
+                    raise UserError(
+                        _('You cannot move registration back as beneficiary already created.'))
 
                 res = super(Registration, self).write(vals)
         else:
@@ -286,7 +354,8 @@ class Registration(models.Model):
     @job
     def ensure_unique(self, mode):
         for rec in self:
-            self.env['openg2p.beneficiary'].matches(rec, mode, stop_on_first=False)
+            self.env['openg2p.beneficiary'].matches(
+                rec, mode, stop_on_first=False)
 
     @api.multi
     def create_beneficiary_from_registration(self):
@@ -297,7 +366,8 @@ class Registration(models.Model):
             self.ensure_unique(mode=MATCH_MODE_COMPREHENSIVE)
 
         if self.duplicate_beneficiaries_ids:  # TODO ability to force create if maanger... pass via context
-            raise ValidationError(_("Potential duplicates exists for this record and so can not be added"))
+            raise ValidationError(
+                _("Potential duplicates exists for this record and so can not be added"))
 
         data = {
             'firstname': self.firstname,
@@ -327,14 +397,16 @@ class Registration(models.Model):
         beneficiary = self.env['openg2p.beneficiary'].create(data)
 
         for code, number in self.get_identities():
-            category = self.env['openg2p.beneficiary.id_category'].search([('type', '=', code)])
+            category = self.env['openg2p.beneficiary.id_category'].search(
+                [('type', '=', code)])
             self.env['openg2p.beneficiary.id_number'].create({
                 'category_id': category.id,
                 'name': number,
                 'beneficiary_id': beneficiary.id
             })
 
-        self.write({'beneficiary_id': beneficiary.id, 'registered_date': fields.Datetime.now()})
+        self.write({'beneficiary_id': beneficiary.id,
+                   'registered_date': fields.Datetime.now()})
         context = dict(self.env.context)
         context['form_view_initial_mode'] = 'edit'
         return {
@@ -350,13 +422,15 @@ class Registration(models.Model):
     def archive_registration(self):
         for registration in self:
             if registration.beneficiary_id:
-                raise UserError(_("You can not archive an registration for which a beneficiary has been created"))
+                raise UserError(
+                    _("You can not archive an registration for which a beneficiary has been created"))
         self.write({'active': False})
 
     @api.multi
     def reset_registration(self):
         """ Reinsert the registration into the registration pipe in the first stage"""
         if self.filtered('beneficiary_id'):
-            raise UserError(_("You can not reset an registration for which a beneficiary has been created"))
+            raise UserError(
+                _("You can not reset an registration for which a beneficiary has been created"))
         default_stage_id = self._default_stage_id()
         self.write({'active': True, 'stage_id': default_stage_id})
