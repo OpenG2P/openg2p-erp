@@ -214,59 +214,70 @@ class Registration(models.Model):
             return {'value': {'date_closed': fields.datetime.now()}}
         return {'value': {'date_closed': False}}
 
-    @api.onchange('stage_id')
+   @api.onchange('stage_id')
     def check_duplicates(self):
         print(self.stage_id.id)
         if int(self.stage_id.id) == 2:
             print("Inside if")
+            data = {
+                "id": str(self.stage_id.id),
+                "firstname": str(self.firstname),
+                "lastname": str(self.lastname),
+                "othernames": str(self.othernames),
+                "location_id": str(self.location_id.id),
+                "street": str(self.street),
+                "street2": str(self.street2),
+                "city": str(self.city),
+                "state_id": str(self.state_id.id),
+                "zip": str(self.zip),
+                "country_id": str(self.country_id.id),
+                "phone": str(self.phone),
+                "mobile": str(self.mobile),
+                "email": str(self.email),
+                "title": str(self.title.id),
+                "lang": str(self.lang),
+                "gender": str(self.gender),
+                "birthday": str(self.birthday),
+                "marital": str(self.marital),
+                "national_id": str(self.identity_national),
+                "passport_id": str(self.identity_passport),
+                "emergency_contact": str(self.emergency_contact),
+                "emergency_phone": str(self.emergency_phone)
+            }
+            # Deleting null fields
+            print(self.partner_id.id)
+            new_data = self.del_none(data)
+
+            print(new_data)
             search_data = {
                 "attributes":
                 {
-                    "first_name": self.firstname,
-                    "last_name": self.lastname,
-                    "phone": self.phone,
-                    "email": self.email
+                    "first_name": str(self.firstname),
+                    "last_name": str(self.lastname),
+                    "street": str(self.street),
+                    "city": str(self.city)
                 }
             }
+            print(search_data)
             search_url = "http://localhost:8080/index/search"
             r = requests.post(search_url, data=search_data)
             if r.status_code == 200:
                 print(r.content)
+                print(r.text)
             else:
-                index_data = {
-                    'id': int(self.partner_id.id),
-                    'firstname': self.firstname,
-                    'lastname': self.lastname,
-                    'othernames': self.othernames,
-                    'location_id': int(self.location_id.id),
-                    'street': self.street,
-                    'street2': self.street2,
-                    'city': self.city,
-                    'state_id': int(self.state_id.id),
-                    'zip': self.zip,
-                    'country_id': int(self.country_id.id),
-                    'phone': self.phone,
-                    'mobile': self.mobile,
-                    'email': self.email,
-                    'title': int(self.title.id),
-                    'lang': self.lang,
-                    'gender': self.gender,
-                    'birthday': self.birthday,
-                    'marital': self.marital,
-                    'national_id': self.identity_national,
-                    'passport_id': self.identity_passport,
-                    'emergency_contact': self.emergency_contact,
-                    'emergency_phone': self.emergency_phone
-                }
-                print("Reading data")
-                print(index_data)
-                index_data = json.dumps(index_data)
-                loaded_r = json.loads(index_data)
                 url_endpoint = "http://localhost:8080/index"
-                print(url_endpoint)
-                r = requests.post(url_endpoint, data=loaded_r)
+                r = requests.post(url_endpoint, json=new_data)
                 print(r.status_code)
-                print("Read Success")
+                print(r.content)
+
+    # Function to remove null fields
+    def del_none(self, d):
+        for key, value in list(d.items()):
+            if value == "False":
+                del d[key]
+            elif isinstance(value, dict):
+                del_none(value)
+        return d
 
     @api.model
     def create(self, vals):
