@@ -1,0 +1,1 @@
+from . import openg2p_beneficiary_school
