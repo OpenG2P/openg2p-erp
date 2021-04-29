@@ -8,7 +8,6 @@ from odoo.tools.translate import _
 import requests
 import json
 
-
 AVAILABLE_PRIORITIES = [
     ('0', 'Urgent'),
     ('1', 'High'),
@@ -210,74 +209,11 @@ class Registration(models.Model):
         if not stage_id:
             return {'value': {}}
         stage = self.env['openg2p.registration.stage'].browse(stage_id)
+        # print("Changed:"+stage[0])
+        # print("Stage:"+stage.fold)
         if stage.fold:
             return {'value': {'date_closed': fields.datetime.now()}}
         return {'value': {'date_closed': False}}
-
-   @api.onchange('stage_id')
-    def check_duplicates(self):
-        print(self.stage_id.id)
-        if int(self.stage_id.id) == 2:
-            print("Inside if")
-            data = {
-                "id": str(self.stage_id.id),
-                "firstname": str(self.firstname),
-                "lastname": str(self.lastname),
-                "othernames": str(self.othernames),
-                "location_id": str(self.location_id.id),
-                "street": str(self.street),
-                "street2": str(self.street2),
-                "city": str(self.city),
-                "state_id": str(self.state_id.id),
-                "zip": str(self.zip),
-                "country_id": str(self.country_id.id),
-                "phone": str(self.phone),
-                "mobile": str(self.mobile),
-                "email": str(self.email),
-                "title": str(self.title.id),
-                "lang": str(self.lang),
-                "gender": str(self.gender),
-                "birthday": str(self.birthday),
-                "marital": str(self.marital),
-                "national_id": str(self.identity_national),
-                "passport_id": str(self.identity_passport),
-                "emergency_contact": str(self.emergency_contact),
-                "emergency_phone": str(self.emergency_phone)
-            }
-            # Deleting null fields
-            print(self.partner_id.id)
-            new_data = self.del_none(data)
-
-            print(new_data)
-            search_data = {
-                "attributes":
-                {
-                    "first_name": str(self.firstname),
-                    "last_name": str(self.lastname),
-                    "street": str(self.street),
-                    "city": str(self.city)
-                }
-            }
-            print(search_data)
-            search_url = "http://localhost:8080/index/search"
-            r = requests.post(search_url, data=search_data)
-            if r.status_code == 200:
-                print(r.content)
-                print(r.text)
-            else:
-                url_endpoint = "http://localhost:8080/index"
-                r = requests.post(url_endpoint, json=new_data)
-                print(r.status_code)
-                print(r.content)
-
-    # Function to remove null fields
-    def del_none(self, d):
-        for key, value in list(d.items()):
-            if value == "False":
-                del d[key]
-            elif isinstance(value, dict):
-                del_none(value)
-        return d
 
     @api.model
     def create(self, vals):
@@ -420,6 +356,10 @@ class Registration(models.Model):
                    'registered_date': fields.Datetime.now()})
         context = dict(self.env.context)
         context['form_view_initial_mode'] = 'edit'
+
+        # print("Hello")
+        # print(context['beneficiary_id'])
+
         return {
             'type': 'ir.actions.act_window',
             'view_type': 'form',
@@ -428,6 +368,70 @@ class Registration(models.Model):
             'res_id': beneficiary.id,
             'context': context
         }
+
+    @api.onchange('stage_id')
+    def checking_duplicates(self):
+        if int(self.stage_id.id) == 2:
+            r = self.search_beneficiary()
+            if r == 200:
+                # Add beneficiary.id to duplicate_beneficiaries_ids
+                pass
+            else:
+                self.index_beneficiary()
+
+    def index_beneficiary(self):
+        data = {
+            "id": str(self.beneficiary_id.id),
+            "first_name": str(self.firstname),
+            "last_name": str(self.lastname),
+            "email": str(self.email),
+            "phone": str(self.phone),
+            "street": str(self.street),
+            "street2": str(self.street2),
+            "city": str(self.city),
+            "postal_code": str(self.zip),
+            "dob": str(self.birthday),
+            "identity": str(self.identity_passport),
+            "emergency_contact_name": str(self.emergency_contact),
+            "emergency_contact_phone": str(self.emergency_phone)
+        }
+        # Deleting null fields
+        new_data = self.del_none(data)
+        url_endpoint = "http://localhost:8080/index"
+        r = requests.post(url_endpoint, json=new_data)
+        return r.status_code
+
+    def search_beneficiary(self):
+        search_data = {
+            "attributes":
+            {
+                "first_name": str(self.firstname),
+                "last_name": str(self.lastname),
+                "email": str(self.email),
+                "phone": str(self.phone),
+                "street": str(self.street),
+                "street2": str(self.street2),
+                "city": str(self.city),
+                "postal_code": str(self.zip),
+                "dob": str(self.birthday),
+                "identity": str(self.identity_passport),
+                "emergency_contact_name": str(self.emergency_contact),
+                "emergency_contact_phone": str(self.emergency_phone)
+            }
+        }
+        new_data = self.del_none(search_data)
+        search_url = "http://localhost:8080/index/search"
+        r = requests.post(search_url, data=new_data)
+        return r.status_code
+
+    # Function to remove null fields
+    def del_none(self, d):
+        for key, value in list(d.items()):
+            if value == "False":
+                del d[key]
+            elif isinstance(value, dict):
+                del_none(value)
+        return d
 
     @api.multi
     def archive_registration(self):
