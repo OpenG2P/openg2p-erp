@@ -357,8 +357,8 @@ class Registration(models.Model):
         context = dict(self.env.context)
         context['form_view_initial_mode'] = 'edit'
 
-        # print("Hello")
-        # print(context['beneficiary_id'])
+        # Indexing the beneficiary
+        self.index_beneficiary()
 
         return {
             'type': 'ir.actions.act_window',
@@ -373,15 +373,15 @@ class Registration(models.Model):
     def checking_duplicates(self):
         if int(self.stage_id.id) == 2:
             r = self.search_beneficiary()
-            if r == 200:
-                # Add beneficiary.id to duplicate_beneficiaries_ids
-                pass
+            if r == True:
+                self.write({'duplicate_beneficiaries_ids': [(self.beneficiary_id)]
+                            })
             else:
-                self.index_beneficiary()
+                print("None found")
 
     def index_beneficiary(self):
         data = {
-            "id": str(self.beneficiary_id.id),
+            "id": str(self.beneficiary_id),
             "first_name": str(self.firstname),
             "last_name": str(self.lastname),
             "email": str(self.email),
@@ -397,9 +397,13 @@ class Registration(models.Model):
         }
         # Deleting null fields
         new_data = self.del_none(data)
+        print(new_data)
         url_endpoint = "http://localhost:8080/index"
-        r = requests.post(url_endpoint, json=new_data)
-        return r.status_code
+        try:
+            r = requests.post(url_endpoint, json=new_data)
+            return r.status_code
+        except requests.exceptions.RequestException as e:
+            print(e)
 
     def search_beneficiary(self):
         search_data = {
@@ -420,17 +424,23 @@ class Registration(models.Model):
             }
         }
         new_data = self.del_none(search_data)
+        print(new_data)
         search_url = "http://localhost:8080/index/search"
-        r = requests.post(search_url, data=new_data)
-        return r.status_code
+        try:
+            r = requests.post(search_url, data=new_data)
+            if r.text:
+                return True
+            else:
+                return False
+        except requests.exceptions.RequestException as e:
+            print(e)
 
-    # Function to remove null fields
     def del_none(self, d):
         for key, value in list(d.items()):
             if value == "False":
                 del d[key]
             elif isinstance(value, dict):
-                del_none(value)
+                self.del_none(value)
         return d
 
     @api.multi
