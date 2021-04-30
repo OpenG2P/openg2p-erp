@@ -397,7 +397,7 @@ class Registration(models.Model):
         }
         # Deleting null fields
         new_data = self.del_none(data)
-        print(new_data)
+        # print(new_data)
         url_endpoint = "http://localhost:8080/index"
         try:
             r = requests.post(url_endpoint, json=new_data)
@@ -424,7 +424,7 @@ class Registration(models.Model):
             }
         }
         new_data = self.del_none(search_data)
-        print(new_data)
+        # print(new_data)
         search_url = "http://localhost:8080/index/search"
         try:
             r = requests.post(search_url, data=new_data)
