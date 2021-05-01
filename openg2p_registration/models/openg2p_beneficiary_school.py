@@ -4,7 +4,6 @@ from odoo import api, fields, models
 class BeneficiarySchool(models.Model):
     _name = "openg2p.beneficiary_school"
     _description = "Beneficiary School Model"
-    _inherit = ["openg2p.registration"]
 
     total_quality = fields.Float(
         string='Total Quality',
@@ -33,13 +32,16 @@ class BeneficiarySchool(models.Model):
         track_visibility='onchange',
     )
 
-    beneficiary_name = fields.Many2one(
-        'openg2p.registration',
-        compute=''
-    )
-
-    @api.depends('retention_progression', 'total_equity', 'total_quality')
-    def _compute_grand_total(self):
-        print('COMPUTE GRAND TOTAL', self.env['openg2p.registration.stage'].name)
-        for record in self:
-            record.grand_total = record.retention_progression + record.total_quality + record.total_equity
+    @api.model
+    def create(self, vals):
+        total_quality = vals.get('total_quality')
+        total_equity = vals.get('total_equity')
+        retention_progression = vals.get('retention_progression')
+        grand_total = vals.get('grand_total')
+        data = {
+            'total_quality': self.total_quality,
+            'total_equity':self.total_equity,
+            'retention_progression':self.retention_progression,
+            'grand_total':self.grand_total,
+        }
+        res = super(BeneficiarySchool, self).create(data)

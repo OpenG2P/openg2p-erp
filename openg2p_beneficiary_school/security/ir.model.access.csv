@@ -1,2 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-openg2p.beneficiary_school,openg2p.beneficiary_school,model_openg2p_beneficiary_school,,1,1,1,1

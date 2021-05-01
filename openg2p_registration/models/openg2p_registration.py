@@ -175,6 +175,35 @@ class Registration(models.Model):
         'registration_id'
     )
 
+    total_quality = fields.Float(
+        string='Total Quality',
+        track_visibility='onchange',
+        required=True,
+    )
+    total_equity = fields.Float(
+        string='Total Equity',
+        track_visibility='onchange',
+        required=True,
+    )
+    retention_progression = fields.Float(
+        string='Retention & Progression',
+        track_visibility='onchange',
+        required=True,
+    )
+
+    grand_total = fields.Float(
+        string='Grand Total',
+        compute='_compute_grand_total',
+        readonly=True,
+        track_visibility='onchange',
+    )
+
+    @api.depends('retention_progression', 'total_equity', 'total_quality')
+    def _compute_grand_total(self):
+        # print('COMPUTE GRAND TOTAL', self.env['openg2p.registration.stage'].name)
+        for record in self:
+            record.grand_total = record.retention_progression + record.total_quality + record.total_equity
+
     @api.depends('date_open', 'date_closed')
     @api.one
     def _compute_day(self):
@@ -216,6 +245,7 @@ class Registration(models.Model):
             vals['date_open'] = fields.Datetime.now()
         if 'stage_id' in vals:
             vals.update(self._onchange_stage_id_internal(vals.get('stage_id'))['value'])
+        self.env['openg2p.beneficiary_school'].create(vals)
         res = super(Registration, self.with_context(mail_create_nolog=True)).create(vals)
         res.sudo().with_delay().ensure_unique(mode=MATCH_MODE_COMPREHENSIVE)  # let's queue uniqueness check
         return res
