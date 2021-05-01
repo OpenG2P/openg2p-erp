@@ -374,10 +374,8 @@ class Registration(models.Model):
         if int(self.stage_id.id) == 2:
             r = self.search_beneficiary()
             if r == True:
-                self.write({'duplicate_beneficiaries_ids': [(self.beneficiary_id)]
-                            })
-            else:
-                print("None found")
+                self.update({'duplicate_beneficiaries_ids': (self.beneficiary_id)
+                             })
 
     def index_beneficiary(self):
         data = {
@@ -430,10 +428,8 @@ class Registration(models.Model):
             r = requests.post(search_url, data=new_data)
             if r.text:
                 return True
-            else:
-                return False
         except requests.exceptions.RequestException as e:
-            print(e)
+            return False
 
     def del_none(self, d):
         for key, value in list(d.items()):
