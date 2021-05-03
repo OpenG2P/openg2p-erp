@@ -358,6 +358,7 @@ class Registration(models.Model):
         context['form_view_initial_mode'] = 'edit'
 
         # Indexing the beneficiary
+        # print("Indexing.......")
         self.index_beneficiary()
 
         return {
@@ -372,14 +373,19 @@ class Registration(models.Model):
     @api.onchange('stage_id')
     def checking_duplicates(self):
         if int(self.stage_id.id) == 2:
-            r = self.search_beneficiary()
-            if r == True:
-                self.update({'duplicate_beneficiaries_ids': (self.beneficiary_id)
-                             })
+            my_list = self.search_beneficiary()
+            my_list = json.loads(my_list)
+            # print(my_list)
+            if my_list:
+                benf_ids = [li['beneficiary'] for li in my_list]
+                # print(benf_ids)
+                for i in benf_ids:
+                    self.update({'duplicate_beneficiaries_ids': (i)
+                                 })
 
     def index_beneficiary(self):
         data = {
-            "id": str(self.beneficiary_id),
+            "id": str(self.beneficiary_id.id),
             "first_name": str(self.firstname),
             "last_name": str(self.lastname),
             "email": str(self.email),
@@ -425,11 +431,10 @@ class Registration(models.Model):
         # print(new_data)
         search_url = "http://localhost:8080/index/search"
         try:
-            r = requests.post(search_url, data=new_data)
-            if r.text:
-                return True
+            r = requests.post(search_url, json=new_data)
+            return r.text
         except requests.exceptions.RequestException as e:
-            return False
+            return r.text
 
     def del_none(self, d):
         for key, value in list(d.items()):
