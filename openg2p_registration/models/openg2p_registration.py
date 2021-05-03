@@ -375,13 +375,12 @@ class Registration(models.Model):
         if int(self.stage_id.id) == 2:
             my_list = self.search_beneficiary()
             my_list = json.loads(my_list)
-            # print(my_list)
-            if my_list:
-                benf_ids = [li['beneficiary'] for li in my_list]
-                # print(benf_ids)
-                for i in benf_ids:
-                    self.update({'duplicate_beneficiaries_ids': (i)
-                                 })
+            print(my_list)
+            benf_ids = [li['beneficiary'] for li in my_list]
+            print(benf_ids)
+            self.update(
+                {'duplicate_beneficiaries_ids': [(6, 0, list(benf_ids))]})
+            print(self.duplicate_beneficiaries_ids)
 
     def index_beneficiary(self):
         data = {
