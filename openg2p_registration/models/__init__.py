@@ -6,4 +6,4 @@ from . import openg2p_registration_identification
 from . import openg2p_beneficiary
 from . import openg2p_registration_stage
 from . import openg2p_location
-from . import openg2p_beneficiary_school
+from . import openg2p_beneficiary_school_map

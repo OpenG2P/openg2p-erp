@@ -25,7 +25,6 @@
 
         'views/menu.xml',
         'views/openg2p_beneficiary.xml',
-        'views/openg2p_beneficiary_school.xml',
         'views/openg2p_registration.xml',
         'views/openg2p_registration_category.xml',
         'views/openg2p_registration_stage.xml',

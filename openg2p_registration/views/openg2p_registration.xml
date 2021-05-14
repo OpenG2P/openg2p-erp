@@ -143,11 +143,14 @@
                                     </tree>
                                 </field>
                             </group>
+
                             <group string="School">
-                                <field name="total_quality"/>
-                                <field name="total_equity"/>
-                                <field name="retention_progression"/>
-                                <field name="grand_total"/>
+                                <field name="org_custom_field">
+                                    <tree>
+                                        <field name="field_name"/>
+                                        <field name="field_value"/>
+                                    </tree>
+                                </field>
                             </group>
                         </group>
                         <separator string="Registration Summary"/>
@@ -378,14 +381,6 @@
                 </p>
             </field>
         </record>
-
-<!--        <record id="stage_move_id" model="ir.actions.server">-->
-<!--            <field name="name">Move Stage</field>-->
-<!--            <field name="model_id" ref="openg2p.registration"/>-->
-<!--            <field name="code">-->
-<!--                action = model.move_stage()-->
-<!--            </field>-->
-<!--        </record>-->
 
         <!-- ALL BENEFICIARIES REQUESTS -->
         <menuitem

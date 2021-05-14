@@ -175,43 +175,10 @@ class Registration(models.Model):
         'registration_id'
     )
 
-    total_quality = fields.Float(
-        string='Total Quality',
-        track_visibility='onchange',
-        required=True,
+    org_custom_field = fields.One2many(
+        'openg2p.beneficiary.schoolmap'
+        'registration',
     )
-    total_equity = fields.Float(
-        string='Total Equity',
-        track_visibility='onchange',
-        required=True,
-    )
-    retention_progression = fields.Float(
-        string='Retention & Progression',
-        track_visibility='onchange',
-        required=True,
-    )
-
-    grand_total = fields.Float(
-        string='Grand Total',
-        compute='_compute_grand_total',
-        readonly=True,
-        track_visibility='onchange',
-    )
-
-    # @api.multi
-    # def move_stage(self):
-    #     print(self.ids)
-    #     for record in self:
-    #         print(record.id)
-    #         # self.env['openg2p.registration.stage'].browse(record.stage_id)
-    #         pass
-            # record.stage_id =
-
-    @api.depends('retention_progression', 'total_equity', 'total_quality')
-    def _compute_grand_total(self):
-        # print('COMPUTE GRAND TOTAL', self.env['openg2p.registration.stage'].name)
-        for record in self:
-            record.grand_total = record.retention_progression + record.total_quality + record.total_equity
 
     @api.depends('date_open', 'date_closed')
     @api.one
