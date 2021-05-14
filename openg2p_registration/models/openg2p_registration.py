@@ -222,7 +222,6 @@ class Registration(models.Model):
             vals['date_open'] = fields.Datetime.now()
         if 'stage_id' in vals:
             vals.update(self._onchange_stage_id_internal(vals.get('stage_id'))['value'])
-        self.env['openg2p.beneficiary.school'].create(vals)
         res = super(Registration, self.with_context(mail_create_nolog=True)).create(vals)
         res.sudo().with_delay().ensure_unique(mode=MATCH_MODE_COMPREHENSIVE)  # let's queue uniqueness check
         return res
