@@ -176,7 +176,7 @@ class Registration(models.Model):
     )
 
     org_custom_field = fields.One2many(
-        'openg2p.beneficiary.schoolmap'
+        'openg2p.beneficiary.schoolmap',
         'registration',
     )
 

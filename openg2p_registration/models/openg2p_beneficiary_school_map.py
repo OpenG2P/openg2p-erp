@@ -6,11 +6,13 @@ class BeneficiarySchoolMap(models.Model):
     _description = "Beneficiary School Map Model"
 
     field_name = fields.Char(
-        'Field Name'
+        'Field Name',
+        required=True,
     )
 
     field_value = fields.Char(
-        'Field Value'
+        'Field Value',
+        required=True,
     )
 
     registration = fields.Many2one(
@@ -18,18 +20,3 @@ class BeneficiarySchoolMap(models.Model):
         required=True,
         index=True,
     )
-
-    # @api.model
-    # def create(self, vals):
-    #     total_quality = vals.get('total_quality')
-    #     total_equity = vals.get('total_equity')
-    #     retention_progression = vals.get('retention_progression')
-    #     grand_total = vals.get('grand_total')
-    #     data = {
-    #         'total_quality': self.total_quality,
-    #         'total_equity':self.total_equity,
-    #         'retention_progression':self.retention_progression,
-    #         'grand_total':self.grand_total,
-    #     }
-    #     res = super(BeneficiarySchoolMap, self).create(data)
-    #     return res
