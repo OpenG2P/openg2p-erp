@@ -144,7 +144,7 @@
                                 </field>
                             </group>
                             <group name="internal_notes_right">
-
+                                <field name="bank_account_id" domain="[('beneficiary_id', '=', id), ('beneficiary_id', '!=', False)]" options="{'limit': 10, 'create': True, 'create_edit': True}"/>
                             </group>
                         </group>
                         <separator string="Registration Summary"/>
