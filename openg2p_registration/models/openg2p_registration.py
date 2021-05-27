@@ -175,87 +175,6 @@ class Registration(models.Model):
         'registration_id'
     )
 
-    org_custom_field = fields.One2many(
-        'openg2p.beneficiary.schoolmap',
-        'registration',
-    )
-
-    def create_regitsration_from_odk(self, odk_data):
-        data = {}
-        format = '%Y-%m-%dT%H:%M:%SZ'
-        for k, v in odk_data:
-            if hasattr(self, k):
-                if k == 'partner_id':
-                    res = self.env['res.partner'].search(
-                        [(k, '=', v)],
-                        limit=1
-                    )
-                    if res:
-                        data[k] = res.id
-                elif k == 'create_date':
-                    data[k] = datetime.strptime(v, format)
-                elif k == 'registered_date':
-                    data[k] = datetime.strptime(v, format)
-                elif k == 'categ_ids':
-                    res = self.env['categ_ids'].search(
-                        [(k, '=', 'v')],
-                        limit=1
-                    )
-                    if res:
-                        data[k] = res.ids
-                elif k == 'company_id':
-                    res = self.env['company_id'].search(
-                        [(k, '=', v)],
-                        limit=1
-                    )
-                    if res:
-                        data[k] = res.id
-                elif k == 'user_id':
-                    res = self.env['user_id'].search(
-                        [(k, '=', v)],
-                        limit=1
-                    )
-                    if res:
-                        data[k] = res.id
-                elif k == 'date_closed':
-                    data[k] = datetime.strptime(v, format)
-                elif k == 'date_open':
-                    data[k] = datetime.strptime(v, format)
-                elif k == 'date_last_stage_update':
-                    data[k] = datetime.strptime(v, format)
-                elif k == 'priority':
-                    if v in [i[0] for i in AVAILABLE_PRIORITIES]:
-                        data[k] = v
-                elif k == 'day_open':
-                    data[k] = self._compute_day()
-                elif k == 'day_close':
-                    data[k] = self._compute_day()
-                elif k == 'delay_close':
-                    data[k] = self._compute_day()
-                elif k == 'beneficiary_id':
-                    res = self.env['openg2p.beneficiary'].search(
-                        [(k, '=', v)],
-                        limit=1
-                    )
-                    if res:
-                        data[k] = res.id
-                elif k == 'identities':
-                    for vi in v:
-                        self.env['openg2p.registration.identity'].create(vi)
-                    data[k] = self.env['openg2p.registration.identity'].search(
-                        [('registration_id', '=', id)]
-                    ).ids
-                elif k == 'org_custom_field':
-                    for vi in v:
-                        self.env['openg2p.beneficiary.schoolmap'].create(vi)
-                    data[k] = self.env['openg2p.registration.identity'].search(
-                        [('registration', '=', id)]
-                    ).ids
-                else:
-                    data[k] = v
-        data['stage_id'] = self._default_stage_id().id
-        # doubt in last_stage_id
-        self.create(data)
 
     @api.depends('date_open', 'date_closed')
     @api.one
@@ -291,7 +210,6 @@ class Registration(models.Model):
         return {'value': {'date_closed': False}}
 
     @api.model
-    @api.multi
     def create(self, vals):
         if vals.get('location_id') and not self._context.get('default_location_id'):
             self = self.with_context(default_location_id=vals.get('location_id'))
