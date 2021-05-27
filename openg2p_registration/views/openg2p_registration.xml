@@ -143,6 +143,9 @@
                                     </tree>
                                 </field>
                             </group>
+                            <group name="internal_notes_right">
+
+                            </group>
                         </group>
                         <separator string="Registration Summary"/>
                         <field name="description" placeholder="Details of Registrations..."/>
