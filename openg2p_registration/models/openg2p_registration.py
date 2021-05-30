@@ -176,86 +176,88 @@ class Registration(models.Model):
     )
 
     org_custom_field = fields.One2many(
-        'openg2p.beneficiary.schoolmap',
+        'openg2p.beneficiary.orgmap',
         'registration',
     )
 
-    def create_regitsration_from_odk(self, odk_data):
+    def create_registration_from_odk(self, odk_data):
+        self.create({})
+        id = self.id
+        from datetime import datetime
         data = {}
+        org_data = {}
         format = '%Y-%m-%dT%H:%M:%SZ'
         for k, v in odk_data:
             if hasattr(self, k):
                 if k == 'partner_id':
                     res = self.env['res.partner'].search(
-                        [(k, '=', v)],
+                        [('partner_id', '=', v)],
                         limit=1
                     )
                     if res:
                         data[k] = res.id
-                elif k == 'create_date':
-                    data[k] = datetime.strptime(v, format)
                 elif k == 'registered_date':
-                    data[k] = datetime.strptime(v, format)
+                    data['registered_date'] = datetime.strptime(v, format)
                 elif k == 'categ_ids':
                     res = self.env['categ_ids'].search(
-                        [(k, '=', 'v')],
+                        [('categ_ids', '=', v)],
                         limit=1
                     )
                     if res:
-                        data[k] = res.ids
+                        data['categ_ids'] = res.ids
                 elif k == 'company_id':
                     res = self.env['company_id'].search(
-                        [(k, '=', v)],
+                        [('company_id', '=', v)],
                         limit=1
                     )
                     if res:
-                        data[k] = res.id
+                        data['company_id'] = res.id
                 elif k == 'user_id':
                     res = self.env['user_id'].search(
-                        [(k, '=', v)],
+                        [('user_id', '=', v)],
                         limit=1
                     )
                     if res:
-                        data[k] = res.id
-                elif k == 'date_closed':
-                    data[k] = datetime.strptime(v, format)
-                elif k == 'date_open':
-                    data[k] = datetime.strptime(v, format)
-                elif k == 'date_last_stage_update':
-                    data[k] = datetime.strptime(v, format)
+                        data['user_id'] = res.id
                 elif k == 'priority':
                     if v in [i[0] for i in AVAILABLE_PRIORITIES]:
-                        data[k] = v
-                elif k == 'day_open':
-                    data[k] = self._compute_day()
-                elif k == 'day_close':
-                    data[k] = self._compute_day()
-                elif k == 'delay_close':
-                    data[k] = self._compute_day()
+                        data['priority'] = v
                 elif k == 'beneficiary_id':
                     res = self.env['openg2p.beneficiary'].search(
-                        [(k, '=', v)],
+                        [('beneficiary_id', '=', id)],
                         limit=1
                     )
                     if res:
-                        data[k] = res.id
+                        data['beneficiary_id'] = res.id
                 elif k == 'identities':
                     for vi in v:
-                        self.env['openg2p.registration.identity'].create(vi)
-                    data[k] = self.env['openg2p.registration.identity'].search(
+                        self.env['openg2p.registration.identity'].create({
+                            'name': list(vi.keys())[0],
+                            'type': list(vi.values())[0],
+                            'registration_id': id,
+                        })
+                    data['identities'] = self.env['openg2p.registration.identity'].search(
                         [('registration_id', '=', id)]
                     ).ids
-                elif k == 'org_custom_field':
-                    for vi in v:
-                        self.env['openg2p.beneficiary.schoolmap'].create(vi)
-                    data[k] = self.env['openg2p.registration.identity'].search(
-                        [('registration', '=', id)]
-                    ).ids
                 else:
-                    data[k] = v
-        data['stage_id'] = self._default_stage_id().id
-        # doubt in last_stage_id
-        self.create(data)
+                    if k not in ['description', 'color', 'beneficiary_name',
+                                 'identity_national', 'identity_passport',
+                                 'legend_blocked', 'legend_done', 'legend_normal']:
+                        org_data.update({k: v})
+                    else:
+                        data[k] = v
+            else:
+                org_data.update({k: v})
+        for k, v in org_data:
+            self.env['openg2p.beneficiary.orgmap'].create({
+                'field_name': k,
+                'field_value': v,
+                'registration': id,
+            })
+        data['org_custom_field'] = self.env['openg2p.beneficiary.orgmap'].search(
+            [('registration', '=', id)]
+        ).ids
+        self.write(data)
 
     @api.depends('date_open', 'date_closed')
     @api.one

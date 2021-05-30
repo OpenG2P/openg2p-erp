@@ -143,7 +143,7 @@
                                     </tree>
                                 </field>
                             </group>
-                            <group string="School">
+                            <group string="Organization">
                                 <field name="org_custom_field">
                                     <tree editable="bottom">
                                         <field name="field_name"/>

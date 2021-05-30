@@ -1,9 +1,9 @@
 from odoo import api, fields, models
 
 
-class BeneficiarySchoolMap(models.Model):
-    _name = "openg2p.beneficiary.schoolmap"
-    _description = "Beneficiary School Map Model"
+class BeneficiaryOrgMap(models.Model):
+    _name = "openg2p.beneficiary.orgmap"
+    _description = "Beneficiary Org Map Model"
 
     field_name = fields.Char(
         'Field Name',
