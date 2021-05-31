@@ -7,7 +7,6 @@
         <field name="arch" type="xml">
             <data>
                 <group name="internal_notes_right" position="inside">
-                    <field name="bank_account_type"/>
                     <field name="bank_account_id" options="{'limit': 10, 'create': True, 'create_edit': True}"/>
                 </group>
             </data>
