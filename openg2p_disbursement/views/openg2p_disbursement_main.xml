@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_openg2p_disbursement_main" model="ir.ui.view">
+            <field name="name">openg2p.disbursement.main.form</field>
+            <field name="model">openg2p.disbursement.main</field>
+            <field name="arch" type="xml">
+                <form string="Disbursement Form">
+                    <sheet>
+                        <group>
+                            <field name="beneficiary_id"/>
+                            <field name="acc_holder_name"/>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="receipt_confirmed"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

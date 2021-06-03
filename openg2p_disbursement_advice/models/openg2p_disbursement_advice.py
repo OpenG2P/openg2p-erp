@@ -113,7 +113,8 @@ class DisbursementAdvice(models.Model):
         advice_bank_map = {}
         for advice in self:
             if advice.state != 'draft':
-                raise ValidationError(_("Advice should be in the draft state for operation to be permitted"))
+                raise ValidationError(
+                    _("Advice should be in the draft state for operation to be permitted"))
 
             advice.line_ids.unlink()
             advice_bank_map[advice.bank_id.id] = advice.id
@@ -126,7 +127,7 @@ class DisbursementAdvice(models.Model):
         else:
             # TODO this needs to be cleaned up, we need a way for status of this job to be commuinicated to UI
             self.sudo().with_delay(priority=0, description="Disbursement Advice: " + batch.name, max_retries=1
-                            )._generate_advice_split_job(batch, slips, advice_bank_map)
+                                   )._generate_advice_split_job(batch, slips, advice_bank_map)
             return {
                 'type': 'ir.actions.act_window.message',
                 'title': _('Disbursement Advice Queued'),
@@ -137,15 +138,18 @@ class DisbursementAdvice(models.Model):
     @related_action('_related_action_disbursement_advice')
     @job
     def _generate_advice_split_job(self, batch, slips, advice_bank_map):
-        no_bank_rule = self.env.ref('openg2p_disbursement_advice.exception_rule_bank_not_available')
+        no_bank_rule = self.env.ref(
+            'openg2p_disbursement_advice.exception_rule_bank_not_available')
         for slip in slips:
             if slip.state != 'done':
-                raise ValidationError("Slip " + slip.name + " should be in the 'done' state for advice to be generated")
+                raise ValidationError(
+                    "Slip " + slip.name + " should be in the 'done' state for advice to be generated")
 
             account = slip.beneficiary_id.bank_account_id
             line = slip.line_ids.filtered(lambda i: i.code == 'NET')
             if not line:
-                raise ValidationError("Could not figure out net for " + slip.name)
+                raise ValidationError(
+                    "Could not figure out net for " + slip.name)
             line = line[0]
             created_line = None
             if account:
@@ -156,7 +160,8 @@ class DisbursementAdvice(models.Model):
                     'amount': line.total,
                     'slip_id': slip.id,
                 }
-                created_line = self.env['openg2p.disbursement.advice.line'].create(advice_line)
+                created_line = self.env['openg2p.disbursement.advice.line'].create(
+                    advice_line)
             elif not account and slip.batch_id.no_advice_bank:
                 advice_line = {
                     'advice_id': advice_bank_map[batch.no_advice_bank.id],
@@ -164,7 +169,8 @@ class DisbursementAdvice(models.Model):
                     'amount': line.total,
                     'slip_id': slip.id,
                 }
-                created_line = self.env['openg2p.disbursement.advice.line'].create(advice_line)
+                created_line = self.env['openg2p.disbursement.advice.line'].create(
+                    advice_line)
             else:
                 self.env['openg2p.disbursement.exception'].create({
                     'rule_id': no_bank_rule.id,
@@ -182,8 +188,10 @@ class DisbursementAdvice(models.Model):
         seq_obj = self.env['ir.sequence']
         for advice in self:
             if not advice.line_count:
-                raise ValidationError('You can not confirm Payment advice without advice lines.')
-            advice_year = advice.date_generated.strftime('%m') + '-' + advice.date_generated.strftime('%Y')
+                raise ValidationError(
+                    'You can not confirm Payment advice without advice lines.')
+            advice_year = advice.date_generated.strftime(
+                '%m') + '-' + advice.date_generated.strftime('%Y')
             number = seq_obj.next_by_code('disbursement.advice')
             sequence_num = 'PAY' + '/' + slugify(advice.bank_id.name,
                                                  max_length=8).upper() + '/' + advice_year + '/' + number
@@ -210,7 +218,8 @@ class DisbursementAdvice(models.Model):
         """
         self.ensure_one()
         if self.state != 'confirm':
-            raise UserError(_("Operation permitted on on advices in the confirmed state"))
+            raise UserError(
+                _("Operation permitted on on advices in the confirmed state"))
 
         if self.bank_id.execute_method == 'manual':
             self.write({'state': 'done', 'date_executed': fields.Date.today()})
@@ -234,7 +243,8 @@ class DisbursementAdvice(models.Model):
     def unlink(self):
         for advice in self:
             if advice.state != 'draft':
-                raise UserError(_("You cannot delete an advice past its draft state."))
+                raise UserError(
+                    _("You cannot delete an advice past its draft state."))
         return super(DisbursementAdvice, self).unlink()
 
     @api.multi

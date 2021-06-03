@@ -14,7 +14,7 @@
                                 <field name="sequence" invisible="1"/>
                                 <field name="bank_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                                 <field name="acc_number"/>
-
+                                <field name="payment_mode"/>
                                 <field name="company_id" groups="base.group_multi_company"
                                        options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             </group>

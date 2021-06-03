@@ -45,7 +45,13 @@
                     <header>
                         <button string="Create Beneficiary" name="create_beneficiary_from_registration" type="object"
                                 class="oe_highlight"
-                                attrs="{'invisible': ['|', '|', ('stage_action', '!=', 'create_beneficiary'), ('beneficiary_id', '!=', False),('active', '=', False)]}"/>
+                                attrs="{'invisible': ['|', '|', ('stage_action', '!=', 'create_beneficiary'),('beneficiary_id', '!=', False),('active', '=', False)]}"/>
+                        <button string="Check Duplicates" name="find_duplicates" type="object"
+                                class="oe_highlight"
+                                attrs="{'invisible': ['|', '|', ('stage_id', '!=', 2),('duplicate_beneficiaries_ids', '!=', []),('active', '=', False)]}"/>
+                        <button string="Merge" name="merge_beneficiaries" type="object"
+                                class="oe_highlight"
+                                attrs="{'invisible': ['|', '|', ('stage_id', '!=', 6),('duplicate_beneficiaries_ids', '=', []),('active', '=', False)]}"/>
                         <button string="Refuse" name="archive_registration" type="object"
                                 attrs="{'invisible': [('active', '=', False)]}"/>
                         <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"
@@ -134,6 +140,9 @@
                                 <field name="emergency_phone"/>
                                 <field name="birthday"/>
                             </group>
+                            
+
+
                             <group string="Identifications">
                                 <field name="identities" nolabel="1">
                                     <tree string="Identifications" editable="bottom">
@@ -142,7 +151,25 @@
                                     </tree>
                                 </field>
                             </group>
+                            
+                            
                         </group>
+                            <!-- Duplicate Beneficiaries -->
+                        <group string="Potential Duplicates">
+                            <field nolabel="1" readonly="1" name="duplicate_beneficiaries_ids" widget="many2many">
+                                <tree>
+                                    <field name="id" />
+                                    <field name="firstname"/>
+                                    <field name="lastname"/>
+                                </tree>
+                            </field>
+                        </group>
+                            
+                        <field placeholder="Enter the ID to retain" name="retained_id" widget ="char"/>
+
+                        <button string="Clear" name="clear_beneficiaries" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', '|', ('stage_id', '!=', 2),('duplicate_beneficiaries_ids', '=', []),('active', '=', False)]}"/>
                         <separator string="Registration Summary"/>
                         <field name="description" placeholder="Details of Registrations..."/>
                     </sheet>
