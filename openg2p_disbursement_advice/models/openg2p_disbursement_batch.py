@@ -42,9 +42,11 @@ class Openg2pDisbursementBatch(models.Model):
     def _compute_advice_status(self):
         for batch in self:
             batch.advice_count = len(batch.advice_ids)
-            count_advised_slips = len(batch.advice_line_ids.filtered(lambda r: r.state != 'cancel'))
+            count_advised_slips = len(
+                batch.advice_line_ids.filtered(lambda r: r.state != 'cancel'))
             batch.count_advised_slips = count_advised_slips
-            batch.count_not_advised_slips = len(batch.slip_ids) - count_advised_slips
+            batch.count_not_advised_slips = len(
+                batch.slip_ids) - count_advised_slips
 
     @api.multi
     def start_disbursing_slip_run(self):
@@ -55,7 +57,9 @@ class Openg2pDisbursementBatch(models.Model):
     @api.multi
     def action_view_exempted(self):
         self.ensure_one()
-        exempted = self.slip_ids - self.advice_line_ids.filtered(lambda r: r.state != 'cancel').mapped('slip_id')
+        exempted = self.slip_ids - \
+            self.advice_line_ids.filtered(
+                lambda r: r.state != 'cancel').mapped('slip_id')
         return {
             "name": "Slips Not Included in Advice",
             "view_type": "form",
@@ -83,7 +87,7 @@ class Openg2pDisbursementBatch(models.Model):
 
         self.advice_ids.unlink()
 
-        # let's get all the banks in this run. We use plain sql for optimizationr easons
+        # let's get all the banks in this run. We use plain sql for optimization reasons
         query = """SELECT DISTINCT(account.bank_id) AS bank
         FROM openg2p_disbursement_slip AS slip
         LEFT JOIN openg2p_beneficiary AS beneficiary ON slip.beneficiary_id = beneficiary.id
@@ -94,7 +98,8 @@ class Openg2pDisbursementBatch(models.Model):
         banks = [x[0] for x in self.env.cr.fetchall() if x[0]]
 
         if not banks:
-            raise UserError('No bank accounts attached to beneficiaries in this batch')
+            raise UserError(
+                'No bank accounts attached to beneficiaries in this batch')
 
         banks = self.env['res.bank'].browse(banks)
 

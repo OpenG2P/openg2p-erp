@@ -8,6 +8,9 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
+import uuid
+import hashlib
+import requests
 
 
 class Slip(models.Model):
@@ -20,7 +23,7 @@ class Slip(models.Model):
         string='Structure',
         readonly=True,
         states={'draft': [('readonly', False)]},
-        required=True,
+        required=False,
         help='Defines rules that have to be applied to this disbursement slip, accordingly to the enrollment chosen.'
     )
     name = fields.Char(
@@ -46,14 +49,16 @@ class Slip(models.Model):
         string='Date From',
         readonly=True,
         required=True,
-        default=lambda self: fields.Date.to_string(date.today().replace(day=1)),
+        default=lambda self: fields.Date.to_string(
+            date.today().replace(day=1)),
         states={'draft': [('readonly', False)]}
     )
     date_to = fields.Date(
         string='Date To',
         readonly=True,
         required=True,
-        default=lambda self: fields.Date.to_string((datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()),
+        default=lambda self: fields.Date.to_string(
+            (datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()),
         states={'draft': [('readonly', False)]}
     )
     state = fields.Selection(
@@ -169,14 +174,16 @@ class Slip(models.Model):
     @api.multi
     def _compute_details_by_disbursement_rule_category(self):
         for slip in self:
-            slip.details_by_disbursement_rule_category = slip.mapped('line_ids').filtered(lambda line: line.category_id)
+            slip.details_by_disbursement_rule_category = slip.mapped(
+                'line_ids').filtered(lambda line: line.category_id)
 
     @api.multi
     @api.depends('line_ids', 'line_ids.total')
     def _compute_slip_stats(self):
         for slip in self:
             slip.slip_count = len(slip.line_ids)
-            slip.total = sum(slip.line_ids.filtered(lambda l: l.code == 'NET').mapped('total'))
+            slip.total = sum(slip.line_ids.filtered(
+                lambda l: l.code == 'NET').mapped('total'))
 
     @api.constrains('enrollment_id', 'program_id')
     def _check_beneficiary_beneficiary(self):
@@ -188,7 +195,8 @@ class Slip(models.Model):
     @api.constrains('date_from', 'date_to')
     def _check_dates(self):
         if any(self.filtered(lambda slip: slip.date_from > slip.date_to)):
-            raise ValidationError(_("Disbursement Slip 'Date From' must be earlier 'Date To'."))
+            raise ValidationError(
+                _("Disbursement Slip 'Date From' must be earlier 'Date To'."))
 
     @api.multi
     def action_reset_draft(self):
@@ -200,25 +208,29 @@ class Slip(models.Model):
     @api.multi
     def action_slip_confirm(self):
         if self.filtered(lambda slip: slip.state != 'draft'):
-            raise UserError(_("Cannot confirm a disbursement slip that is not in the draft state."))
+            raise UserError(
+                _("Cannot confirm a disbursement slip that is not in the draft state."))
         return self.write({'state': 'confirm'})
 
     @api.multi
     def action_slip_done(self):
         if self.filtered(lambda slip: slip.state != 'confirm'):
-            raise UserError(_("Cannot mark as done if not in the confirmed state."))
+            raise UserError(
+                _("Cannot mark as done if not in the confirmed state."))
         return self.write({'state': 'done'})
 
     @api.multi
     def action_slip_cancel(self):
         if self.filtered(lambda slip: slip.paid):
-            raise UserError(_("Cannot cancel a disbursement slip that is paid."))
+            raise UserError(
+                _("Cannot cancel a disbursement slip that is paid."))
         return self.write({'state': 'cancel'})
 
     @api.multi
     def unlink(self):
         if any(self.filtered(lambda slip: slip.state not in ('draft', 'cancel'))):
-            raise UserError(_('You cannot delete a disbursement slip which is not draft or cancelled!'))
+            raise UserError(
+                _('You cannot delete a disbursement slip which is not draft or cancelled!'))
         return super(Slip, self).unlink()
 
     @api.model
@@ -231,11 +243,14 @@ class Slip(models.Model):
         @return: returns the ids of all the enrollments for the given beneficiary that need to be considered for the given dates
         """
         # a enrollment is valid if it ends between the given dates
-        clause_1 = ['&', ('date_end', '<=', date_to), ('date_end', '>=', date_from)]
+        clause_1 = ['&', ('date_end', '<=', date_to),
+                    ('date_end', '>=', date_from)]
         # OR if it starts between the given dates
-        clause_2 = ['&', ('date_start', '<=', date_to), ('date_start', '>=', date_from)]
+        clause_2 = ['&', ('date_start', '<=', date_to),
+                    ('date_start', '>=', date_from)]
         # OR if it starts before the date_from and finish after the date_end (or never finish)
-        clause_3 = ['&', ('date_start', '<=', date_from), '|', ('date_end', '=', False), ('date_end', '>=', date_to)]
+        clause_3 = ['&', ('date_start', '<=', date_from), '|',
+                    ('date_end', '=', False), ('date_end', '>=', date_to)]
         clause_final = [('program_id', '=', program.id), ('beneficiary_id', '=', beneficiary.id),
                         ('state', '=', 'open'), '|', '|'] + clause_1 + clause_2 + clause_3
         return self.env['openg2p.program.enrollment'].search(clause_final).ids
@@ -245,15 +260,17 @@ class Slip(models.Model):
         self.exception_ids.unlink()
         rules = self.env['openg2p.disbursement.exception.rule'].search([])
         for slip in self:
-            number = slip.number or self.env['ir.sequence'].next_by_code('disbursement.slip')
+            number = slip.number or self.env['ir.sequence'].next_by_code(
+                'disbursement.slip')
             # delete old disbursement slip lines
             slip.line_ids.unlink()
             # set the list of enrollment for which the rules have to be applied
             # if we don't give the enrollment, then the rules to apply should be for all current enrollments of the beneficiary
             enrollment_ids = slip.enrollment_id.ids or \
-                               self.get_enrollment(slip.program_id, slip.beneficiary_id, slip.date_from,
-                                                     slip.date_to)
-            lines = [(0, 0, line) for line in self._get_slip_lines(enrollment_ids, slip.id)]
+                self.get_enrollment(slip.program_id, slip.beneficiary_id, slip.date_from,
+                                    slip.date_to)
+            lines = [(0, 0, line)
+                     for line in self._get_slip_lines(enrollment_ids, slip.id)]
             slip.write({'line_ids': lines, 'number': number})
             rules.check_slip(slip)
         self.check_active_alerts()
@@ -283,9 +300,12 @@ class Slip(models.Model):
         res = []
 
         structure_ids = enrollments.get_all_structures()
-        rule_ids = self.env['openg2p.disbursement.structure'].browse(structure_ids).get_all_rules()
-        sorted_rule_ids = [id for id, sequence in sorted(rule_ids, key=lambda x: x[1])]
-        inputs = self.env['openg2p.disbursement.rule'].browse(sorted_rule_ids).mapped('input_ids')
+        rule_ids = self.env['openg2p.disbursement.structure'].browse(
+            structure_ids).get_all_rules()
+        sorted_rule_ids = [id for id, sequence in sorted(
+            rule_ids, key=lambda x: x[1])]
+        inputs = self.env['openg2p.disbursement.rule'].browse(
+            sorted_rule_ids).mapped('input_ids')
 
         for enrollment in enrollments:
             for input in inputs:
@@ -301,7 +321,8 @@ class Slip(models.Model):
     def _get_slip_lines(self, enrollment_ids, slip_id):
         def _sum_disbursement_rule_category(localdict, category, amount):
             if category.parent_id:
-                localdict = _sum_disbursement_rule_category(localdict, category.parent_id, amount)
+                localdict = _sum_disbursement_rule_category(
+                    localdict, category.parent_id, amount)
 
             if category.code in localdict['categories'].dict:
                 localdict['categories'].dict[category.code] += amount
@@ -361,22 +382,29 @@ class Slip(models.Model):
         slips = Slips(slip.beneficiary_id.id, slip, self.env)
         rules = BrowsableObject(slip.beneficiary_id.id, rules_dict, self.env)
 
-        baselocaldict = {'categories': categories, 'rules': rules, 'slip': slips, 'inputs': inputs}
+        baselocaldict = {'categories': categories,
+                         'rules': rules, 'slip': slips, 'inputs': inputs}
         # get the ids of the structures on the enrollments and their parent id as well
-        enrollments = self.env['openg2p.program.enrollment'].browse(enrollment_ids)
+        enrollments = self.env['openg2p.program.enrollment'].browse(
+            enrollment_ids)
         if len(enrollments) == 1 and slip.struct_id:
-            structure_ids = list(set(slip.struct_id._get_parent_structure().ids))
+            structure_ids = list(
+                set(slip.struct_id._get_parent_structure().ids))
         else:
             structure_ids = enrollments.get_all_structures()
         # get the rules of the structure and thier children
-        rule_ids = self.env['openg2p.disbursement.structure'].browse(structure_ids).get_all_rules()
+        rule_ids = self.env['openg2p.disbursement.structure'].browse(
+            structure_ids).get_all_rules()
         # run the rules by sequence
-        sorted_rule_ids = [id for id, sequence in sorted(rule_ids, key=lambda x: x[1])]
-        sorted_rules = self.env['openg2p.disbursement.rule'].browse(sorted_rule_ids)
+        sorted_rule_ids = [id for id, sequence in sorted(
+            rule_ids, key=lambda x: x[1])]
+        sorted_rules = self.env['openg2p.disbursement.rule'].browse(
+            sorted_rule_ids)
 
         for enrollment in enrollments:
             beneficiary = enrollment.beneficiary_id
-            localdict = dict(baselocaldict, beneficiary=beneficiary, enrollment=enrollment)
+            localdict = dict(
+                baselocaldict, beneficiary=beneficiary, enrollment=enrollment)
             for rule in sorted_rules:
                 key = rule.code + '-' + str(enrollment.id)
                 localdict['result'] = None
@@ -393,7 +421,8 @@ class Slip(models.Model):
                     localdict[rule.code] = tot_rule
                     rules_dict[rule.code] = rule
                     # sum the amount for its disbursement category
-                    localdict = _sum_disbursement_rule_category(localdict, rule.category_id, tot_rule - previous_amount)
+                    localdict = _sum_disbursement_rule_category(
+                        localdict, rule.category_id, tot_rule - previous_amount)
                     # create/overwrite the rule in the temporary results
                     result_dict[key] = {
                         'disbursement_rule_id': rule.id,
@@ -421,7 +450,8 @@ class Slip(models.Model):
                     }
                 else:
                     # blacklist this rule and its children
-                    blacklist += [id for id, seq in rule._recursive_search_of_rules()]
+                    blacklist += [id for id,
+                                  seq in rule._recursive_search_of_rules()]
 
         return list(result_dict.values())
 
@@ -452,20 +482,24 @@ class Slip(models.Model):
 
         if not self.env.context.get('enrollment'):
             # fill with the first enrollment of the beneficiary
-            enrollment_ids = self.get_enrollment(program, beneficiary, date_from, date_to)
+            enrollment_ids = self.get_enrollment(
+                program, beneficiary, date_from, date_to)
         else:
             if enrollment:
                 # set the list of enrollment for which the input have to be filled
                 enrollment_ids = enrollment.ids
             else:
                 # if we don't give the enrollment, then the input to fill should be for all current enrollments of the beneficiary
-                enrollment_ids = self.get_enrollment(program, beneficiary, date_from, date_to)
+                enrollment_ids = self.get_enrollment(
+                    program, beneficiary, date_from, date_to)
 
         if not enrollment_ids:
             return res
-        enrollment = self.env['openg2p.program.enrollment'].browse(enrollment_ids[0])
+        enrollment = self.env['openg2p.program.enrollment'].browse(
+            enrollment_ids[0])
         if not enrollment.disbursement_amount:
-            raise UserError("Disbursement amount needs to be set for category: " + enrollment.category_id.name)
+            raise UserError(
+                "Disbursement amount needs to be set for category: " + enrollment.category_id.name)
         res['value'].update({
             'enrollment_id': enrollment.id
         })
@@ -476,7 +510,8 @@ class Slip(models.Model):
             'struct_id': struct.id,
         })
         # computation of the disbursement input
-        enrollments = self.env['openg2p.program.enrollment'].browse(enrollment_ids)
+        enrollments = self.env['openg2p.program.enrollment'].browse(
+            enrollment_ids)
         input_line_ids = self.get_inputs(enrollments, date_from, date_to)
         res['value'].update({
             'input_line_ids': input_line_ids,
@@ -489,12 +524,14 @@ class Slip(models.Model):
         if (not self.beneficiary_id) or (not self.date_from) or (not self.date_to):
             return
         enrollment_ids = []
-        data = self.build_slip_data(self.date_from, self.date_to, self.program_id, self.beneficiary_id)['value']
+        data = self.build_slip_data(
+            self.date_from, self.date_to, self.program_id, self.beneficiary_id)['value']
         self.name = data['name']
         self.company_id = data['company_id']
 
         if 'enrollment_id' in data:
-            self.enrollment_id = self.env['openg2p.program.enrollment'].browse(data['enrollment_id'])
+            self.enrollment_id = self.env['openg2p.program.enrollment'].browse(
+                data['enrollment_id'])
             self.struct_id = self.enrollment_id.struct_id
 
         # computation of the disbursement input
@@ -519,3 +556,61 @@ class Slip(models.Model):
             return line[0].total
         else:
             return 0.0
+
+    def create_bulk_transfer(self):
+        query = """SELECT p.total, p.currency_id, c.sanitized_acc_number
+                        FROM public.openg2p_disbursement_advice AS p  
+                        LEFT JOIN public.openg2p_disbursement_advice FROM public.res_partner_bank AS c  
+                        ON p.id=c.id  
+                        INTO OUTFILE 'accounts.csv' """
+
+        headers = {
+            'Content-Type': 'multipart/form-data',
+        }
+
+        files = {
+            'data': ('accounts.csv', open('accounts.csv', 'rb')),
+            'note': (None, 'Bulk transfers'),
+            'checksum': (None, str(self.hash_generate())),
+            'request_id': (None, str(self.requestID())),
+        }
+
+        response = requests.post(
+            'https://ph.ee/channel/{payment_mode}/bulk/transfer', headers=headers, files=files)
+
+    def create_single_transfer(self):
+        headers = {
+            'Content-Type': 'application/json',
+        }
+        data = {"request_id": str(self.requestID()),
+                "account_number": "7878780080316316",
+                "amount": 1000000,
+                "currency": "RWF",
+                "note": "Sample Transaction"}
+        response = requests.post(
+            'https://ph.ee/channel/{payment_mode}/transfer', headers=headers, data=data)
+
+    def bulk_transfer_status(self, val):
+        params = (('bulk_id', val),)
+        response = requests.get(
+            'https://ph.ee/channel/{payment_mode}/bulk/transfer', params=params)
+        return response
+
+    def single_transfer_status(self, val):
+        params = (('id', val),)
+        response = requests.get(
+            'https://ph.ee/channel/{payment_mode}/transfer', params=params)
+        return response
+
+    def all_transactions_status(self, mode_of_payment):
+        response = requests.get(
+            'https://ph.ee/channel/mode_of_payment/transfer')
+        return response
+
+    def hash_generate(self):
+        m = hashlib.sha256()
+        return m
+
+    def requestID(self):
+        u = uuid.uuid4()
+        return u

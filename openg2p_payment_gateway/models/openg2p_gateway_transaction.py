@@ -48,7 +48,6 @@ class GatewayTransaction(models.Model):
     )
     provider = fields.Char(
         required=True,
-        readonly=True
     )
     partner_id = fields.Many2one(
         'res.partner',
@@ -123,14 +122,15 @@ class GatewayTransaction(models.Model):
         return self.write({'state': 'cancel'})
 
     def create(self, vals):
-        res =  super(GatewayTransaction, self).create(vals)
+        res = super(GatewayTransaction, self).create(vals)
         if res.execute_method == 'server2server':
             res._execute()
 
     @api.multi
     def reset(self):
         if self.filtered(lambda r: r.state in ('requested', 'done')):
-            raise UserError(_("Cannot reset transaction requested or done to execute"))
+            raise UserError(
+                _("Cannot reset transaction requested or done to execute"))
         self.write({'state': 'draft', 'date_processed': None, 'error': None})
         self.filtered(lambda r: r.execute_method == 'server2server')._execute()
 
@@ -138,7 +138,8 @@ class GatewayTransaction(models.Model):
     def write(self, vals):
         result = super(GatewayTransaction, self).write(vals)
         if vals.get('state') == 'draft':
-            self.filtered(lambda r: r.execute_method == 'server2server')._execute()
+            self.filtered(lambda r: r.execute_method ==
+                          'server2server')._execute()
         return result
 
     def _prepare_transaction(self, origin, **kwargs):
@@ -189,7 +190,7 @@ class GatewayTransaction(models.Model):
         # @TODO let's have a cron here?
         for record in self:
             if record.state == 'requested':
-                    record.write({'state': record.get_provider.get_state()})
+                record.write({'state': record.get_provider.get_state()})
 
     @job
     def process_webhook(self, provider_name, method_name, params):

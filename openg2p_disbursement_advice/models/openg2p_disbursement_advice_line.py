@@ -26,11 +26,11 @@ class DisbursementAdviceLine(models.Model):
         'Bank Account No.',
         related='bank_account_id.acc_number',
         store=True,
-        readonly=True
+        # readonly=True
     )
     acc_holder_name = fields.Char(
         string='Account Holder Name',
-        compute="_compute_acc_holder_name",
+        # compute="_compute_acc_holder_name",
         store=True
     )
     bank_account_id = fields.Many2one(
@@ -89,7 +89,8 @@ class DisbursementAdviceLine(models.Model):
 
     _sql_constraints = [
         ('size_gt_zero', 'CHECK (amount>0)', 'Amount has to be greater than zero.'),
-        ('beneficiary_batch_uniq', 'UNIQUE (beneficiary_id, batch_id)', 'Beneficiary must be unique per batch.'),
+        ('beneficiary_batch_uniq', 'UNIQUE (beneficiary_id, batch_id)',
+         'Beneficiary must be unique per batch.'),
     ]
 
     @api.multi

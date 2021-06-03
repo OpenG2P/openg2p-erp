@@ -16,7 +16,8 @@ def validate_mobile_money(number):
     try:
         return phonenumbers.is_valid_number((phonenumbers.parse(number)))
     except:
-        raise ValidationError(_("Supplied mobile money account %s is invalid" % (number,)))
+        raise ValidationError(
+            _("Supplied mobile money account %s is invalid" % (number,)))
 
 
 class ResPartnerBank(models.Model):
@@ -54,13 +55,19 @@ class ResPartnerBank(models.Model):
         default=lambda self: self.env.user.company_id.currency_id,
         readonly=True
     )
+    payment_mode = fields.Selection(
+        [('AFM', 'AfriMoney'), ('SLB', 'Sierra Leone Commercial Bank')],
+        required=True
+    )
 
     @api.model
     def create(self, vals):
         if 'acc_type' in vals and vals['acc_type'] == 'iban':
-            vals['acc_number'] = pretty_iban(normalize_iban(vals['acc_number']))
+            vals['acc_number'] = pretty_iban(
+                normalize_iban(vals['acc_number']))
         if 'beneficiary_id' in vals and not 'partner_id' in vals:
-            vals['partner_id'] = self.env['openg2p.beneficiary'].browse(vals['beneficiary_id']).partner_id
+            vals['partner_id'] = self.env['openg2p.beneficiary'].browse(
+                vals['beneficiary_id']).partner_id
         return super(ResPartnerBank, self).create(vals)
 
     @api.multi
@@ -68,7 +75,8 @@ class ResPartnerBank(models.Model):
         if vals.get('acc_number'):
             for rec in self:
                 if rec.acc_type == 'iban':
-                    vals['acc_number'] = pretty_iban(normalize_iban(vals['acc_number']))
+                    vals['acc_number'] = pretty_iban(
+                        normalize_iban(vals['acc_number']))
         return super(ResPartnerBank, self).write(vals)
 
     @api.multi
@@ -76,7 +84,8 @@ class ResPartnerBank(models.Model):
     def _compute_name(self):
         for record in self:
             if record.bank_name:
-                record.name = '%s (%s)' % (record.sanitized_acc_number or record.acc_number, record.bank_name)
+                record.name = '%s (%s)' % (
+                    record.sanitized_acc_number or record.acc_number, record.bank_name)
             else:
                 record.name = record.sanitized_acc_number or record.acc_number
 
@@ -93,14 +102,16 @@ class ResPartnerBank(models.Model):
     def _constraint_acc_number(self):
         for acc in self:
             if acc.beneficiary_id and not acc.beneficiary_id.partner_id == acc.partner_id:
-                raise ValidationError(_("Account partner has not be the same as beneficiary"))
+                raise ValidationError(
+                    _("Account partner has not be the same as beneficiary"))
 
     @api.constrains('acc_number', 'bank_id')
     def _constraint_acc_number(self):
         for acc in self:
             if acc.bank_id.validation_regex and not re.compile(acc.bank_id.validation_regex, re.IGNORECASE) \
                     .match(acc.acc_number):
-                raise ValidationError(_("Account number does not meet the expected pattern for " + acc.bank_id.name))
+                raise ValidationError(
+                    _("Account number does not meet the expected pattern for " + acc.bank_id.name))
 
             if acc.acc_type == 'iban':
                 validate_iban(acc.acc_number)
@@ -110,7 +121,8 @@ class ResPartnerBank(models.Model):
     @api.depends('acc_number')
     def _compute_acc_type(self):
         for bank in self:
-            bank.acc_type = self.retrieve_acc_type(bank.acc_number, bank_account=bank)
+            bank.acc_type = self.retrieve_acc_type(
+                bank.acc_number, bank_account=bank)
 
     @api.model
     def retrieve_acc_type(self, acc_number, bank_account=None):

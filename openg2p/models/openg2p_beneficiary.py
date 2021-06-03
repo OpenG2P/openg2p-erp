@@ -2,12 +2,12 @@
 # Copyright 2020 OpenG2P (https://openg2p.org)
 # @author: Salton Massally <saltonmassally@gmail.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
 import base64
 import copy
 import logging
 import random
 import string
+import requests
 from dateutil.relativedelta import relativedelta
 from odoo.addons.component.core import WorkContext
 
@@ -20,11 +20,14 @@ from odoo.addons.openg2p.services.matching_service import MATCH_MODE_NORMAL
 
 _logger = logging.getLogger(__name__)
 
+
 @api.model
 def _lang_get(self):
     return self.env['res.lang'].get_installed()
 
-_PARTNER_FIELDS = ['firstname', 'lastname', 'street', 'street2', 'zip', 'state', 'city', 'country_id']
+
+_PARTNER_FIELDS = ['firstname', 'lastname', 'street',
+                   'street2', 'zip', 'state', 'city', 'country_id']
 
 
 class Beneficiary(models.Model):
@@ -38,7 +41,8 @@ class Beneficiary(models.Model):
 
     @api.model
     def _default_image(self):
-        image_path = get_module_resource('openg2p', 'static/src/img', 'default_image.png')
+        image_path = get_module_resource(
+            'openg2p', 'static/src/img', 'default_image.png')
         return tools.image_resize_image_big(base64.b64encode(open(image_path, 'rb').read()))
 
     partner_id = fields.Many2one(
@@ -268,15 +272,15 @@ class Beneficiary(models.Model):
     image_medium = fields.Binary(
         "Medium-sized image",
         attachment=True,
-        help="Medium-sized image of this beneficiary. It is automatically " \
-             "resized as a 128x128px image, with aspect ratio preserved. " \
+        help="Medium-sized image of this beneficiary. It is automatically "
+             "resized as a 128x128px image, with aspect ratio preserved. "
              "Use this field in form views or some kanban views."
     )
     image_small = fields.Binary(
         "Small-sized image",
         attachment=True,
-        help="Small-sized image of this beneficiary. It is automatically " \
-             "resized as a 64x64px image, with aspect ratio preserved. " \
+        help="Small-sized image of this beneficiary. It is automatically "
+             "resized as a 64x64px image, with aspect ratio preserved. "
              "Use this field anywhere a small image is required."
     )
     location_id = fields.Many2one(
@@ -404,7 +408,8 @@ class Beneficiary(models.Model):
 
     @api.multi
     def update_address(self, vals):
-        addr_vals = {key: vals[key] for key in self._address_fields() if key in vals}
+        addr_vals = {key: vals[key]
+                     for key in self._address_fields() if key in vals}
         if addr_vals:
             return super(Beneficiary, self).write(addr_vals)
 
@@ -412,7 +417,8 @@ class Beneficiary(models.Model):
     def _compute_full_name(self):
         for rec in self:
             if rec.othernames:
-                rec.name = "%s %s %s" % (rec.firstname, rec.othernames, rec.lastname)
+                rec.name = "%s %s %s" % (
+                    rec.firstname, rec.othernames, rec.lastname)
             else:
                 rec.name = "%s %s" % (rec.firstname, rec.lastname)
 
@@ -462,7 +468,6 @@ class Beneficiary(models.Model):
 
     @api.multi
     def _display_address(self):
-
         '''
         The purpose of this function is to build and return an address formatted accordingly to the
         standards of the country where it belongs.
@@ -500,17 +505,21 @@ class Beneficiary(models.Model):
         We check that if the state is given a value, it does belong to the given country, or we remove it.
         """
         States = self.env['res.country.state']
-        states_ids = {vals['state_id'] for vals in vals_list if vals.get('state_id')}
-        state_to_country = States.search([('id', 'in', list(states_ids))]).read(['country_id'])
+        states_ids = {vals['state_id']
+                      for vals in vals_list if vals.get('state_id')}
+        state_to_country = States.search(
+            [('id', 'in', list(states_ids))]).read(['country_id'])
         for vals in vals_list:
             if vals.get('state_id'):
-                country_id = next(c['country_id'][0] for c in state_to_country if c['id'] == vals.get('state_id'))
+                country_id = next(
+                    c['country_id'][0] for c in state_to_country if c['id'] == vals.get('state_id'))
                 state = States.browse(vals['state_id'])
                 if state.country_id.id != country_id:
                     state_domain = [('code', '=', state.code),
                                     ('country_id', '=', country_id)]
                     state = States.search(state_domain, limit=1)
-                    vals['state_id'] = state.id  # replace state or remove it if not found
+                    # replace state or remove it if not found
+                    vals['state_id'] = state.id
 
     @api.multi
     def _get_country_name(self):
@@ -717,8 +726,10 @@ class Beneficiary(models.Model):
         @TODO implement threshold
         """
         matches = self.env['openg2p.beneficiary']
-        work = WorkContext(model_name=self._name, collection=self.with_context(active_test=False))
-        matchers = [matcher for matcher in work.many_components(usage='beneficiary.matcher') if matcher.mode <= mode]
+        work = WorkContext(model_name=self._name,
+                           collection=self.with_context(active_test=False))
+        matchers = [matcher for matcher in work.many_components(
+            usage='beneficiary.matcher') if matcher.mode <= mode]
         matchers.sort(key=lambda r: r.sequence)
 
         for matcher in matchers:
