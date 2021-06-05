@@ -17,36 +17,23 @@ class DisbursementMain(models.Model):
                 'mail.thread', 'openg2p.mixin.no_copy']
     _description = 'Disbursement Main Transaction'
 
-    name = fields.Char(
-        'Bank Account No.',
-        # related='bank_account_id.acc_number',
-        store=True,
-        # readonly=True
-    )
-
-    acc_holder_name = fields.Char(
-        string='Account Holder Name',
-        # compute="_compute_acc_holder_name",
-        store=True
-    )
     bank_account_id = fields.Many2one(
         'res.partner.bank',
         'Account ID',
         ondelete='restrict'
     )
-
-    currency_id = fields.Many2one(
-        'res.currency',
-        # related="slip_id.currency_id"
-    )
-    batch_id = fields.Many2one(
-        'openg2p.disbursement.batch',
-        'Batch',
+    name = fields.Char(
+        'Bank Account No.',
+        related='bank_account_id.acc_number',
         store=True,
-        ondelete='cascade',
-        # related="slip_id.batch_id"
+        readonly=True
     )
 
+    acc_holder_name = fields.Char(
+        string='Account Holder Name',
+        compute="_compute_acc_holder_name",
+        store=True
+    )
     batch_id = fields.Many2one(
         'openg2p.disbursement.batch',
         string='Disbursement Batch',
@@ -55,6 +42,13 @@ class DisbursementMain(models.Model):
         copy=False,
         states={'draft': [('readonly', False)]},
         required=True
+    )
+
+    currency_id = fields.Many2one(
+        string="Currency",
+        related='batch_id.currency_id',
+        readonly=True,
+        store=True
     )
     state = fields.Selection(
         [
@@ -81,8 +75,7 @@ class DisbursementMain(models.Model):
     company_id = fields.Many2one(
         'res.company',
         readonly=True,
-        store=True,
-        # related='advice_id.company_id'
+        store=True
     )
     receipt_confirmed = fields.Boolean(
         related="transaction_id.receipt_confirmed"
@@ -104,7 +97,6 @@ class DisbursementMain(models.Model):
         states={'draft': [('readonly', False)]}
     )
     total = fields.Monetary(
-        # compute='_compute_slip_stats',
         string='Net',
         store=True
     )
@@ -127,3 +119,66 @@ class DisbursementMain(models.Model):
         copy=False,
         states={'draft': [('readonly', False)]}
     )
+
+    @api.depends('bank_account_id')
+    def _compute_acc_holder_name(self):
+        for rec in self:
+            rec.acc_holder_name = rec.bank_account_id.acc_holder_name or rec.bank_account_id.beneficiary_id.name
+
+    def create_bulk_transfer(self):
+        query = """SELECT p.total, p.currency_id, c.sanitized_acc_number
+                        FROM public.openg2p_disbursement_advice AS p  
+                        LEFT JOIN public.openg2p_disbursement_advice FROM public.res_partner_bank AS c  
+                        ON p.id=c.id  
+                        INTO OUTFILE 'accounts.csv' """
+
+        headers = {
+            'Content-Type': 'multipart/form-data',
+        }
+
+        files = {
+            'data': ('accounts.csv', open('accounts.csv', 'rb')),
+            'note': (None, 'Bulk transfers'),
+            'checksum': (None, str(self.hash_generate())),
+            'request_id': (None, str(self.requestID())),
+        }
+
+        response = requests.post(
+            'https://ph.ee/channel/{payment_mode}/bulk/transfer', headers=headers, files=files)
+
+    def create_single_transfer(self):
+        headers = {
+            'Content-Type': 'application/json',
+        }
+        data = {"request_id": str(self.requestID()),
+                "account_number": "7878780080316316",
+                "amount": 1000000,
+                "currency": "RWF",
+                "note": "Sample Transaction"}
+        response = requests.post(
+            'https://ph.ee/channel/{payment_mode}/transfer', headers=headers, data=data)
+
+    def bulk_transfer_status(self, val):
+        params = (('bulk_id', val),)
+        response = requests.get(
+            'https://ph.ee/channel/{payment_mode}/bulk/transfer', params=params)
+        return response
+
+    def single_transfer_status(self, val):
+        params = (('id', val),)
+        response = requests.get(
+            'https://ph.ee/channel/{payment_mode}/transfer', params=params)
+        return response
+
+    def all_transactions_status(self, mode_of_payment):
+        response = requests.get(
+            'https://ph.ee/channel/mode_of_payment/transfer')
+        return response
+
+    def hash_generate(self):
+        m = hashlib.sha256()
+        return m
+
+    def requestID(self):
+        u = uuid.uuid4()
+        return u
