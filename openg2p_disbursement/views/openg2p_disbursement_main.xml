@@ -8,17 +8,31 @@
                 <form string="Disbursement Form">
                     <sheet>
                         <group>
-                            <field name="beneficiary_id"/>
-                            <field name="acc_holder_name"/>
-                            <field name="name"/>
-                        </group>
-                        <group>
-                            <field name="amount"/>
-                            <field name="receipt_confirmed"/>
+                            <group>
+                                <field name="beneficiary_id"/>
+                                <field name="acc_holder_name"/>
+                                <field name="program_id"/>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="amount"/>
+                                <field name="receipt_confirmed"/>
+                            </group>
                         </group>
                     </sheet>
                 </form>
             </field>
         </record>
     </data>
+    <record id="view_openg2p_disbursement_main_tree" model="ir.ui.view">
+        <field name="name">openg2p.disbursement.main.tree</field>
+        <field name="model">openg2p.disbursement.main</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="beneficiary_id"/>
+                <field name="acc_holder_name"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
 </odoo>

@@ -180,6 +180,7 @@ class Registration(models.Model):
         string='Retained_ID'
     )
 
+
     @api.depends('date_open', 'date_closed')
     @api.one
     def _compute_day(self):
