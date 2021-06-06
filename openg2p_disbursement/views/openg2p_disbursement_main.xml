@@ -9,17 +9,33 @@
                     <sheet>
                         <group>
                             <group>
+                            
                                 <field name="beneficiary_id"/>
-                                <field name="acc_holder_name"/>
-                                <field name="program_id"/>
-                                <field name="name"/>
+                                <field name="batch_id"/>
+                                
                             </group>
                             <group>
+                                <field name="state" invisible="1"/>
+                                <field name="acc_holder_name"/>
+                                <field name="bank_account_id"/>
+                                <field name="name"/>
                                 <field name="amount"/>
-                                <field name="receipt_confirmed"/>
+                                <!-- <field name="currency_id"/> -->
+                            </group>
+                            <group name="secondary">
+                                <label for="date_start" string="Period"/>
+                                    <div name="date">
+                                        <field name="date_start" class="oe_inline"/>
+                                        <field name="date_end" class="oe_inline"/>
+                                    </div>
                             </group>
                         </group>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"
+                            widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -32,6 +48,7 @@
                 <field name="beneficiary_id"/>
                 <field name="acc_holder_name"/>
                 <field name="name"/>
+                <field name="batch_id"/>
             </tree>
         </field>
     </record>

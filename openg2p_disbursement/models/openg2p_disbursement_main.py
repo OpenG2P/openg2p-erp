@@ -14,7 +14,7 @@ import requests
 class DisbursementMain(models.Model):
     _name = 'openg2p.disbursement.main'
     _inherit = ['openg2p.transaction.mixin',
-                'mail.thread', 'openg2p.mixin.no_copy']
+                'mail.thread', 'mail.activity.mixin', 'openg2p.mixin.no_copy']
     _description = 'Disbursement Main Transaction'
 
     bank_account_id = fields.Many2one(
@@ -24,31 +24,27 @@ class DisbursementMain(models.Model):
     )
     name = fields.Char(
         'Bank Account No.',
-        related='bank_account_id.acc_number',
+        # related='bank_account_id.acc_number',
         store=True,
-        readonly=True
+        # readonly=True
     )
 
     acc_holder_name = fields.Char(
         string='Account Holder Name',
-        compute="_compute_acc_holder_name",
+        # compute="_compute_acc_holder_name",
         store=True
     )
     batch_id = fields.Many2one(
         'openg2p.disbursement.batch',
-        string='Disbursement Batch',
-        index=True,
-        readonly=True,
-        copy=False,
-        states={'draft': [('readonly', False)]},
+        'Batch',
         required=True
     )
 
     currency_id = fields.Many2one(
         string="Currency",
         related='batch_id.currency_id',
-        readonly=True,
-        store=True
+        # readonly=True,
+        # store=True
     )
     state = fields.Selection(
         [
@@ -80,30 +76,32 @@ class DisbursementMain(models.Model):
     receipt_confirmed = fields.Boolean(
         related="transaction_id.receipt_confirmed"
     )
-    date_from = fields.Date(
+    date_start = fields.Date(
         string='Date From',
-        readonly=True,
         required=True,
+        # readonly=True,
+        # states={'draft': [('readonly', False)]},
         default=lambda self: fields.Date.to_string(
             date.today().replace(day=1)),
-        states={'draft': [('readonly', False)]}
+        track_visibility='onchange'
     )
-    date_to = fields.Date(
+    date_end = fields.Date(
         string='Date To',
-        readonly=True,
         required=True,
+        # readonly=True,
+        # states={'draft': [('readonly', False)]},
         default=lambda self: fields.Date.to_string(
             (datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()),
-        states={'draft': [('readonly', False)]}
+        track_visibility='onchange'
     )
-    total = fields.Monetary(
-        string='Net',
-        store=True
-    )
+    # total = fields.Monetary(
+    #     string='Net',
+    #     store=True
+    # )
     program_id = fields.Many2one(
         'openg2p.program',
         string='Program',
-        readonly=True,
+        # readonly=True,
         copy=False,
         store=True,
         related="batch_id.program_id"
