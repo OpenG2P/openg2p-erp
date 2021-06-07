@@ -24,14 +24,14 @@ class DisbursementMain(models.Model):
     )
     name = fields.Char(
         'Bank Account No.',
-        # related='bank_account_id.acc_number',
+        related='bank_account_id.acc_number',
         store=True,
-        # readonly=True
+        readonly=True
     )
 
     acc_holder_name = fields.Char(
         string='Account Holder Name',
-        # compute="_compute_acc_holder_name",
+        compute="_compute_acc_holder_name",
         store=True
     )
     batch_id = fields.Many2one(
