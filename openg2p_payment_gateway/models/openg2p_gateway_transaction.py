@@ -68,7 +68,7 @@ class GatewayTransaction(models.Model):
     currency_id = fields.Many2one(
         'res.currency',
         'Currency',
-        required=False
+        required=True
     )
     origin_id = fields.Reference(selection=[])
     res_model = fields.Char(
