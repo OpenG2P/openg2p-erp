@@ -164,18 +164,16 @@
                                     <field name="lastname"/>
                                 </tree>
                             </field>
-
+                            <group name="internal_notes_right">
+                                
+                            </group>
                         </group>
-                        
                             
                         <field placeholder="Enter the ID to retain" name="retained_id" widget ="char"/>
 
                         <button string="Clear" name="clear_beneficiaries" type="object"
                         class="oe_highlight"
                         attrs="{'invisible': ['|', '|', ('stage_id', '!=', 2),('duplicate_beneficiaries_ids', '=', []),('active', '=', False)]}"/>
-
-                        <group name="internal_notes_right"></group>
-
                         <separator string="Registration Summary"/>
                         <field name="description" placeholder="Details of Registrations..."/>
                     </sheet>

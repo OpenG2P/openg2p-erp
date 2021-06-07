@@ -94,10 +94,6 @@ class DisbursementMain(models.Model):
             (datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()),
         track_visibility='onchange'
     )
-    # total = fields.Monetary(
-    #     string='Net',
-    #     store=True
-    # )
     program_id = fields.Many2one(
         'openg2p.program',
         string='Program',
@@ -116,6 +112,10 @@ class DisbursementMain(models.Model):
         readonly=True,
         copy=False,
         states={'draft': [('readonly', False)]}
+    )
+    payment_mode = fields.Selection(
+        [('AFM', 'AfriMoney'), ('SLB', 'Sierra Leone Commercial Bank')],
+        required=True
     )
 
     @api.depends('bank_account_id')

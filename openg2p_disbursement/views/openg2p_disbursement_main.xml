@@ -20,6 +20,7 @@
                                 <field name="bank_account_id"/>
                                 <field name="name"/>
                                 <field name="amount"/>
+                                <field name="payment_mode"/>
                                 <!-- <field name="currency_id"/> -->
                             </group>
                             <group name="secondary">
