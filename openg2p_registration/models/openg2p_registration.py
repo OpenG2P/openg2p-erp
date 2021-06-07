@@ -384,13 +384,21 @@ class Registration(models.Model):
             self.update(
                 {'duplicate_beneficiaries_ids': [(6, 0, list(benf_ids))]})
 
+    def archive_data(self):
+        beneficiary_data = self.env['openg2p.beneficiary'].browse(
+            self.retained_id)
+
+        self.write({'merged_beneficiary_ids': [
+                   (4, 0, beneficiary_data)]})
+
     @api.multi
     def merge_beneficiaries(self):
 
         idr = self.retained_id
-        print(idr)
+        # print(idr)
         beneficiary_data = self.env['openg2p.beneficiary'].browse(idr)
-        print(beneficiary_data)
+        self.archive_data()
+        # print(beneficiary_data)
 
         beneficiary_data.write(
             {'first_name': str(self.firstname),
@@ -402,6 +410,8 @@ class Registration(models.Model):
              'city': str(self.city),
              'postal_code': str(self.zip),
              'identity': str(self.identity_passport),
+             'bank': str(self.bank_account_id.name),
+             'bank_account': str(self.bank_accound_id.acc_number),
              'emergency_contact_name': str(self.emergency_contact),
              'emergency_contact_phone': str(self.emergency_phone)})
 
