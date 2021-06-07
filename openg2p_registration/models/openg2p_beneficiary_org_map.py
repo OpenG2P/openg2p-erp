@@ -18,5 +18,7 @@ class BeneficiaryOrgMap(models.Model):
     registration = fields.Many2one(
         'openg2p.registration',
         required=True,
-        index=True,
     )
+
+    def create(self, vals_list):
+        super(BeneficiaryOrgMap, self).create(vals_list)

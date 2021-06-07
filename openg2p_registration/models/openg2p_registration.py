@@ -187,7 +187,7 @@ class Registration(models.Model):
             'end': 'end',
             'group_ey66y74-Enter_Today_s_date': 'date',
             'group_ey66y74-Region': 'region',
-            'group_ey66y74-District': 'district',
+            'group_ey66y74-District': 'state_id',
             'group_ey66y74-Chiefdom': 'chiefdom',
             'group_ey66y74-Town_Village': 'city',
             'group_ey66y74-School_Name': 'school_name',
@@ -205,7 +205,7 @@ class Registration(models.Model):
             'group_ad9sc65-Head_Teacher_Mobile_Number': 'head_teacher_mobile_number',
             'group_ad9sc65-Is_the_Head_Teacher_Present': 'is_the_head_teacher_present',
             'group_ad9sc65-Take_a_Picture_of_the_Head_Teacher': 'picture_of_the_head_teacher',
-            'group_ad9sc65-Name_of_Respondant': 'name_of_respondant',
+            'group_ad9sc65-Name_of_Respondant': 'name',
             'group_ad9sc65-Designation_of_Respondant': 'designation_of_respondant',
             'group_ad9sc65-Mobile_Number_of_Respondant': 'mobile',
             'group_ad9sc65-Is_the_School_Approved': 'is_the_school_approved',
@@ -289,19 +289,29 @@ class Registration(models.Model):
         }
 
     def create_registration_from_odk(self, odk_data):
-        self.create({})
-        id = self.id
+        regd = self.create({
+            'firstname': '',
+            'lastname': '',
+            'street': '',
+            'location_id': 1,
+            'city': '',
+            'state_id': 1,
+            'gender': 'male',
+        })
+        id = regd.id
+        print('SUB->REG', id)
         from datetime import datetime
         data = {}
         org_data = odk_data or {}
-        odk_map = odk_data['odk_map'] or self._get_default_odk_map()
+        odk_map = odk_data['odk_map'] if 'odk_map' in odk_data.keys() else self._get_default_odk_map()
         format = '%Y-%m-%dT%H:%M:%SZ'
-        for k, v in odk_data:
+        for k, v in odk_data.items():
             if k in ['Status', 'AttachmentsExpected', 'AttachmentsPresent',
                      'SubmitterName', 'SubmitterID', 'KEY', 'meta-instanceID',
                      '__version__']:
                 continue
-            k = odk_map[k] or k
+            if k in odk_map.keys():
+                k = odk_map[k]
             if hasattr(self, k):
                 if k == 'partner_id':
                     res = self.env['res.partner'].search(
@@ -353,6 +363,13 @@ class Registration(models.Model):
                     data['identities'] = self.env['openg2p.registration.identity'].search(
                         [('registration_id', '=', id)]
                     ).ids
+                elif k == 'state_id':
+                    state = self.env[''].search(
+                        [('name', '=', v)]
+                    )
+                    if state:
+                        data['state_id'] = state.id
+                    # else:
                 else:
                     if k not in ['description', 'color', 'beneficiary_name',
                                  'identity_national', 'identity_passport',
@@ -361,8 +378,16 @@ class Registration(models.Model):
                     else:
                         data[k] = v
             else:
-                org_data.update({k: v})
-        for k, v in org_data:
+                if k == 'name':
+                    name_parts = v.split(' ')
+                    data['firstname'] = name_parts[0]
+                    if len(name_parts) > 1:
+                        data['lastname'] = ' '.join(name_parts[1:])
+                else:
+                    org_data.update({k: v})
+        for k, v in org_data.items():
+            if k == '__id':
+                continue
             self.env['openg2p.beneficiary.orgmap'].create({
                 'field_name': k,
                 'field_value': v,
@@ -371,7 +396,9 @@ class Registration(models.Model):
         data['org_custom_field'] = self.env['openg2p.beneficiary.orgmap'].search(
             [('registration', '=', id)]
         ).ids
-        self.write(data)
+        self.search([
+            ('id', '=', id)
+        ]).write(data)
 
     @api.depends('date_open', 'date_closed')
     @api.one
