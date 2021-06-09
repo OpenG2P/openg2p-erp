@@ -1,4 +1,4 @@
-# Creating a separate model for disbursement without using advice and slip
+# Created a separate model for disbursement without relating advice and slip
 
 import odoo.addons.decimal_precision as dp
 
