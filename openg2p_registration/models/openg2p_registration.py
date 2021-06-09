@@ -185,99 +185,99 @@ class Registration(models.Model):
             'SubmissionDate': 'SubmissionDate',
             'start': 'start',
             'end': 'end',
-            'group_ey66y74-Enter_Today_s_date': 'date',
-            'group_ey66y74-Region': 'region',
-            'group_ey66y74-District': 'state_id',
-            'group_ey66y74-Chiefdom': 'chiefdom',
-            'group_ey66y74-Town_Village': 'city',
-            'group_ey66y74-School_Name': 'school_name',
-            'group_ey66y74-EMIS_Number': 'emis_number',
-            'group_ey66y74-Bank_Name': 'bank_name',
-            'group_ey66y74-Account_Number': 'bank_account_number',
-            'group_ey66y74-BBAN': 'bban',
-            'group_ad9sc65-GPS_Cordinates-Latitude': 'gps_coordinates_latitude',
-            'group_ad9sc65-GPS_Cordinates-Longitude': 'gps_coordinates_longitude',
-            'group_ad9sc65-GPS_Cordinates-Altitude': 'gps_coordinates_altitude',
-            'group_ad9sc65-GPS_Cordinates-Accuracy': 'gps_coordinates_accuracy',
-            'group_ad9sc65-Is_there_a_sign_post_ly_shows_school_name': 'is_there_a_sign_post_ly_shows_school_name',
-            'group_ad9sc65-Take_snapshot_of_sch_ly_shows_school_name': 'snapshot_of_sch_ly_shows_school_name',
-            'group_ad9sc65-Head_Teacher_Name': 'head_teacher_name',
-            'group_ad9sc65-Head_Teacher_Mobile_Number': 'head_teacher_mobile_number',
-            'group_ad9sc65-Is_the_Head_Teacher_Present': 'is_the_head_teacher_present',
-            'group_ad9sc65-Take_a_Picture_of_the_Head_Teacher': 'picture_of_the_head_teacher',
-            'group_ad9sc65-Name_of_Respondant': 'name',
-            'group_ad9sc65-Designation_of_Respondant': 'designation_of_respondant',
-            'group_ad9sc65-Mobile_Number_of_Respondant': 'mobile',
-            'group_ad9sc65-Is_the_School_Approved': 'is_the_school_approved',
-            'group_ad9sc65-Are_there_students_w_ility_in_this_School': 'are_there_students_w_ility_in_this_School',
-            'group_ad9sc65-Was_there_an_SMC_meeting_this_term': 'was_there_an_smc_meeting_this_term',
-            'group_ad9sc65-Take_picture_of_minu_page_with_the_date': 'picture_of_minu_page_with_the_date',
-            'group_ad9sc65-was_there_a_staff_me_teacher_performance': 'was_there_a_staff_me_teacher_performance',
-            'group_ad9sc65-Take_picture_of_minu_page_with_the_date_001': 'picture_of_minu_page_with_the_date',
-            'group_ad9sc65-Does_the_School_disp_u_see_this_displayed': 'does_the_school_disp_u_see_this_displayed',
-            'group_ad9sc65-Take_a_picture_of_the_displayed_summary': 'picture_of_the_displayed_summary',
-            'group_ad9sc65-Does_the_School_have_rrent_year_s_SDP_SIP': 'does_the_School_have_rrent_year_s_sdp_sip',
-            'group_ad9sc65-Take_a_picture_of_SD_page_with_the_date': 'picture_of_sd_page_with_the_date',
-            'group_ad9sc65-Does_the_school_keep_records_and_receipts': 'does_the_school_keep_records_and_receipts',
-            'group_ad9sc65-Take_a_picture_of_do_page_with_the_date': 'picture_of_do_page_with_the_date',
-            'group_ad9sc65-How_does_the_school_ds_received_from_PBF': 'how_does_the_school_ds_received_from_pbf',
-            'group_so6sy88-Enrollment': 'enrollment',
-            'group_so6sy88-Total_Pupils_enrolled_in_Class_1': 'total_pupils_enrolled_in_class_1',
-            'group_so6sy88-Total_Pupils_enrolled_in_Class_2': 'total_pupils_enrolled_in_class_2',
-            'group_so6sy88-Total_Pupils_enrolled_in_Class_3': 'total_pupils_enrolled_in_class_3',
-            'group_so6sy88-Total_Pupils_enrolled_in_Class_4': 'total_pupils_enrolled_in_class_4',
-            'group_so6sy88-Total_Pupils_enrolled_in_Class_5': 'total_pupils_enrolled_in_class_5',
-            'group_so6sy88-Total_Pupils_enrolled_in_Class_6': 'total_pupils_enrolled_in_class_6',
-            'group_so6sy88-Total_Enrollment_in_this_Level': 'total_enrollment_in_this_Level',
-            'group_tl6wr26-How_many_Classes_are_in_the_School': 'how_many_classes_are_in_the_school',
-            'group_tl6wr26-What_Class_is_this': 'what_class_is_this',
-            'group_tl6wr26-How_many_people_are_resent_in_this_class': 'how_many_people_are_resent_in_this_class',
-            'group_tl6wr26-Are_you_sure_you_cou_present_in_the_Class': 'are_you_sure_you_cou_present_in_the_Class',
-            'group_tl6wr26-Number_of_Pupils_wit_in_first_class_room': 'number_of_pupils_wit_in_first_class_room',
-            'group_tl6wr26-Please_take_a_Photo_Books_in_this_Class': 'photo_books_in_this_class',
-            'group_tl6wr26-How_many_Pupils_did_se_Books_Pen_Pencil': 'how_many_pupils_did_se_books_pen_pencil',
-            'group_tl6wr26-Enumerator_Now_look_lk_in_the_Class_Room': 'enumerator_now_look_lk_in_the_class_room',
-            'group_tl6wr26-Did_you_See_Chalk_an_rd_in_this_Classroom': 'did_you_see_chalk_an_rd_in_this_classroom',
-            'group_tl6wr26-Enumerator_Now_Ask_His_Her_LESSON_PLAN': 'enumerator_now_ask_his_her_lesson_plan',
-            'group_tl6wr26-Did_the_Teacher_show_HIS_HER_Lesson_Plan': 'did_the_teacher_show_his_her_lesson_plan',
-            'group_tl6wr26-Enumerator_randomly_n_the_last_two_weeks': 'enumerator_randomly_n_the_last_two_weeks',
-            'group_tl6wr26-From_your_Observatio_n_the_last_two_weeks': 'from_your_observatio_n_the_last_two_weeks',
-            'group_dv1ck16-This_is_the_Reading_e_following_criteria': 'this_is_the_reading_e_following_criteria',
-            'group_dv1ck16-Grade': 'grade',
-            'group_gu9rl97-How_many_Pupils_are_the_Assessment_with': 'how_many_pupils_are_the_assessment_with',
-            'group_gu9rl97-What_is_the_gender_of_this_pupil': 'gender_of_this_pupil',
-            'group_gu9rl97-How_do_you_rate_this_he_reading_Assesment': 'how_do_you_rate_this_he_reading_assesment',
-            'group_gu9rl97-Enumerator_Ask_the_y_Selected_Classroom': 'enumerator_ask_the_y_selected_classroom',
-            'group_kr5mb36-What_Class_is_this_001': 'what_class_is_this',
-            'group_kr5mb36-How_many_Pupils_are_present_this_Class': 'how_many_pupils_are_present_this_class',
-            'group_kr5mb36-Are_you_sure_you_cou_present_in_the_Class_001': 'are_you_sure_you_cou_present_in_the_class',
-            'group_kr5mb36-Number_of_students_w_s_in_First_Classroom': 'number_of_students_w_s_in_first_classroom',
-            'group_kr5mb36-Please_take_a_Photo_Books_in_this_Class_001': 'please_take_a_photo_books_in_this_class',
-            'group_kr5mb36-How_many_Pupils_did_se_Books_Pen_Pencil_001': 'how_many_pupils_did_se_books_pen_pencil',
-            'group_kr5mb36-Enumerator_Now_look_lk_in_the_Class_Room_001': 'enumerator_now_look_lk_in_the_classroom',
-            'group_kr5mb36-Did_you_See_Chalk_an_rd_in_this_Classroom_001': 'did_you_see_chalk_an_rd_in_this_classroom',
-            'group_kr5mb36-Enumerator_Now_Ask_His_Her_LESSON_PLAN_001': 'enumerator_now_ask_his_her_lesson_plan',
-            'group_kr5mb36-Did_the_Teacher_show_HIS_HER_Lesson_Plan_001': 'did_the_teacher_show_his_her_lesson_plan',
-            'group_kr5mb36-Enumerator_randomly_n_the_last_two_weeks_001': 'enumerator_randomly_n_the_last_two_weeks',
-            'group_kr5mb36-From_your_Observatio_n_the_last_two_weeks_001': 'from_your_observatio_n_the_last_two_weeks',
-            'group_wv3pu53-This_is_the_Reading_e_following_criteria_001': 'this_is_the_reading_e_following_criteria',
-            'group_wv3pu53-How_many_Pupils_are_the_Assessment_with_001': 'how_many_pupils_are_the_assessment_with',
-            'group_jk2je61-What_is_the_gender_of_this_pupil_001': 'what_is_the_gender_of_this_pupil',
-            'group_jk2je61-How_do_you_rate_this_he_reading_Assesment_001': 'how_do_you_rate_this_he_reading_assessment',
-            'group_fo2et49-Attendance_in_Class_1_at_time_of_visit': 'attendance_in_Class_1_at_time_of_visit',
-            'group_fo2et49-Attendance_in_Class_2_at_time_of_visit': 'attendance_in_Class_2_at_time_of_visit',
-            'group_fo2et49-Attendance_in_Class_3_at_time_of_visit': 'attendance_in_Class_3_at_time_of_visit',
-            'group_fo2et49-Attendance_in_Class_4_at_time_of_visit': 'attendance_in_Class_4_at_time_of_visit',
-            'group_fo2et49-Attendance_in_Class_5_at_time_of_visit': 'attendance_in_Class_5_at_time_of_visit',
-            'group_fo2et49-Attendance_in_Class_6_at_time_of_visit': 'attendance_in_Class_6_at_time_of_visit',
-            'group_fo2et49-Total_Student_in_Att_ndance_at_the_School': 'total_student_in_attendance_at_the_school',
-            'group_fo2et49-Total_Teachers_emplo_teach_in_this_School': 'total_teachers_emplo_teach_in_this_school',
-            'group_fo2et49-Number_of_teachers_f_ooms_physical_count': 'number_of_teachers_f_ooms_physical_count',
-            'group_fo2et49-Enumerator_Now_ask_Signed_FEEDBACK_FORM': 'enumerator_now_ask_signed_feedback_form',
-            'group_fo2et49-Enumerator_Now_coun_by_the_head_teacher': 'enumerator_now_coun_by_the_head_teacher',
-            'group_fo2et49-How_many_dated_and_s_forms_did_you_count': 'how_many_dated_and_s_forms_did_you_count',
-            'group_fo2et49-Do_a_headcount_of_te_d_on_school_premises': 'do_a_headcount_of_te_d_on_school_premises',
-            'group_fo2et49-Take_group_photo': 'group_photo',
+            'Enter_Today_s_date': 'date',
+            'Region': 'region',
+            'District': 'state_id',
+            'Chiefdom': 'chiefdom',
+            'Town_Village': 'city',
+            'School_Name': 'school_name',
+            'EMIS_Number': 'emis_number',
+            'Bank_Name': 'bank_name',
+            'Account_Number': 'bank_account_number',
+            'BBAN': 'bban',
+            'GPS_Cordinates-Latitude': 'gps_coordinates_latitude',
+            'GPS_Cordinates-Longitude': 'gps_coordinates_longitude',
+            'GPS_Cordinates-Altitude': 'gps_coordinates_altitude',
+            'GPS_Cordinates-Accuracy': 'gps_coordinates_accuracy',
+            'Is_there_a_sign_post_ly_shows_school_name': 'is_there_a_sign_post_ly_shows_school_name',
+            'Take_snapshot_of_sch_ly_shows_school_name': 'snapshot_of_sch_ly_shows_school_name',
+            'Head_Teacher_Name': 'head_teacher_name',
+            'Head_Teacher_Mobile_Number': 'head_teacher_mobile_number',
+            'Is_the_Head_Teacher_Present': 'is_the_head_teacher_present',
+            'Take_a_Picture_of_the_Head_Teacher': 'picture_of_the_head_teacher',
+            'Name_of_Respondant': 'name',
+            'Designation_of_Respondant': 'designation_of_respondant',
+            'Mobile_Number_of_Respondant': 'mobile',
+            'Is_the_School_Approved': 'is_the_school_approved',
+            'Are_there_students_w_ility_in_this_School': 'are_there_students_w_ility_in_this_School',
+            'Was_there_an_SMC_meeting_this_term': 'was_there_an_smc_meeting_this_term',
+            'Take_picture_of_minu_page_with_the_date': 'picture_of_minu_page_with_the_date',
+            'was_there_a_staff_me_teacher_performance': 'was_there_a_staff_me_teacher_performance',
+            'Take_picture_of_minu_page_with_the_date_001': 'picture_of_minu_page_with_the_date',
+            'Does_the_School_disp_u_see_this_displayed': 'does_the_school_disp_u_see_this_displayed',
+            'Take_a_picture_of_the_displayed_summary': 'picture_of_the_displayed_summary',
+            'Does_the_School_have_rrent_year_s_SDP_SIP': 'does_the_School_have_rrent_year_s_sdp_sip',
+            'Take_a_picture_of_SD_page_with_the_date': 'picture_of_sd_page_with_the_date',
+            'Does_the_school_keep_records_and_receipts': 'does_the_school_keep_records_and_receipts',
+            'Take_a_picture_of_do_page_with_the_date': 'picture_of_do_page_with_the_date',
+            'How_does_the_school_ds_received_from_PBF': 'how_does_the_school_ds_received_from_pbf',
+            'Enrollment': 'enrollment',
+            'Total_Pupils_enrolled_in_Class_1': 'total_pupils_enrolled_in_class_1',
+            'Total_Pupils_enrolled_in_Class_2': 'total_pupils_enrolled_in_class_2',
+            'Total_Pupils_enrolled_in_Class_3': 'total_pupils_enrolled_in_class_3',
+            'Total_Pupils_enrolled_in_Class_4': 'total_pupils_enrolled_in_class_4',
+            'Total_Pupils_enrolled_in_Class_5': 'total_pupils_enrolled_in_class_5',
+            'Total_Pupils_enrolled_in_Class_6': 'total_pupils_enrolled_in_class_6',
+            'Total_Enrollment_in_this_Level': 'total_enrollment_in_this_Level',
+            'How_many_Classes_are_in_the_School': 'how_many_classes_are_in_the_school',
+            'What_Class_is_this': 'what_class_is_this',
+            'How_many_people_are_resent_in_this_class': 'how_many_people_are_resent_in_this_class',
+            'Are_you_sure_you_cou_present_in_the_Class': 'are_you_sure_you_cou_present_in_the_Class',
+            'Number_of_Pupils_wit_in_first_class_room': 'number_of_pupils_wit_in_first_class_room',
+            'Please_take_a_Photo_Books_in_this_Class': 'photo_books_in_this_class',
+            'How_many_Pupils_did_se_Books_Pen_Pencil': 'how_many_pupils_did_se_books_pen_pencil',
+            'Enumerator_Now_look_lk_in_the_Class_Room': 'enumerator_now_look_lk_in_the_class_room',
+            'Did_you_See_Chalk_an_rd_in_this_Classroom': 'did_you_see_chalk_an_rd_in_this_classroom',
+            'Enumerator_Now_Ask_His_Her_LESSON_PLAN': 'enumerator_now_ask_his_her_lesson_plan',
+            'Did_the_Teacher_show_HIS_HER_Lesson_Plan': 'did_the_teacher_show_his_her_lesson_plan',
+            'Enumerator_randomly_n_the_last_two_weeks': 'enumerator_randomly_n_the_last_two_weeks',
+            'From_your_Observatio_n_the_last_two_weeks': 'from_your_observatio_n_the_last_two_weeks',
+            'This_is_the_Reading_e_following_criteria': 'this_is_the_reading_e_following_criteria',
+            'Grade': 'grade',
+            'How_many_Pupils_are_the_Assessment_with': 'how_many_pupils_are_the_assessment_with',
+            'What_is_the_gender_of_this_pupil': 'gender_of_this_pupil',
+            'How_do_you_rate_this_he_reading_Assesment': 'how_do_you_rate_this_he_reading_assesment',
+            'Enumerator_Ask_the_y_Selected_Classroom': 'enumerator_ask_the_y_selected_classroom',
+            'What_Class_is_this_001': 'what_class_is_this',
+            'How_many_Pupils_are_present_this_Class': 'how_many_pupils_are_present_this_class',
+            'Are_you_sure_you_cou_present_in_the_Class_001': 'are_you_sure_you_cou_present_in_the_class',
+            'Number_of_students_w_s_in_First_Classroom': 'number_of_students_w_s_in_first_classroom',
+            'Please_take_a_Photo_Books_in_this_Class_001': 'please_take_a_photo_books_in_this_class',
+            'How_many_Pupils_did_se_Books_Pen_Pencil_001': 'how_many_pupils_did_se_books_pen_pencil',
+            'Enumerator_Now_look_lk_in_the_Class_Room_001': 'enumerator_now_look_lk_in_the_classroom',
+            'Did_you_See_Chalk_an_rd_in_this_Classroom_001': 'did_you_see_chalk_an_rd_in_this_classroom',
+            'Enumerator_Now_Ask_His_Her_LESSON_PLAN_001': 'enumerator_now_ask_his_her_lesson_plan',
+            'Did_the_Teacher_show_HIS_HER_Lesson_Plan_001': 'did_the_teacher_show_his_her_lesson_plan',
+            'Enumerator_randomly_n_the_last_two_weeks_001': 'enumerator_randomly_n_the_last_two_weeks',
+            'From_your_Observatio_n_the_last_two_weeks_001': 'from_your_observatio_n_the_last_two_weeks',
+            'This_is_the_Reading_e_following_criteria_001': 'this_is_the_reading_e_following_criteria',
+            'How_many_Pupils_are_the_Assessment_with_001': 'how_many_pupils_are_the_assessment_with',
+            'What_is_the_gender_of_this_pupil_001': 'what_is_the_gender_of_this_pupil',
+            'How_do_you_rate_this_he_reading_Assesment_001': 'how_do_you_rate_this_he_reading_assessment',
+            'Attendance_in_Class_1_at_time_of_visit': 'attendance_in_Class_1_at_time_of_visit',
+            'Attendance_in_Class_2_at_time_of_visit': 'attendance_in_Class_2_at_time_of_visit',
+            'Attendance_in_Class_3_at_time_of_visit': 'attendance_in_Class_3_at_time_of_visit',
+            'Attendance_in_Class_4_at_time_of_visit': 'attendance_in_Class_4_at_time_of_visit',
+            'Attendance_in_Class_5_at_time_of_visit': 'attendance_in_Class_5_at_time_of_visit',
+            'Attendance_in_Class_6_at_time_of_visit': 'attendance_in_Class_6_at_time_of_visit',
+            'Total_Student_in_Att_ndance_at_the_School': 'total_student_in_attendance_at_the_school',
+            'Total_Teachers_emplo_teach_in_this_School': 'total_teachers_emplo_teach_in_this_school',
+            'Number_of_teachers_f_ooms_physical_count': 'number_of_teachers_f_ooms_physical_count',
+            'Enumerator_Now_ask_Signed_FEEDBACK_FORM': 'enumerator_now_ask_signed_feedback_form',
+            'Enumerator_Now_coun_by_the_head_teacher': 'enumerator_now_coun_by_the_head_teacher',
+            'How_many_dated_and_s_forms_did_you_count': 'how_many_dated_and_s_forms_did_you_count',
+            'Do_a_headcount_of_te_d_on_school_premises': 'do_a_headcount_of_te_d_on_school_premises',
+            'Take_group_photo': 'group_photo',
             # '__version__': '__version__',
             # 'meta-instanceID': 'meta-instanceID',
             # 'KEY': 'KEY',
@@ -302,7 +302,13 @@ class Registration(models.Model):
         print('SUB->REG', id)
         from datetime import datetime
         data = {}
-        org_data = odk_data or {}
+        temp = {}
+        for k, v in odk_data.items():
+            if k.startswith('group'):
+                for k2, v2 in v.items():
+                    temp[k2] = v2
+        odk_data = temp
+        org_data = {}
         odk_map = odk_data['odk_map'] if 'odk_map' in odk_data.keys() else self._get_default_odk_map()
         format = '%Y-%m-%dT%H:%M:%SZ'
         for k, v in odk_data.items():
@@ -360,11 +366,13 @@ class Registration(models.Model):
                             'type': list(vi.values())[0],
                             'registration_id': id,
                         })
-                    data['identities'] = self.env['openg2p.registration.identity'].search(
+                    res = self.env['openg2p.registration.identity'].search(
                         [('registration_id', '=', id)]
-                    ).ids
+                    )
+                    if res:
+                        data['identities'] = res.ids
                 elif k == 'state_id':
-                    state = self.env[''].search(
+                    state = self.env['res.country.state'].search(
                         [('name', '=', v)]
                     )
                     if state:
@@ -374,31 +382,31 @@ class Registration(models.Model):
                     if k not in ['description', 'color', 'beneficiary_name',
                                  'identity_national', 'identity_passport',
                                  'legend_blocked', 'legend_done', 'legend_normal']:
-                        org_data.update({k: v})
+                        if k == 'name':
+                            name_parts = v.split(' ')
+                            data['firstname'] = name_parts[0]
+                            if len(name_parts) > 1:
+                                data['lastname'] = ' '.join(name_parts[1:])
+                        else:
+                            org_data.update({k: v})
                     else:
                         data[k] = v
             else:
-                if k == 'name':
-                    name_parts = v.split(' ')
-                    data['firstname'] = name_parts[0]
-                    if len(name_parts) > 1:
-                        data['lastname'] = ' '.join(name_parts[1:])
-                else:
-                    org_data.update({k: v})
+                org_data.update({k: v})
         for k, v in org_data.items():
-            if k == '__id':
-                continue
             self.env['openg2p.beneficiary.orgmap'].create({
                 'field_name': k,
-                'field_value': v,
+                'field_value': v or '',
                 'registration': id,
             })
-        data['org_custom_field'] = self.env['openg2p.beneficiary.orgmap'].search(
-            [('registration', '=', id)]
-        ).ids
-        self.search([
-            ('id', '=', id)
-        ]).write(data)
+        # res = self.env['openg2p.beneficiary.orgmap'].search(
+        #     [('registration', '=', id)]
+        # )
+        # if res:
+        #     data['org_custom_field'] = res.ids
+        # regd = self.search([('id', '=', id)])
+        regd.write(data)
+        return regd
 
     @api.depends('date_open', 'date_closed')
     @api.one
