@@ -143,3 +143,15 @@ class NewBatch(models.Model):
     # )
     # has_checklist_draft = fields.Boolean()
     # note = fields.Text()
+
+    def action_confirm(self):
+        for rec in self:
+            rec.state = 'confirm'
+
+    def action_pending(self):
+        for rec in self:
+            rec.state = 'pending'
+
+    def action_confirm(self):
+        for rec in self:
+            rec.state = 'paymentstatus'

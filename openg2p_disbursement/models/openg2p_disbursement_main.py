@@ -121,7 +121,8 @@ class DisbursementMain(models.Model):
     @api.depends('bank_account_id')
     def _compute_acc_holder_name(self):
         for rec in self:
-            rec.acc_holder_name = rec.bank_account_id.acc_holder_name or rec.bank_account_id.beneficiary_id.name
+            # rec.bank_account_id.acc_holder_name or
+            rec.acc_holder_name = rec.bank_account_id.beneficiary_id.name
 
     def create_bulk_transfer(self):
         query = """SELECT p.total, p.currency_id, c.sanitized_acc_number
