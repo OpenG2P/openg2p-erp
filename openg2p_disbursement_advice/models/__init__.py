@@ -12,3 +12,6 @@ from . import openg2p_registration
 from . import queue_job
 from . import res_bank
 from . import res_partner_bank
+from . import openg2p_disbursement_single_transaction
+from . import openg2p_disbursement_batch_transaction
+from . import openg2p_disbursement_main

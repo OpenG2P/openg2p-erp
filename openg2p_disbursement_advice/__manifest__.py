@@ -26,7 +26,10 @@
         'views/report_disbursementslipdetails.xml',
         'views/res_bank.xml',
         'views/res_partner_bank.xml',
-        'views/openg2p_gateway_transaction.xml'
+        'views/openg2p_gateway_transaction.xml',
+        'views/openg2p_disbursement_single_transaction.xml',
+        'views/openg2p_disbursement_batch_transaction.xml',
+        'views/openg2p_disbursement_main.xml',
     ],
     'demo': ['data/demo.xml']
 }

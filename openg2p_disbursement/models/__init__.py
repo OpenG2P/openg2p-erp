@@ -21,5 +21,3 @@ from . import openg2p_disbursement_structure
 from . import openg2p_program_enrollment
 from . import openg2p_program_enrollment_category
 from . import res_config_settings
-from . import openg2p_disbursement_main
-from . import openg2p_disbursement_new_batch

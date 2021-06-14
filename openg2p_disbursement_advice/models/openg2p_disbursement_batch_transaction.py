@@ -4,7 +4,10 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import json
+import requests
 import logging
+import hashlib
+import uuid
 from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
@@ -17,8 +20,8 @@ _logger = logging.getLogger(__name__)
 BATCH_SIZE = 500
 
 
-class NewBatch(models.Model):
-    _name = 'openg2p.disbursement.new.batch'
+class BatchTransaction(models.Model):
+    _name = 'openg2p.disbursement.batch.transaction'
     _description = 'Disbursement Batch'
     _inherit = ['generic.mixin.no.unlink',
                 'mail.thread', 'openg2p.mixin.has_document']
@@ -70,36 +73,6 @@ class NewBatch(models.Model):
             (datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()),
         track_visibility='onchange'
     )
-    # job_batch_id = fields.Many2one(
-    #     'queue.job.batch',
-    #     index=True,
-    #     string='Background Job'
-    # )
-    # job_completeness = fields.Float(
-    #     compute="_compute_job_stat",
-    #     string='Progress',
-    #     compute_sudo=True
-    # )
-    # job_failures = fields.Float(
-    #     compute="_compute_job_stat",
-    #     string='Failures',
-    #     compute_sudo=True
-    # )
-    # job_failed_count = fields.Float(
-    #     related='job_batch_id.failed_job_count',
-    #     related_sudo=True
-    # )
-    # job_state = fields.Selection(
-    #     [
-    #         ('draft', 'Draft'),
-    #         ('enqueued', 'Enqueued'),
-    #         ('progress', 'In Progress'),
-    #         ('finished', 'Finished')
-    #     ],
-    #     related='job_batch_id.state',
-    #     related_sudo=True,
-    #     readonly=True
-    # )
     company_id = fields.Many2one(
         'res.company',
         'Company',
@@ -114,37 +87,9 @@ class NewBatch(models.Model):
         readonly=True,
         store=True
     )
-    # exception_count = fields.Integer(
-    #     compute='_compute_exception_count'
-    # )
-    # intended_beneficiaries = fields.Text()
-
-    # states helper fields
-    # can_confirm = fields.Boolean(
-    #     compute='_compute_can_confirm',
-    # )
-    # can_generate = fields.Boolean(
-    #     compute='_compute_can_generate',
-    # )
-    # can_approve = fields.Boolean(
-    #     compute='_compute_can_approve',
-    # )
-    # can_disburse = fields.Boolean(
-    #     compute='_compute_can_disburse',
-    # )
-    # can_close = fields.Boolean(
-    #     compute='_compute_can_close',
-    # )
-    # can_cancel = fields.Boolean(
-    #     compute='_compute_can_cancel',
-    # )
-    # is_approved = fields.Boolean(
-    #     compute='_compute_state_approved',
-    # )
-    # has_checklist_draft = fields.Boolean()
-    # note = fields.Text()
 
     def action_confirm(self):
+        self.create_bulk_transfer()
         for rec in self:
             rec.state = 'confirm'
 
@@ -152,6 +97,45 @@ class NewBatch(models.Model):
         for rec in self:
             rec.state = 'pending'
 
-    def action_confirm(self):
+    def action_transaction(self):
         for rec in self:
             rec.state = 'paymentstatus'
+
+    def create_bulk_transfer(self):
+        query = """SELECT p.acc_holder_name,p.name,p.amount,p.currency_id, p.payment_mode
+                        FROM public.openg2p_disbursement_main AS p    
+                        ON p.batch_id=c.id  
+                        INTO OUTFILE 'accounts.csv' """
+        headers = {
+            'Content-Type': 'multipart/form-data',
+        }
+
+        files = {
+            'data': ('accounts.csv', open('accounts.csv', 'rb')),
+            'note': (None, 'Bulk transfers'),
+            'checksum': (None, str(self.hash_generate())),
+            'request_id': (None, str(self.requestID())),
+        }
+
+        response = requests.post(
+            'https://ph.ee/channel/self.name/bulk/transfer', headers=headers, files=files)
+
+    def bulk_transfer_status(self, val):
+        params = (('bulk_id', val),)
+
+        response = requests.get(
+            'https://ph.ee/channel/self.name/bulk/transfer', params=params)
+        return response
+
+    def all_transactions_status(self, mode_of_payment):
+        response = requests.get(
+            'https://ph.ee/channel/mode_of_payment/transfer')
+        return response
+
+    def hash_generate(self):
+        m = hashlib.sha256()
+        return m
+
+    def requestID(self):
+        u = uuid.uuid4()
+        return u

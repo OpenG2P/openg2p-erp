@@ -45,9 +45,7 @@
         'data/exception_rules.xml',
         'views/openg2p_disbursement_exception_rule.xml',
         'views/openg2p_disbursement_exception.xml',
-        'views/res_config_settings_views.xml',
-        'views/openg2p_disbursement_main.xml',
-        'views/openg2p_disbursement_new_batch.xml'
+        'views/res_config_settings_views.xml'
     ],
     'demo': [
         'data/openg2p_disbursement_demo.xml'
