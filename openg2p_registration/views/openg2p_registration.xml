@@ -143,6 +143,9 @@
                                     </tree>
                                 </field>
                             </group>
+                            <group string="Internal Info" name="internal_notes_right">
+
+                            </group>
                             <group string="Organization">
                                 <field name="org_custom_field">
                                     <tree editable="bottom">
@@ -162,6 +165,24 @@
                     </div>
                 </form>
             </field>
+        </record>
+
+        <record id="action_update_attendance" model="ir.actions.server">
+            <field name="name">Increase attendance 20</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="openg2p_registration.model_openg2p_registration"/>
+            <field name="state">code</field>
+            <field name="code">self.increase_atten_20(context.get('active_ids'))</field>
+        </record>
+
+        <record id="value_update_attendance" model="ir.default">
+            <field name="name">Increase attendance 20</field>
+            <field name="action_id" ref="action_update_attendance"/>
+            <field name="value" eval="'ir.actions.server,' + str(ref('action_update_attendance'))"/>
+            <field name="key">action</field>
+            <field name="model_id" ref="openg2p_registration.model_openg2p_registration"/>
+            <field name="model">openg2p.registration</field>
+            <field name="key2">client_action_multi</field>
         </record>
 
         <record model="ir.ui.view" id="crm_case_pivot_view_beneficiary">
@@ -192,7 +213,11 @@
                 <search string="Search Registrations">
                     <field name="name" context="{'active_test': False}" string="Registration"
                            filter_domain="['|','|', '|', ('firstname','ilike',self), ('firstname','%',self), ('lastname','ilike',self), ('lastname','%',self)]"/>
-
+                    <filter string="Att=140" name="att_eq_140"
+                            domain="['&amp;',('org_custom_field.field_name','=','total_student_in_attendance_at_the_school'),('org_custom_field.field_value','=','140')]"/>
+                    <filter string="Att>100" name="att_gt_100"
+                            domain="['&amp;',('org_custom_field.field_name','=','total_student_in_attendance_at_the_school'),('org_custom_field.field_value','>',100)]"/>
+                    <separator/>
                     <filter string="My Registrations" name="my_registrations" domain="[('user_id', '=', uid)]"/>
                     <filter string="Unassigned" name="unassigned" domain="[('user_id', '=', False)]"/>
                     <filter string="Unread Messages" name="message_needaction"

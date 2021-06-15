@@ -207,7 +207,7 @@ class Registration(models.Model):
             'Take_a_Picture_of_the_Head_Teacher': 'picture_of_the_head_teacher',
             'Name_of_Respondant': 'name',
             'Designation_of_Respondant': 'designation_of_respondant',
-            'Mobile_Number_of_Respondant': 'mobile',
+            'Mobile_Number_of_Respondant': 'phone',
             'Is_the_School_Approved': 'is_the_school_approved',
             'Are_there_students_w_ility_in_this_School': 'are_there_students_w_ility_in_this_School',
             'Was_there_an_SMC_meeting_this_term': 'was_there_an_smc_meeting_this_term',
@@ -303,22 +303,41 @@ class Registration(models.Model):
         from datetime import datetime
         data = {}
         temp = {}
+        odk_map = odk_data['odk_map'] if 'odk_map' in odk_data.keys() else self._get_default_odk_map()
         for k, v in odk_data.items():
             if k.startswith('group'):
                 for k2, v2 in v.items():
+                    if k2 in odk_map.keys():
+                        k2 = odk_map[k2]
                     temp[k2] = v2
         odk_data = temp
         org_data = {}
-        odk_map = odk_data['odk_map'] if 'odk_map' in odk_data.keys() else self._get_default_odk_map()
         format = '%Y-%m-%dT%H:%M:%SZ'
         for k, v in odk_data.items():
             if k in ['Status', 'AttachmentsExpected', 'AttachmentsPresent',
                      'SubmitterName', 'SubmitterID', 'KEY', 'meta-instanceID',
-                     '__version__']:
+                     '__version__', 'bank_name']:
                 continue
-            if k in odk_map.keys():
-                k = odk_map[k]
-            if hasattr(self, k):
+            print('odk->regd'.upper(), k)
+            if k == 'bank_account_number':
+                print('odk->regd'.upper(), odk_data['bank_account_number'])
+                data['bank_account_number'] = odk_data['bank_account_number']
+                res = self.env['res.partner.bank'].search(
+                    [('acc_number', '=', str(odk_data['bank_account_number']))]
+                )
+                print('odk->regd'.upper(), 'ban-res1', res)
+                if not res:
+                    res = self.env['res.partner.bank'].create({
+                        'acc_number': odk_data['bank_account_number'],
+                        'partner_id': self.env.ref('base.main_partner').id,
+                    })
+                print('odk->regd'.upper(), 'ban-res2', res)
+                if res:
+                    data['bank_account_id'] = res.id
+                print('odk->regd'.upper(), 'ban-res3', res)
+            elif k == 'phone':
+                data['phone'] = odk_data['phone']
+            elif hasattr(self, k):
                 if k == 'partner_id':
                     res = self.env['res.partner'].search(
                         [('partner_id', '=', v)],
@@ -377,7 +396,6 @@ class Registration(models.Model):
                     )
                     if state:
                         data['state_id'] = state.id
-                    # else:
                 else:
                     if k not in ['description', 'color', 'beneficiary_name',
                                  'identity_national', 'identity_passport',
@@ -399,12 +417,6 @@ class Registration(models.Model):
                 'field_value': v or '',
                 'registration': id,
             })
-        # res = self.env['openg2p.beneficiary.orgmap'].search(
-        #     [('registration', '=', id)]
-        # )
-        # if res:
-        #     data['org_custom_field'] = res.ids
-        # regd = self.search([('id', '=', id)])
         regd.write(data)
         return regd
 
