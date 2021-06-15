@@ -63,7 +63,7 @@ class SingleTransaction(models.Model):
             ('draft', 'Drafting'),
             ('confirm', 'Confirmed'),
             ('pending', 'Pending'),
-            ('paymentstatus', 'Transaction Status')
+            ('paymentstatus', 'Completed')
         ],
         string='Status',
         readonly=True,
@@ -93,10 +93,14 @@ class SingleTransaction(models.Model):
             (datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()),
         track_visibility='onchange'
     )
-    request_ID = fields.Char(
+    request_id = fields.Char(
         string="UUID",
-        compute="requestID",
+        compute="_generate_uuid",
         store=True
+    )
+    transaction_status = fields.Char(
+        readonly=True,
+        default='queued',
     )
 
     _sql_constraints = [
@@ -117,26 +121,23 @@ class SingleTransaction(models.Model):
         for rec in self:
             rec.acc_holder_name = rec.bank_account_id.acc_holder_name or rec.bank_account_id.beneficiary_id.name
 
-    def action_confirm(self):
-        for rec in self:
-            rec.state = 'confirm'
+    # def action_pending(self):
+    #     self.create_single_transfer()
+    #     for rec in self:
+    #         rec.state = 'pending'
 
-    def action_pending(self):
-        self.create_single_transfer()
-        for rec in self:
-            rec.state = 'pending'
-
-    def action_transaction(self):
-        self.single_transfer_status()
-        for rec in self:
-            rec.state = 'paymentstatus'
+    # def action_transaction(self):
+    #     self.single_transfer_status()
+    #     for rec in self:
+    #         rec.state = 'paymentstatus'
 
     def create_single_transfer(self):
+        print(request_id)
         headers = {
             'Content-Type': 'application/json',
         }
         data = {
-            "request_id": self.request_ID,
+            "request_id": self.request_id,
             "account_number": str(self.name),
             "amount": self.amount,
             "currency": self.currency_id,
@@ -144,13 +145,19 @@ class SingleTransaction(models.Model):
         }
         url = 'https://ph.ee/channel/'+str(self.payment_mode)+'/transfer'
         response = requests.post(url, headers=headers, data=data)
+        print(response)
+        self.transaction_status = response['status']
 
     def single_transfer_status(self):
-        params = (('id', self.request_ID),)
+        params = (('request_id', str(self.request_id)),)
         url = 'https://ph.ee/channel/'+str(self.payment_mode)+'/transfer'
+
+        print(url)
         response = requests.get(url, params=params)
+        print(response)
+        self.transaction_status = response['status']
         return response
 
-    def requestID(self):
+    def _generate_uuid(self):
         for rec in self:
-            rec.request_ID = uuid.uuid4().hex
+            rec.request_id = uuid.uuid4().hex

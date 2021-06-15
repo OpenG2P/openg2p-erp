@@ -8,6 +8,7 @@ import requests
 import logging
 import hashlib
 import uuid
+import csv
 from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
@@ -49,11 +50,11 @@ class BatchTransaction(models.Model):
             ('paymentstatus', 'Transaction Status')
         ],
         string='Status',
-        # index=True,
+        index=True,
         readonly=True,
-        # copy=False,
+        copy=False,
         default='draft',
-        # track_visibility='onchange'
+        track_visibility='onchange'
     )
     date_start = fields.Date(
         string='Date From',
@@ -81,31 +82,45 @@ class BatchTransaction(models.Model):
         ondelete='restrict',
         default=lambda self: self.env.user.company_id
     )
-    currency_id = fields.Many2one(
-        string="Currency",
-        related='company_id.currency_id',
-        readonly=True,
+    request_id = fields.Char(
+        string="UUID",
+        compute="_generate_uuid",
         store=True
     )
-
-    def action_confirm(self):
-        self.create_bulk_transfer()
-        for rec in self:
-            rec.state = 'confirm'
-
-    def action_pending(self):
-        for rec in self:
-            rec.state = 'pending'
-
-    def action_transaction(self):
-        for rec in self:
-            rec.state = 'paymentstatus'
+    transaction_status = fields.Char(
+        readonly=True,
+        default='queued',
+    )
 
     def create_bulk_transfer(self):
-        query = """SELECT p.acc_holder_name,p.name,p.amount,p.currency_id, p.payment_mode
-                        FROM public.openg2p_disbursement_main AS p    
-                        ON p.batch_id=c.id  
-                        INTO OUTFILE 'accounts.csv' """
+        # query = """SELECT p.acc_holder_name,p.name,p.amount,p.currency_id, p.payment_mode
+        #                 FROM public.openg2p_disbursement_main AS p
+        #                 ON p.batch_id=c.id
+        #                 INTO OUTFILE 'accounts.csv' """
+        beneficiary_transactions = self.env['openg2p.disbursement.main'].browse(
+            [('batch_id', '=', self.id)])
+        print(beneficiary_transactions)
+
+        with open('accounts.csv') as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerows(
+                [[t.acc_holder_name, t.name, t.amount, t.currency_id, t.payment_mode] for t in beneficiary_transactions])
+        # Storing record according to payment mode
+        # payment_mode = {}
+        # for transaction in beneficiary_transactions:
+        #     if transaction.payment_mode in payment_mode.keys():
+        #         payment_mode[transaction.payment_mode].append(transaction)
+        #     else:
+        #         payment_mode[transaction.payment_mode] = [transaction]
+
+        # # Passing post request according to payment mode
+        # for idx in len(payment_mode.items()):
+        #     pm, transactions = payment_mode.items()[idx]
+        #     with open(pm+'.csv') as csvfile:
+        #         csvwriter = csv.writer(csvfile)
+        #         csvwriter.writerows(
+        #             [[t.acc_holder_name, t.name, t.amount, t.currency_id] for t in transactions])
+
         headers = {
             'Content-Type': 'multipart/form-data',
         }
@@ -113,29 +128,40 @@ class BatchTransaction(models.Model):
         files = {
             'data': ('accounts.csv', open('accounts.csv', 'rb')),
             'note': (None, 'Bulk transfers'),
-            'checksum': (None, str(self.hash_generate())),
-            'request_id': (None, str(self.requestID())),
+            'checksum': (None, str(self.generate_hash())),
+            'request_id': (None, str(self.request_id)),
         }
+        url = 'https://ph.ee/channel/bulk/transfer'
+        response = requests.post(url, headers=headers, files=files)
 
-        response = requests.post(
-            'https://ph.ee/channel/self.name/bulk/transfer', headers=headers, files=files)
-
-    def bulk_transfer_status(self, val):
-        params = (('bulk_id', val),)
-
-        response = requests.get(
-            'https://ph.ee/channel/self.name/bulk/transfer', params=params)
+        self.transaction_status = response['status']
         return response
 
-    def all_transactions_status(self, mode_of_payment):
-        response = requests.get(
-            'https://ph.ee/channel/mode_of_payment/transfer')
+    def bulk_transfer_status(self):
+        params = (('request_id', str(self.request_id)),)
+
+        url = 'https://ph.ee/channel/bulk/transfer'
+        response = requests.get(url, params=params)
+
+        self.transaction_status = response['status']
+
         return response
 
-    def hash_generate(self):
-        m = hashlib.sha256()
-        return m
+    def all_transactions_status(self):
+        response = requests.get(
+            'https://ph.ee/channel/transfer')
+        return response
 
-    def requestID(self):
-        u = uuid.uuid4()
-        return u
+    def generate_hash(self):
+        sha256 = hashlib.sha256()
+        block_size = 256*128
+
+        with open('accounts.csv', 'rb') as f:
+            for chunk in iter(lambda: f.read(block_size), b''):
+                sha256.update(chunk)
+
+        return sha256.hexdigest()
+
+    def _generate_uuid(self):
+        for rec in self:
+            rec.request_id = uuid.uuid4().hex

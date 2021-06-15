@@ -7,10 +7,9 @@
             <field name="arch" type="xml">
                 <form string="Single Transaction Form">
                     <header>
-                        <button name="action_confirm" type="object" states="draft" string="Confirm" class="oe_highlight"/>
-                        <button name="action_pending" type="object" states="confirm" string="Make Transaction" class="oe_highlight"/>
-                        <button name="action_transaction" type="object"  states="pending" string="Check Status" class="oe_highlight"/>
-                        <field name="state" widget="statusbar"/>
+                        <button name="create_single_transfer" type="object"  states="confirm" string="Make Transaction" class="oe_highlight"/>
+                        <button name="single_transfer_status" type="object"  states="pending" string="Check Status" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"/>
                     </header>
                     <sheet>
                         <group>
@@ -25,7 +24,6 @@
                                 <field name="currency_id"/>
                             </group>
                             <group>
-                                <field name="request_ID" invisible="1"/>
                                 <field name="bank_account_id"/>
                                 <field name="name"/>
                                 <field name="acc_holder_name"/>
@@ -37,6 +35,9 @@
                                         <field name="date_start" class="oe_inline"/>-
                                         <field name="date_end" class="oe_inline"/>
                                     </div>
+                            </group>
+                            <group>
+                                <field name="transaction_status" attrs="{'invisible':[('state','!=','pending'),('state','!=','paymentstatus')]}"/>
                             </group>
                         </group>
                     </sheet>
@@ -57,6 +58,7 @@
             <tree string="Single Transaction">
                 <field name="beneficiary_id"/>
                 <field name="program_id"/>
+                <field name="request_id"/>
                 <field name="state"/>
             </tree>
         </field>

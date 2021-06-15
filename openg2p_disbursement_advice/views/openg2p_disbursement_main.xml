@@ -12,11 +12,20 @@
                             
                                 <field name="beneficiary_id"/>
                                 <field name="batch_id"/>
+                                <field name="program_id"/>
+                                <field name="bank_account_id"/>
                                 
                             </group>
                             <group>
-                                <field name="state" invisible="1"/>
+                                <field name="name"/>
+                                <field name="acc_holder_name"/>
+                                <field name="payment_mode"/>
+                            </group>
+                            <group>
+                                <!-- <field name="state" invisible="1"/> -->
                                 <field name="amount"/>
+                                <field name="currency_id"/>
+
                             </group>
                             <group name="secondary">
                                 <label for="date_start" string="Period"/>
@@ -43,6 +52,7 @@
             <tree>
                 <field name="beneficiary_id"/>
                 <field name="batch_id"/>
+                <field name="program_id"/>
                 <field name="amount"/>
             </tree>
         </field>

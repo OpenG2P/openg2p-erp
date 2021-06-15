@@ -7,10 +7,9 @@
             <field name="arch" type="xml">
                 <form string="Batch Form">
                     <header>
-                        <button name="action_confirm" type="object" states="draft" string="Confirm" class="oe_highlight"/>
-                        <button name="action_pending" type="object" states="confirm" string="Approve Batch" class="oe_highlight"/>
-                        <button name="action_transaction" type="object"  states="pending" string="Check status" class="oe_highlight"/>
-                        <field name="state" widget="statusbar"/>
+                        <button name="create_bulk_transfer" type="object"  states="confirm" string="Make Transaction" class="oe_highlight"/>
+                        <button name="bulk_transfer_status" type="object"  states="pending" string="Check Status" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"/>
                     </header>
                     <sheet>
                          <div class="oe_title">
@@ -31,6 +30,9 @@
                                                                                       class="oe_inline"/>
                             </div>
                         </group>
+                        <group>
+                            <field name="transaction_status" attrs="{'invisible':[('state','!=','pending'),('state','!=','paymentstatus')]}"/>
+                        </group>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids"
@@ -49,8 +51,9 @@
             <tree>
                 <field name="name"/>
                 <field name="program_id"/>
+                <field name="request_id"/>
                 <field name="state"/>
-                <button name="action_confirm" string="Confirm" class="oe_highlight"/>
+                <!-- <button name="action_confirm" string="Confirm" class="oe_highlight"/> -->
             </tree>
         </field>
     </record>

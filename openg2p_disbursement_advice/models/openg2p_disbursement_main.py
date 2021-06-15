@@ -51,10 +51,6 @@ class DisbursementMain(models.Model):
         compute="_compute_acc_holder_name",
         store=True
     )
-    currency_id = fields.Many2one(
-        'res.currency',
-        required=True
-    )
     amount = fields.Float(
         'Amount',
         digits=dp.get_precision('Disbursement'),
@@ -79,21 +75,16 @@ class DisbursementMain(models.Model):
             (datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()),
         track_visibility='onchange'
     )
-    paid = fields.Boolean(
-        string='Made Disbursement Order?',
-        readonly=True,
-        copy=False,
-        states={'draft': [('readonly', False)]}
+    currency_id = fields.Many2one(
+        'res.currency',
+        required=True
     )
-
-    @api.multi
-    def _transaction_execution_amount(self):
-        """
-        Get the amount to execute for this record
-        :return: float
-        """
-        self.ensure_one()
-        return self.amount
+    payment_mode = fields.Selection(
+        'Payment Mode',
+        related='bank_account_id.payment_mode',
+        store=True,
+        readonly=True
+    )
 
     @api.depends('bank_account_id')
     def _compute_acc_holder_name(self):
