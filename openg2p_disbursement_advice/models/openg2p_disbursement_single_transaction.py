@@ -99,8 +99,7 @@ class SingleTransaction(models.Model):
         store=True
     )
     transaction_status = fields.Char(
-        readonly=True,
-        default='queued',
+        readonly=True
     )
 
     _sql_constraints = [
@@ -119,45 +118,61 @@ class SingleTransaction(models.Model):
     @api.depends('bank_account_id')
     def _compute_acc_holder_name(self):
         for rec in self:
+            print(rec)
             rec.acc_holder_name = rec.bank_account_id.acc_holder_name or rec.bank_account_id.beneficiary_id.name
 
-    # def action_pending(self):
-    #     self.create_single_transfer()
-    #     for rec in self:
-    #         rec.state = 'pending'
+    def action_confirm(self):
+        for rec in self:
+            rec.state = 'confirm'
 
-    # def action_transaction(self):
-    #     self.single_transfer_status()
-    #     for rec in self:
-    #         rec.state = 'paymentstatus'
+    def action_pending(self):
+        for rec in self:
+            rec.state = 'pending'
+
+    def action_transaction(self):
+        for rec in self:
+            rec.state = 'paymentstatus'
 
     def create_single_transfer(self):
-        print(request_id)
+
+        self._generate_uuid()
+
         headers = {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         }
         data = {
-            "request_id": self.request_id,
+            "request_id": str(self.request_id),
             "account_number": str(self.name),
-            "amount": self.amount,
-            "currency": self.currency_id,
+            "amount": int(self.amount),
+            "currency": str(self.currency_id.name),
             "note": "Sample Transaction"
         }
-        url = 'https://ph.ee/channel/'+str(self.payment_mode)+'/transfer'
-        response = requests.post(url, headers=headers, data=data)
-        print(response)
-        self.transaction_status = response['status']
+        json_data = json.dumps(data)
+
+        url = 'http://15.207.23.72:5000/channel/' + \
+            str(self.payment_mode)+'/transfer'
+
+        try:
+            response = requests.post(url, headers=headers, data=json_data)
+            print(response.text)
+            self.transaction_status = response.json().get('status')
+        except requests.exceptions.RequestException as e:
+            print(e)
 
     def single_transfer_status(self):
         params = (('request_id', str(self.request_id)),)
-        url = 'https://ph.ee/channel/'+str(self.payment_mode)+'/transfer'
+        url = 'http://15.207.23.72:5000/channel/' + \
+            str(self.payment_mode)+'/transfer'
 
         print(url)
-        response = requests.get(url, params=params)
-        print(response)
-        self.transaction_status = response['status']
-        return response
+        try:
+            response = requests.get(url, params=params)
+            print(response.text)
+            self.transaction_status = response.json()[0]['status']
+        except requests.exceptions.RequestException as e:
+            print(e)
 
     def _generate_uuid(self):
         for rec in self:
-            rec.request_id = uuid.uuid4().hex
+            if not rec.request_id:
+                rec.request_id = uuid.uuid4().hex

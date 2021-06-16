@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="view_openg2p_disbursement_single_transaction_tree" model="ir.ui.view">
+        <field name="name">openg2p.disbursement.single.transaction.tree</field>
+        <field name="model">openg2p.disbursement.single.transaction</field>
+        <field name="arch" type="xml">
+            <tree string="Single Transaction">
+                <field name="beneficiary_id"/>
+                <field name="program_id"/>
+                <field name="request_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
     <data>
         <record id="view_openg2p_disbursement_single_transaction" model="ir.ui.view">
             <field name="name">openg2p.disbursement.single.transaction.form</field>
@@ -7,9 +19,12 @@
             <field name="arch" type="xml">
                 <form string="Single Transaction Form">
                     <header>
-                        <button name="create_single_transfer" type="object"  states="confirm" string="Make Transaction" class="oe_highlight"/>
+                        <button name="action_confirm" type="object"  states="draft" string="Confirm" class="oe_highlight"/>
+                        <button name="action_pending" type="object"  states="confirm" string="Pending" class="oe_highlight"/>
+                        <button name="action_transaction" type="object"  states="pending" string="Complete" class="oe_highlight"/>
+                        <button name="create_single_transfer" type="object"  states="confirm" string="Make Transfer" class="oe_highlight"/>
                         <button name="single_transfer_status" type="object"  states="pending" string="Check Status" class="oe_highlight"/>
-                        <field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"/>
+                        <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
                         <group>
@@ -26,6 +41,7 @@
                             <group>
                                 <field name="bank_account_id"/>
                                 <field name="name"/>
+                                <field name="request_id" invisible="1"/>
                                 <field name="acc_holder_name"/>
                                 <field name="payment_mode"/>
                             </group>
@@ -50,17 +66,4 @@
             </field>
         </record>
     </data>
-    <record id="view_openg2p_disbursement_single_transaction_tree" model="ir.ui.view">
-        <field name="name">openg2p.disbursement.single.transaction.tree</field>
-        <field name="view_mode">tree</field>
-        <field name="model">openg2p.disbursement.single.transaction</field>
-        <field name="arch" type="xml">
-            <tree string="Single Transaction">
-                <field name="beneficiary_id"/>
-                <field name="program_id"/>
-                <field name="request_id"/>
-                <field name="state"/>
-            </tree>
-        </field>
-    </record>
 </odoo>

@@ -89,14 +89,23 @@ class BatchTransaction(models.Model):
     )
     transaction_status = fields.Char(
         readonly=True,
-        default='queued',
     )
 
+    def action_confirm(self):
+        for rec in self:
+            rec.state = 'confirm'
+
+    def action_pending(self):
+        for rec in self:
+            rec.state = 'pending'
+
+    def action_transaction(self):
+        for rec in self:
+            rec.state = 'paymentstatus'
+
     def create_bulk_transfer(self):
-        # query = """SELECT p.acc_holder_name,p.name,p.amount,p.currency_id, p.payment_mode
-        #                 FROM public.openg2p_disbursement_main AS p
-        #                 ON p.batch_id=c.id
-        #                 INTO OUTFILE 'accounts.csv' """
+        self._generate_uuid()
+
         beneficiary_transactions = self.env['openg2p.disbursement.main'].browse(
             [('batch_id', '=', self.id)])
         print(beneficiary_transactions)
@@ -105,21 +114,6 @@ class BatchTransaction(models.Model):
             csvwriter = csv.writer(csvfile)
             csvwriter.writerows(
                 [[t.acc_holder_name, t.name, t.amount, t.currency_id, t.payment_mode] for t in beneficiary_transactions])
-        # Storing record according to payment mode
-        # payment_mode = {}
-        # for transaction in beneficiary_transactions:
-        #     if transaction.payment_mode in payment_mode.keys():
-        #         payment_mode[transaction.payment_mode].append(transaction)
-        #     else:
-        #         payment_mode[transaction.payment_mode] = [transaction]
-
-        # # Passing post request according to payment mode
-        # for idx in len(payment_mode.items()):
-        #     pm, transactions = payment_mode.items()[idx]
-        #     with open(pm+'.csv') as csvfile:
-        #         csvwriter = csv.writer(csvfile)
-        #         csvwriter.writerows(
-        #             [[t.acc_holder_name, t.name, t.amount, t.currency_id] for t in transactions])
 
         headers = {
             'Content-Type': 'multipart/form-data',
@@ -132,36 +126,46 @@ class BatchTransaction(models.Model):
             'request_id': (None, str(self.request_id)),
         }
         url = 'https://ph.ee/channel/bulk/transfer'
-        response = requests.post(url, headers=headers, files=files)
 
-        self.transaction_status = response['status']
-        return response
+        try:
+            response = requests.post(url, headers=headers, files=files)
+            self.transaction_status = response.json().get('status')
+            return response
+        except requests.exceptions.RequestException as e:
+            print(e)
 
     def bulk_transfer_status(self):
         params = (('request_id', str(self.request_id)),)
 
         url = 'https://ph.ee/channel/bulk/transfer'
-        response = requests.get(url, params=params)
 
-        self.transaction_status = response['status']
-
-        return response
+        try:
+            response = requests.get(url, params=params)
+            self.transaction_status = response.json()[0]['status']
+            return response
+        except requests.exceptions.RequestException as e:
+            print(e)
 
     def all_transactions_status(self):
-        response = requests.get(
-            'https://ph.ee/channel/transfer')
-        return response
+        try:
+            response = requests.get('https://ph.ee/channel/transfer')
+            return response
+        except BaseException as e:
+            print(e)
 
     def generate_hash(self):
         sha256 = hashlib.sha256()
         block_size = 256*128
 
-        with open('accounts.csv', 'rb') as f:
-            for chunk in iter(lambda: f.read(block_size), b''):
-                sha256.update(chunk)
-
-        return sha256.hexdigest()
+        try:
+            with open('accounts.csv', 'rb') as f:
+                for chunk in iter(lambda: f.read(block_size), b''):
+                    sha256.update(chunk)
+            return sha256.hexdigest()
+        except BaseException as e:
+            print(e)
 
     def _generate_uuid(self):
         for rec in self:
-            rec.request_id = uuid.uuid4().hex
+            if not rec.request_id:
+                rec.request_id = uuid.uuid4().hex

@@ -1,15 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="view_openg2p_disbursement_batch_transaction_tree" model="ir.ui.view">
+        <field name="name">openg2p.disbursement.batch.transaction.tree</field>
+        <field name="model">openg2p.disbursement.batch.transaction</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="program_id"/>
+                <field name="request_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
     <data>
-        <record id="view_openg2p_disbursement_new_batch" model="ir.ui.view">
+        <record id="view_openg2p_disbursement_batch_transaction_form" model="ir.ui.view">
             <field name="name">openg2p.disbursement.batch.transaction.form</field>
             <field name="model">openg2p.disbursement.batch.transaction</field>
             <field name="arch" type="xml">
                 <form string="Batch Form">
                     <header>
-                        <button name="create_bulk_transfer" type="object"  states="confirm" string="Make Transaction" class="oe_highlight"/>
+                        <button name="action_confirm" type="object"  states="draft" string="Confirm" class="oe_highlight"/>
+                        <button name="action_pending" type="object"  states="confirm" string="Pending" class="oe_highlight"/>
+                        <button name="action_transaction" type="object"  states="pending" string="Complete" class="oe_highlight"/>
+                        <button name="create_bulk_transfer" type="object"  states="confirm" string="Make Transfer" class="oe_highlight"/>
                         <button name="bulk_transfer_status" type="object"  states="pending" string="Check Status" class="oe_highlight"/>
-                        <field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"/>
+                        <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
                          <div class="oe_title">
@@ -21,6 +36,7 @@
                         <group>
                             <group name="primary">
                                 <field name="program_id" options="{'no_create_edit': True}"/>
+                                <field name="request_id" invisible="1"/>
                             </group>
                         </group>
                         <group name="secondary">
@@ -43,18 +59,33 @@
             </field>
         </record>
     </data>
-    <record id="view_openg2p_disbursement_main_tree" model="ir.ui.view">
-        <field name="name">openg2p.disbursement.batch.transaction.tree</field>
-        <field name="view_mode">tree</field>
+     <record id="view_openg2p_disbursement_batch_transaction_kanban" model="ir.ui.view">
+        <field name="name">openg2p.disbursement.batch.transaction.kanban</field>
         <field name="model">openg2p.disbursement.batch.transaction</field>
         <field name="arch" type="xml">
-            <tree>
+            <kanban default_group_by="program_id">
                 <field name="name"/>
                 <field name="program_id"/>
                 <field name="request_id"/>
                 <field name="state"/>
-                <!-- <button name="action_confirm" string="Confirm" class="oe_highlight"/> -->
-            </tree>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_openg2p_batch_kanban">
+                            <t>
+                                <img class="o_kanban_image" alt="Avatar" t-att-src='_s + "/base/static/img/avatar.png"'/>
+                            </t>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title"><li>Name: <field name="name"/></li></strong>
+                                <div class="o_kanban_tags_section"/>
+                                <ul>
+                                    <li>Program : <field name="program_id"/></li>
+                                    <li>State : <field name="state"/></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
         </field>
     </record>
 </odoo>
