@@ -169,3 +169,16 @@ class BatchTransaction(models.Model):
         for rec in self:
             if not rec.request_id:
                 rec.request_id = uuid.uuid4().hex
+
+    @api.multi
+    def open_rec(self):
+        return {
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'addon.model',
+            'res_id': self.id,
+            'type': 'ir.actions.act_window',
+            'target': 'current',
+            'flags': {'form': {'action_buttons': True}}
+
+        }
