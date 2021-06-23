@@ -11,6 +11,7 @@ from odoo.tools.translate import _
 import requests
 import json
 
+
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
 

@@ -6,13 +6,12 @@ from odoo import models, fields, api
 
 
 class DisbursementBatch(models.Model):
-    _inherit = 'openg2p.disbursement.batch'
+    _inherit = "openg2p.disbursement.batch"
 
     has_checklist_draft = fields.Boolean(default=True)
     checklist_draft_complete_enrollment = fields.Boolean()
     active_enrollment_count = fields.Integer(
-        compute='_compute_active_enrollment_count',
-        string="Pending Enrollment"
+        compute="_compute_active_enrollment_count", string="Pending Enrollment"
     )
 
     @api.multi
@@ -26,5 +25,6 @@ class DisbursementBatch(models.Model):
     @api.one
     def _compute_active_enrollment_count(self):
         for rec in self:
-            rec.active_enrollment_count = self.env['openg2p.registration'].search_count([
-                ('stage_id.fold', '=', False), ('create_date', '<=', self.date_end)])
+            rec.active_enrollment_count = self.env["openg2p.registration"].search_count(
+                [("stage_id.fold", "=", False), ("create_date", "<=", self.date_end)]
+            )

@@ -6,10 +6,8 @@ from odoo import fields, models
 
 
 class Openg2pDisbursementSlip(models.Model):
-    _inherit = 'openg2p.disbursement.slip'
+    _inherit = "openg2p.disbursement.slip"
 
     advice_line_id = fields.Many2one(
-        'openg2p.disbursement.advice.line',
-        'Bank Advice Line',
-        copy=False
+        "openg2p.disbursement.advice.line", "Bank Advice Line", copy=False
     )

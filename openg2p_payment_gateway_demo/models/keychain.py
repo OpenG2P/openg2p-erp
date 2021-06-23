@@ -7,16 +7,12 @@ from odoo import fields, models
 
 
 class KeychainAccount(models.Model):
-    _inherit = 'keychain.account'
+    _inherit = "keychain.account"
 
-    namespace = fields.Selection(
-        selection_add=[('demo', 'Demo')])
+    namespace = fields.Selection(selection_add=[("demo", "Demo")])
 
     def _demo_init_data(self):
-        return {
-            'client_id': None,
-            'mode': 'sandbox'
-        }
+        return {"client_id": None, "mode": "sandbox"}
 
     def _demo_validate_data(self, data):
         return True

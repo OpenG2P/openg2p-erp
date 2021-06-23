@@ -4,21 +4,29 @@ from odoo import api, fields, models
 
 
 class Openg2pLocation(models.Model):
-    _inherit = 'openg2p.location'
+    _inherit = "openg2p.location"
 
     new_registration_count = fields.Integer(
-        compute='_compute_new_registration_count', string='New Registration')
+        compute="_compute_new_registration_count", string="New Registration"
+    )
     new_registered_beneficiary = fields.Integer(
-        compute='_compute_registration_stats', string='New Registered Beneficiaries')
+        compute="_compute_registration_stats", string="New Registered Beneficiaries"
+    )
     expected_beneficiary = fields.Integer(
-        compute='_compute_registration_stats', string='Expected Beneficiaries')
+        compute="_compute_registration_stats", string="Expected Beneficiaries"
+    )
 
     @api.multi
     def _compute_new_registration_count(self):
-        registration_data = self.env['openg2p.registration'].read_group(
-            [('location_id', 'in', self.ids), ('stage_id.sequence', '<=', '1')],
-            ['location_id'], ['location_id'])
-        result = dict((data['location_id'][0], data['location_id_count']) for data in registration_data)
+        registration_data = self.env["openg2p.registration"].read_group(
+            [("location_id", "in", self.ids), ("stage_id.sequence", "<=", "1")],
+            ["location_id"],
+            ["location_id"],
+        )
+        result = dict(
+            (data["location_id"][0], data["location_id_count"])
+            for data in registration_data
+        )
         for location in self:
             location.new_registration_count = result.get(location.id, 0)
 
