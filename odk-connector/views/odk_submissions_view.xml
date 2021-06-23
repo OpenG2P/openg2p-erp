@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--  Tree View  -->
+    <record id="odk_submissions_tree_view" model="ir.ui.view">
+        <field name="name">odk.submissions.tree</field>
+        <field name="model">odk.submissions</field>
+        <field name="arch" type="xml">
+            <tree string="Submissions" create="false" import="false">
+                <field name="odoo_corresponding_id" readonly="1" widget="many2onebutton"/>
+                <field name="odk_submission_id"/>
+                <field name="submission_date" readonly="1"/>
+                <field name="odk_config_id" readonly="1" widget="many2onebutton"/>
+                <field name="submission_response" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>
