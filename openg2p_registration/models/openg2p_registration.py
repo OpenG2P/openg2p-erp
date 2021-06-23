@@ -175,6 +175,7 @@ class Registration(models.Model):
         'registration_id'
     )
 
+
     @api.depends('date_open', 'date_closed')
     @api.one
     def _compute_day(self):
