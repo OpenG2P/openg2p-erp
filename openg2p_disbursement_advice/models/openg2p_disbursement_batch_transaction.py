@@ -106,14 +106,34 @@ class BatchTransaction(models.Model):
     def create_bulk_transfer(self):
         self._generate_uuid()
 
-        beneficiary_transactions = self.env['openg2p.disbursement.main'].browse(
-            [('batch_id', '=', self.id)])
-        print(beneficiary_transactions)
+        # import os
+        # if os.path.exists('accounts.csv'):
+        #     os.remove('accounts.csv')
 
-        with open('accounts.csv') as csvfile:
-            csvwriter = csv.writer(csvfile)
-            csvwriter.writerows(
-                [[t.acc_holder_name, t.name, t.amount, t.currency_id, t.payment_mode] for t in beneficiary_transactions])
+        limit = 100
+        beneficiary_transactions = self.env['openg2p.disbursement.main'].search(
+            [('batch_id', '=', self.id)], limit=limit)
+
+        offset = 0
+        while len(beneficiary_transactions) > 0:
+
+            with open('accounts.csv', 'a') as csvfile:
+                csvwriter = csv.writer(csvfile)
+                for rec in beneficiary_transactions:
+                    entry = [rec.acc_holder_name, rec.name, rec.amount,
+                             rec.currency_id.name, rec.payment_mode]
+                    # print(entry)
+                    beneficiary_transaction_records = []
+                    beneficiary_transaction_records.append(entry)
+                    csvwriter.writerows(
+                        map(lambda x: [x], beneficiary_transaction_records))
+
+            offset += len(beneficiary_transactions)
+
+            if len(beneficiary_transactions) < limit:
+                break
+            beneficiary_transactions = self.env['openg2p.disbursement.main'].search(
+                [('batch_id', '=', self.id)], limit=limit, offset=offset)
 
         headers = {
             'Content-Type': 'multipart/form-data',
@@ -125,22 +145,24 @@ class BatchTransaction(models.Model):
             'checksum': (None, str(self.generate_hash())),
             'request_id': (None, str(self.request_id)),
         }
-        url = 'https://ph.ee/channel/bulk/transfer'
+        print(self.request_id)
+        url = 'http://15.207.23.72:5000/channel/bulk/transfer'
 
         try:
             response = requests.post(url, headers=headers, files=files)
             self.transaction_status = response.json().get('status')
-            return response
+            print(response.text)
         except requests.exceptions.RequestException as e:
             print(e)
 
     def bulk_transfer_status(self):
         params = (('request_id', str(self.request_id)),)
 
-        url = 'https://ph.ee/channel/bulk/transfer'
+        url = 'http://15.207.23.72:5000/channel/bulk/transfer'
 
         try:
             response = requests.get(url, params=params)
+            print(response.text)
             self.transaction_status = response.json()[0]['status']
             return response
         except requests.exceptions.RequestException as e:
@@ -148,7 +170,8 @@ class BatchTransaction(models.Model):
 
     def all_transactions_status(self):
         try:
-            response = requests.get('https://ph.ee/channel/transfer')
+            response = requests.get(
+                'https://15.207.23.72:5000/channel/transfer')
             return response
         except BaseException as e:
             print(e)
@@ -169,16 +192,3 @@ class BatchTransaction(models.Model):
         for rec in self:
             if not rec.request_id:
                 rec.request_id = uuid.uuid4().hex
-
-    @api.multi
-    def open_rec(self):
-        return {
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'addon.model',
-            'res_id': self.id,
-            'type': 'ir.actions.act_window',
-            'target': 'current',
-            'flags': {'form': {'action_buttons': True}}
-
-        }
