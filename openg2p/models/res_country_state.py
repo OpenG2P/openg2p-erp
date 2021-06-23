@@ -7,7 +7,7 @@ from odoo import models, fields
 
 
 class CountryState(models.Model):
-    _inherit = 'res.country.state'
+    _inherit = "res.country.state"
 
     country_id = fields.Many2one(
         default=lambda self: self.env.user.company_id.country_id.id

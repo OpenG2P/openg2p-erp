@@ -6,13 +6,12 @@ from odoo import models, fields, api
 
 
 class DisbursementBatch(models.Model):
-    _inherit = 'openg2p.disbursement.batch'
+    _inherit = "openg2p.disbursement.batch"
 
     has_checklist_draft = fields.Boolean(default=True)
     checklist_draft_complete_deregistration = fields.Boolean()
     active_deregistration_count = fields.Integer(
-        compute='_compute_active_deregistration_count',
-        string="Pending Deregistration"
+        compute="_compute_active_deregistration_count", string="Pending Deregistration"
     )
 
     @api.multi
@@ -26,11 +25,14 @@ class DisbursementBatch(models.Model):
     @api.multi
     def _compute_active_deregistration_count(self):
         for rec in self:
-            rec.active_deregistration_count = self.env['openg2p.deregistration'].search_count(
+            rec.active_deregistration_count = self.env[
+                "openg2p.deregistration"
+            ].search_count(
                 [
-                    ('state', '=', 'confirm'),
-                    ('date', '<=', rec.date_end),
-                    '|',
-                    ('program_id', '=', rec.program_id.id),
-                    ('program_id', '=', False)
-                ])
+                    ("state", "=", "confirm"),
+                    ("date", "<=", rec.date_end),
+                    "|",
+                    ("program_id", "=", rec.program_id.id),
+                    ("program_id", "=", False),
+                ]
+            )

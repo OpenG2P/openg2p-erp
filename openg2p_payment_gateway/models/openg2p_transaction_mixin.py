@@ -7,30 +7,23 @@ from odoo.fields import first
 
 
 class TransactionMixin(models.AbstractModel):
-    _name = 'openg2p.transaction.mixin'
+    _name = "openg2p.transaction.mixin"
     _description = "Gateway Transaction Mixin"
 
     bank_account_id = fields.Many2one(
-        'res.partner.bank',
-        'Account',
-        required=True,
-        index=True
+        "res.partner.bank", "Account", required=True, index=True
     )
     partner_id = fields.Many2one(
-        'res.partner',
-        string='Partner',
+        "res.partner",
+        string="Partner",
         related="bank_account_id.partner_id",
         store=True,
-        readonly=True
+        readonly=True,
     )
-    currency_id = fields.Many2one(
-        'res.currency',
-        string='Currency',
-        required=True
-    )
+    currency_id = fields.Many2one("res.currency", string="Currency", required=True)
     transaction_id = fields.Many2one(
-        'openg2p.gateway.transaction',
-        string='Transaction',
+        "openg2p.gateway.transaction",
+        string="Transaction",
     )
 
     @api.multi
@@ -42,4 +35,4 @@ class TransactionMixin(models.AbstractModel):
         return NotImplementedError
 
     def _get_transaction_name(self):
-        return self.name or ('%s with id %s' % (self._name, self.id))
+        return self.name or ("%s with id %s" % (self._name, self.id))

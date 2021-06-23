@@ -10,19 +10,17 @@ from odoo.addons.component.core import Component
 
 import json
 import logging
+
 _logger = logging.getLogger(__name__)
 
 
 class PaymentService(Component):
-    _inherit = 'payment.service'
-    _name = 'payment.service.demo'
-    _usage = 'gateway.provider'
-    _allowed_execute_method = ['server2server']
-
+    _inherit = "payment.service"
+    _name = "payment.service.demo"
+    _usage = "gateway.provider"
+    _allowed_execute_method = ["server2server"]
 
     def execute(self):
         transaction = self.collection
-        vals = {
-            'external_id': "we did it"
-        }
+        vals = {"external_id": "we did it"}
         transaction.write(vals)

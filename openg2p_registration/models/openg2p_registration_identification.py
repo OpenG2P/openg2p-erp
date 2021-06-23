@@ -12,24 +12,16 @@ class RegistrationIdentification(models.Model):
     @api.model
     def _get_supported_id_categories(self):
         categories = []
-        for i in self.env['openg2p.beneficiary.id_category'].search([]):
+        for i in self.env["openg2p.beneficiary.id_category"].search([]):
             categories.append((i.code, i.name))
         return categories
 
-    name = fields.Char(
-        "ID #",
-        required=True
-    )
+    name = fields.Char("ID #", required=True)
     type = fields.Selection(
-        selection=lambda x: x._get_supported_id_categories(),
-        required=True
+        selection=lambda x: x._get_supported_id_categories(), required=True
     )
-    registration_id = fields.Many2one(
-        'openg2p.registration',
-        required=True,
-        index=True
-    )
+    registration_id = fields.Many2one("openg2p.registration", required=True, index=True)
 
     _sql_constraints = [
-        ('id_uniq', 'unique (type, name)', "ID already exists !"),
+        ("id_uniq", "unique (type, name)", "ID already exists !"),
     ]
