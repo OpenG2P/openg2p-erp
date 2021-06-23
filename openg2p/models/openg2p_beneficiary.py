@@ -20,9 +20,11 @@ from odoo.addons.openg2p.services.matching_service import MATCH_MODE_NORMAL
 
 _logger = logging.getLogger(__name__)
 
+
 @api.model
 def _lang_get(self):
     return self.env['res.lang'].get_installed()
+
 
 _PARTNER_FIELDS = ['firstname', 'lastname', 'street', 'street2', 'zip', 'state', 'city', 'country_id']
 
@@ -195,7 +197,9 @@ class Beneficiary(models.Model):
     age = fields.Integer(
         string="Age",
         readonly=True,
-        compute="_compute_age"
+        compute="_compute_age",
+        store=False,
+        search='_search_age'
     )
     identities = fields.One2many(
         comodel_name='openg2p.beneficiary.id_number',
@@ -325,6 +329,31 @@ class Beneficiary(models.Model):
     _sql_constraints = [
         ('ref_id_uniq', 'unique(ref)', 'The Beneficiary reference must be unique.'),
     ]
+
+    def _search_age(self, operator, val):
+        res = []
+        bs = self.env['openg2p.beneficiary'].search([])
+        for b in bs:
+            print(b.age, operator, val)
+            if operator == '=':
+                if b.age == val:
+                    res.append(b)
+            elif operator == '!=':
+                if b.age != val:
+                    res.append(b)
+            elif operator == '<':
+                if b.age < val:
+                    res.append(b)
+            elif operator == '>':
+                if b.age > val:
+                    res.append(b)
+            elif operator == '>=':
+                if b.age >= val:
+                    res.append(b)
+            elif operator == '<=':
+                if b.age <= val:
+                    res.append(b)
+        return [('id', 'in', [rec.id for rec in res])]
 
     @api.onchange('phone', 'country_id')
     def _onchange_phone_validation(self):

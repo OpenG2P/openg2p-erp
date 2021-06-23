@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_odk_connector"
+              name="ODK Connector"
+              sequence="0"
+    />
+
+    <!-- Configuration Part -->
+    <menuitem id="menu_odk_configuration"
+        parent="menu_odk_connector"
+        sequence="4"
+        name="Configuration"
+        action="action_odk_configurations"
+    />
+
+    <!-- Submissions Part -->
+    <menuitem id="menu_odk_submissions"
+        parent="menu_odk_connector"
+        sequence="5"
+        name="Submissions"
+        action="action_odk_submission"
+    />
+</odoo>
