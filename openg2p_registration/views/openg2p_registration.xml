@@ -316,7 +316,6 @@
                                     <div class="dropdown-menu" role="menu">
                                         <t t-if="widget.deletable">
                                             <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
-<!--                                            <a role="menuitem" type="update" class="dropdown-item">Update</a>-->
                                         </t>
                                         <ul class="oe_kanban_colorpicker" data-field="color"/>
                                     </div>
