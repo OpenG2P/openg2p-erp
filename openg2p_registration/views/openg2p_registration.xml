@@ -6,6 +6,9 @@
             <field name="name">Registrations</field>
             <field name="model">openg2p.registration</field>
             <field name="arch" type="xml">
+<!--                <header>-->
+<!--                    <button string="Filter" name="filter_att" type="object" class="btn-primary"/>-->
+<!--                </header>-->
                 <tree string="Registrations" decoration-bf="message_needaction==True">
                     <field name="message_needaction" invisible="1"/>
                     <field name="last_stage_id" invisible="1"/>
@@ -17,6 +20,7 @@
                     <field name="stage_id"/>
                     <field name="priority"/>
                     <field name="location_id"/>
+                    <field name="attendance" invisible="1"/>
                 </tree>
             </field>
         </record>
@@ -167,23 +171,30 @@
             </field>
         </record>
 
-        <record id="action_update_attendance" model="ir.actions.server">
-            <field name="name">Increase attendance 20</field>
-            <field name="type">ir.actions.server</field>
-            <field name="model_id" ref="openg2p_registration.model_openg2p_registration"/>
-            <field name="state">code</field>
-            <field name="code">self.increase_atten_20(context.get('active_ids'))</field>
+        <act_window id="action_update_att"
+                name="Update Record"
+                src_model="openg2p.registration"
+                res_model="openg2p.registration.update_att"
+                view_type="tree" view_mode="form"
+                key2="client_action_multi" target="new"
+                groups="openg2p_registration.group_openg2p_registration_user"/>
+
+        <record id="wizard_view" model="ir.ui.view">
+            <field name="name">Update Attendance</field>
+            <field name="model">openg2p.registration.update_att</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="val"/>
+                    </group>
+                    <group>
+                        <button string="Update" name="update_att" type="object" class="btn-primary"/>
+                        <button string="Stage Change" name="update_stage" type="object" class="btn-primary"/>
+                    </group>
+                </form>
+            </field>
         </record>
 
-<!--        <record id="value_update_attendance" model="ir.default">-->
-<!--            <field name="name">Increase attendance 20</field>-->
-<!--            <field name="action_id" ref="action_update_attendance"/>-->
-<!--            <field name="value" eval="'ir.actions.server,' + str(ref('action_update_attendance'))"/>-->
-<!--            <field name="key">action</field>-->
-<!--            <field name="model_id" ref="openg2p_registration.model_openg2p_registration"/>-->
-<!--            <field name="model">openg2p.registration</field>-->
-<!--            <field name="key2">client_action_multi</field>-->
-<!--        </record>-->
 
         <record model="ir.ui.view" id="crm_case_pivot_view_beneficiary">
             <field name="name">Beneficiaries - Registration</field>
@@ -279,6 +290,7 @@
                 <kanban default_group_by="stage_id" class="o_kanban_registration" group_create="0" quick_create="false">
                     <field name="stage_id" options='{"group_by_tooltip": {"requirements": "Requirements"}}'/>
                     <field name="color"/>
+                    <field name="attendance" invisible="1"/>
                     <field name="priority"/>
                     <field name="user_id"/>
                     <field name="name"/>
@@ -305,6 +317,7 @@
                                     <div class="dropdown-menu" role="menu">
                                         <t t-if="widget.deletable">
                                             <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
+<!--                                            <a role="menuitem" type="update" class="dropdown-item">Update</a>-->
                                         </t>
                                         <ul class="oe_kanban_colorpicker" data-field="color"/>
                                     </div>

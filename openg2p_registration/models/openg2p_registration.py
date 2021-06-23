@@ -180,6 +180,66 @@ class Registration(models.Model):
         'registration',
     )
 
+    attendance = fields.Integer(
+        string='Attendance',
+        store=False,
+        required=False,
+        compute='_compute_att',
+        search='_search_att',
+    )
+
+    def _search_att(self, operator, val2):
+        print('_search_att', '|', operator, '|', val2)
+        res = []
+        regds = self.env['openg2p.registration'].search([])
+        for rec in regds:
+            print(rec)
+            att = self.env['openg2p.beneficiary.orgmap'].search(
+                ['&', ('registration', '=', rec.id),
+                 ('field_name', '=', 'total_student_in_attendance_at_the_school')]
+            )
+            if not att:
+                continue
+            try:
+                val = int(att.field_value)
+            except BaseException as e:
+                continue
+            print(val, '|', operator, '|', val2)
+            if operator == '>':
+                if val > val2:
+                    res.append(rec)
+            elif operator == '<':
+                if val < val2:
+                    res.append(rec)
+            elif operator == '=':
+                if val == val2:
+                    res.append(rec)
+            elif operator == '!=':
+                if val != val2:
+                    res.append(rec)
+            elif operator == '>=':
+                if val >= val2:
+                    res.append(rec)
+            elif operator == '<=':
+                if val <= val2:
+                    res.append(rec)
+        print(res)
+        return [('id', 'in', [rec.id for rec in res])]
+
+    @api.depends('org_custom_field')
+    def _compute_att(self):
+        for rec in self:
+            att = self.env['openg2p.beneficiary.orgmap'].search(
+                ['&', ('registration', '=', rec.id),
+                 ('field_name', '=', 'total_student_in_attendance_at_the_school')]
+            )
+            try:
+                rec.attendance = int(att.field_value) if att else 0
+            except BaseException as e:
+                print(e)
+                rec.attendance = 0
+            # print(rec.attendance)
+
     def _get_default_odk_map(self):
         return {
             'SubmissionDate': 'SubmissionDate',
@@ -419,6 +479,14 @@ class Registration(models.Model):
             })
         regd.write(data)
         return regd
+
+    def increase_atten_20(self, selected_ids):
+        for r in self:
+            if r.id in selected_ids:
+                for org_item in r.org_custom_field:
+                    if org_item.field_name == 'total_student_in_attendance_at_the_school':
+                        print(org_item.field_value)
+        return True
 
     @api.depends('date_open', 'date_closed')
     @api.one
