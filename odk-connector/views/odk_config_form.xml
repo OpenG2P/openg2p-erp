@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--  Form View  -->
+    <record id="odk_config_form_view" model="ir.ui.view">
+        <field name="name">odk.config.form</field>
+        <field name="model">odk.config</field>
+        <field name="arch" type="xml">
+            <form string="Configuration">
+                <group>
+                    <field name="form_name"/>
+                    <field name="odk_endpoint"/>
+                    <field name="odk_project_id"/>
+                    <field name="odk_form_id"/>
+                    <field name="odk_email"/>
+                    <field name="odk_password"/>
+                    <field name="is_active"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!--  Tree View  -->
+    <record id="odk_config_tree_view" model="ir.ui.view">
+        <field name="name">odk.config.tree</field>
+        <field name="model">odk.config</field>
+        <field name="arch" type="xml">
+            <tree string="Configuration">
+                <field name="form_name"/>
+                <field name="odk_endpoint" readonly="1"/>
+                <field name="odk_project_id" readonly="1"/>
+                <field name="odk_form_id" readonly="1"/>
+                <field name="odk_email" readonly="1"/>
+                <field name="odk_submissions_count"/>
+                <field name="odk_last_sync_date" readonly="1"/>
+                <field name="is_active"/>
+                <button name="odk_button_update_form_submissions"
+                    type="object"
+                    string="Update Submissions"
+                    icon="fa-download"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>
