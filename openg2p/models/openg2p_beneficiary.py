@@ -26,16 +26,8 @@ def _lang_get(self):
     return self.env["res.lang"].get_installed()
 
 
-_PARTNER_FIELDS = [
-    "firstname",
-    "lastname",
-    "street",
-    "street2",
-    "zip",
-    "state",
-    "city",
-    "country_id",
-]
+
+_PARTNER_FIELDS = ['firstname', 'lastname', 'street', 'street2', 'zip', 'state', 'city', 'country_id']
 
 
 class Beneficiary(models.Model):
