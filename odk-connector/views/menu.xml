@@ -3,6 +3,7 @@
     <menuitem id="menu_odk_connector"
               name="ODK Connector"
               sequence="0"
+              web_icon="static/description/icon.png"
     />
 
     <!-- Configuration Part -->
