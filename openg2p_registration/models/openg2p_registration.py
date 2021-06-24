@@ -342,10 +342,6 @@ class Registration(models.Model):
         context = dict(self.env.context)
         context["form_view_initial_mode"] = "edit"
 
-        # Indexing the beneficiary
-        # print("Indexing.......")
-        self.index_beneficiary()
-
         return {
             "type": "ir.actions.act_window",
             "view_type": "form",
@@ -354,108 +350,6 @@ class Registration(models.Model):
             "res_id": beneficiary.id,
             "context": context,
         }
-
-    @api.multi
-    def find_duplicates(self):
-        my_list = self.search_beneficiary()
-        if my_list:
-            my_list = json.loads(my_list)
-            benf_ids = [li["beneficiary"] for li in my_list]
-            print(benf_ids)
-            self.update({"duplicate_beneficiaries_ids": [(6, 0, list(benf_ids))]})
-
-    @api.multi
-    def merge_beneficiaries(self):
-
-        idr = self.retained_id
-        print(idr)
-        beneficiary_data = self.env["openg2p.beneficiary"].browse(idr)
-        print(beneficiary_data)
-
-        beneficiary_data.write(
-            {
-                "first_name": str(self.firstname),
-                "last_name": str(self.firstname),
-                "email": str(self.firstname),
-                "phone": str(self.phone),
-                "street": str(self.street),
-                "street2": str(self.street),
-                "city": str(self.city),
-                "postal_code": str(self.zip),
-                "identity": str(self.identity_passport),
-                "emergency_contact_name": str(self.emergency_contact),
-                "emergency_contact_phone": str(self.emergency_phone),
-            }
-        )
-
-        delete_url = "http://localhost:8080/index/" + str(idr)
-        r = requests.post(delete_url)
-        print(r)
-        self.clear_beneficiaries()
-        self.retained_id = 0
-
-    def clear_beneficiaries(self):
-        self.write({"duplicate_beneficiaries_ids": [(5, 0, 0)]})
-
-    def index_beneficiary(self):
-        data = {
-            "id": str(self.beneficiary_id.id),
-            "first_name": str(self.firstname),
-            "last_name": str(self.lastname),
-            "email": str(self.email),
-            "phone": str(self.phone),
-            "street": str(self.street),
-            "street2": str(self.street2),
-            "city": str(self.city),
-            "postal_code": str(self.zip),
-            "dob": str(self.birthday),
-            "identity": str(self.identity_passport),
-            "emergency_contact_name": str(self.emergency_contact),
-            "emergency_contact_phone": str(self.emergency_phone),
-        }
-        # Deleting null fields
-        new_data = self.del_none(data)
-        # print(new_data)
-        url_endpoint = "http://localhost:8080/index"
-        try:
-            r = requests.post(url_endpoint, json=new_data)
-            return r.status_code
-        except requests.exceptions.RequestException as e:
-            print(e)
-
-    def search_beneficiary(self):
-        search_data = {
-            "attributes": {
-                "first_name": str(self.firstname),
-                "last_name": str(self.lastname),
-                "email": str(self.email),
-                "phone": str(self.phone),
-                "street": str(self.street),
-                "street2": str(self.street2),
-                "city": str(self.city),
-                "postal_code": str(self.zip),
-                "dob": str(self.birthday),
-                "identity": str(self.identity_passport),
-                "emergency_contact_name": str(self.emergency_contact),
-                "emergency_contact_phone": str(self.emergency_phone),
-            }
-        }
-        new_data = self.del_none(search_data)
-        # print(new_data)
-        search_url = "http://localhost:8080/index/search"
-        try:
-            r = requests.post(search_url, json=new_data)
-            return r.text
-        except requests.exceptions.RequestException as e:
-            print(e)
-
-    def del_none(self, d):
-        for key, value in list(d.items()):
-            if value == "False":
-                del d[key]
-            elif isinstance(value, dict):
-                self.del_none(value)
-        return d
 
     @api.multi
     def archive_registration(self):

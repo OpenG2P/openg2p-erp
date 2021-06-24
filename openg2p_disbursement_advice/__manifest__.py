@@ -20,7 +20,6 @@
         "views/openg2p_disbursement_advice_report.xml",
         "views/openg2p_disbursement_batch.xml",
         "views/openg2p_disbursement_slip.xml",
-        "views/openg2p_registration.xml",
         "views/report_disbursement_advice.xml",
         "views/report_disbursementslip.xml",
         "views/report_disbursementslipdetails.xml",

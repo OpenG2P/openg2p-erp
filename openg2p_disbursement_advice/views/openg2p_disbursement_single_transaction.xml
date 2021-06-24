@@ -81,6 +81,6 @@
     </record>
 
     <!--creating menus-->
-    <menuitem id="single_root" name="Make Single Transaction" sequence="1" web_icon="Single Transaction,static/img/icon.png"/>
+    <menuitem id="single_root" name="Make Single Transaction" sequence="1" web_icon="Single Transaction,static/description/single.png"/>
     <menuitem id="single_transaction" name="Beneficiaries" parent="single_root" action="action_single_transaction" sequence="10"/>
 </odoo>

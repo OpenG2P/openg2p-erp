@@ -102,6 +102,6 @@
     </record>
 
     <!--creating menus-->
-    <menuitem id="batch_root" name="Make Batch Transaction" sequence="1" />
+    <menuitem id="batch_root" name="Make Batch Transaction" sequence="1" web_icon="Single Transaction,static/description/batch.png"/>
     <menuitem id="batch_transaction" name="Beneficiaries" parent="batch_root" action="action_batch_transaction" sequence="10"/>
 </odoo>
