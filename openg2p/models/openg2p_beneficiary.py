@@ -26,16 +26,8 @@ def _lang_get(self):
     return self.env["res.lang"].get_installed()
 
 
-_PARTNER_FIELDS = [
-    "firstname",
-    "lastname",
-    "street",
-    "street2",
-    "zip",
-    "state",
-    "city",
-    "country_id",
-]
+_PARTNER_FIELDS = ['firstname', 'lastname', 'street', 'street2', 'zip', 'state', 'city', 'country_id']
+
 
 
 class Beneficiary(models.Model):
@@ -159,10 +151,19 @@ class Beneficiary(models.Model):
         string="Birth Country",
         ondelete="restrict",
         default=lambda self: self.env.user.company_id.country_id.id,
-        track_visibility="onchange",
+        track_visibility="onchange"
     )
-    birthday = fields.Date("Birth Date", track_visibility="onchange")
-    age = fields.Integer(string="Age", readonly=True, compute="_compute_age")
+    birthday = fields.Date(
+        "Birth Date",
+        track_visibility='onchange'
+    )
+    age = fields.Integer(
+        string="Age",
+        readonly=True,
+        compute="_compute_age",
+        store=False,
+        search='_search_age'
+    )
     identities = fields.One2many(
         comodel_name="openg2p.beneficiary.id_number",
         inverse_name="beneficiary_id",
@@ -286,7 +287,32 @@ class Beneficiary(models.Model):
         ("ref_id_uniq", "unique(ref)", "The Beneficiary reference must be unique."),
     ]
 
-    @api.onchange("phone", "country_id")
+    def _search_age(self, operator, val):
+        res = []
+        bs = self.env['openg2p.beneficiary'].search([])
+        for b in bs:
+            print(b.age, operator, val)
+            if operator == '=':
+                if b.age == val:
+                    res.append(b)
+            elif operator == '!=':
+                if b.age != val:
+                    res.append(b)
+            elif operator == '<':
+                if b.age < val:
+                    res.append(b)
+            elif operator == '>':
+                if b.age > val:
+                    res.append(b)
+            elif operator == '>=':
+                if b.age >= val:
+                    res.append(b)
+            elif operator == '<=':
+                if b.age <= val:
+                    res.append(b)
+        return [('id', 'in', [rec.id for rec in res])]
+
+    @api.onchange('phone', 'country_id')
     def _onchange_phone_validation(self):
         if self.phone:
             self.phone = self.phone_format(self.phone)

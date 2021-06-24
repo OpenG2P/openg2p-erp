@@ -8,6 +8,7 @@ from . import openg2p_disbursement_advice
 from . import openg2p_disbursement_advice_line
 from . import openg2p_disbursement_batch
 from . import openg2p_disbursement_slip
+from . import openg2p_registration
 from . import queue_job
 from . import res_bank
 from . import res_partner_bank

@@ -22,6 +22,7 @@
         "views/openg2p_disbursement_slip.xml",
         "views/report_disbursement_advice.xml",
         "views/report_disbursementslip.xml",
+        "views/openg2p_registration.xml",
         "views/report_disbursementslipdetails.xml",
         "views/res_bank.xml",
         "views/res_partner_bank.xml",
