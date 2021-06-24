@@ -162,7 +162,14 @@ class Beneficiary(models.Model):
         track_visibility="onchange",
     )
     birthday = fields.Date("Birth Date", track_visibility="onchange")
-    age = fields.Integer(string="Age", readonly=True, compute="_compute_age")
+    age = fields.Integer(
+        string="Age",
+        readonly=True,
+        compute="_compute_age",
+        store=False,
+        search="_search_age",
+    )
+
     identities = fields.One2many(
         comodel_name="openg2p.beneficiary.id_number",
         inverse_name="beneficiary_id",
@@ -285,6 +292,31 @@ class Beneficiary(models.Model):
     _sql_constraints = [
         ("ref_id_uniq", "unique(ref)", "The Beneficiary reference must be unique."),
     ]
+
+    def _search_age(self, operator, val):
+        res = []
+        bs = self.env["openg2p.beneficiary"].search([])
+        for b in bs:
+            print(b.age, operator, val)
+            if operator == "=":
+                if b.age == val:
+                    res.append(b)
+            elif operator == "!=":
+                if b.age != val:
+                    res.append(b)
+            elif operator == "<":
+                if b.age < val:
+                    res.append(b)
+            elif operator == ">":
+                if b.age > val:
+                    res.append(b)
+            elif operator == ">=":
+                if b.age >= val:
+                    res.append(b)
+            elif operator == "<=":
+                if b.age <= val:
+                    res.append(b)
+        return [("id", "in", [rec.id for rec in res])]
 
     @api.onchange("phone", "country_id")
     def _onchange_phone_validation(self):

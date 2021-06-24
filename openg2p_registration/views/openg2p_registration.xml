@@ -17,25 +17,25 @@
                     <field name="stage_id"/>
                     <field name="priority"/>
                     <field name="location_id"/>
+                    <field name="attendance" invisible="1"/>
                 </tree>
             </field>
         </record>
 
-        <!--below code produced error while upgrading module-->
-       <!-- <record id="openg2p_registration_view_tree_activity" model="ir.ui.view">
-           <field name="name">openg2p.registration.view.tree.activity</field>
-           <field name="model">openg2p.registration</field>
-           <field name="arch" type="xml">
-               <tree string="Next Activities" decoration-danger="activity_date_deadline &lt; current_date"
-                     default_order="activity_date_deadline" multi_edit="1">
-                   <field name="name"/>
-                   <field name="activity_date_deadline"/>
-                   <field name="activity_type_id"/>
-                   <field name="activity_summary"/>
-                   <field name="stage_id"/>
-               </tree>
-           </field>
-       </record> -->
+        <!-- <record id="openg2p_registration_view_tree_activity" model="ir.ui.view">
+            <field name="name">openg2p.registration.view.tree.activity</field>
+            <field name="model">openg2p.registration</field>
+            <field name="arch" type="xml">
+                <tree string="Next Activities" decoration-danger="activity_date_deadline &lt; current_date"
+                      default_order="activity_date_deadline" multi_edit="1">
+                    <field name="name"/>
+                    <field name="activity_date_deadline"/>
+                    <field name="activity_type_id"/>
+                    <field name="activity_summary"/>
+                    <field name="stage_id"/>
+                </tree>
+            </field>
+        </record> -->
 
         <record model="ir.ui.view" id="crm_case_form_view_beneficiary">
             <field name="name">Beneficiaries - Registration Form</field>
@@ -152,8 +152,18 @@
                                     </tree>
                                 </field>
                             </group>
-                            
-                            
+                            <group string="Internal Info" name="internal_notes_right">
+
+                            </group>
+                            <group string="Organization">
+                                <field name="org_custom_field">
+                                    <tree editable="bottom">
+                                        <field name="field_name"/>
+                                        <field name="field_value"/>
+                                    </tree>
+                                </field>
+                            </group>
+                                
                         </group>
                             <!-- Duplicate Beneficiaries -->
                         <group string="Potential Duplicates">
@@ -186,6 +196,31 @@
             </field>
         </record>
 
+        <act_window id="action_update_att"
+                name="Update Record"
+                src_model="openg2p.registration"
+                res_model="openg2p.registration.update_att"
+                view_type="tree" view_mode="form"
+                key2="client_action_multi" target="new"
+                groups="openg2p_registration.group_openg2p_registration_user"/>
+
+        <record id="wizard_view" model="ir.ui.view">
+            <field name="name">Update Attendance</field>
+            <field name="model">openg2p.registration.update_att</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="val"/>
+                    </group>
+                    <group>
+                        <button string="Update" name="update_att" type="object" class="btn-primary"/>
+                        <button string="Stage Change" name="update_stage" type="object" class="btn-primary"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
         <record model="ir.ui.view" id="crm_case_pivot_view_beneficiary">
             <field name="name">Beneficiaries - Registration</field>
             <field name="model">openg2p.registration</field>
@@ -214,7 +249,11 @@
                 <search string="Search Registrations">
                     <field name="name" context="{'active_test': False}" string="Registration"
                            filter_domain="['|','|', '|', ('firstname','ilike',self), ('firstname','%',self), ('lastname','ilike',self), ('lastname','%',self)]"/>
-
+                    <filter string="Att=140" name="att_eq_140"
+                            domain="['&amp;',('org_custom_field.field_name','=','total_student_in_attendance_at_the_school'),('org_custom_field.field_value','=','140')]"/>
+                    <filter string="Att>100" name="att_gt_100"
+                            domain="['&amp;',('org_custom_field.field_name','=','total_student_in_attendance_at_the_school'),('org_custom_field.field_value','>',100)]"/>
+                    <separator/>
                     <filter string="My Registrations" name="my_registrations" domain="[('user_id', '=', uid)]"/>
                     <filter string="Unassigned" name="unassigned" domain="[('user_id', '=', False)]"/>
                     <filter string="Unread Messages" name="message_needaction"
@@ -276,6 +315,7 @@
                 <kanban default_group_by="stage_id" class="o_kanban_registration" group_create="0" quick_create="false">
                     <field name="stage_id" options='{"group_by_tooltip": {"requirements": "Requirements"}}'/>
                     <field name="color"/>
+                    <field name="attendance" invisible="1"/>
                     <field name="priority"/>
                     <field name="user_id"/>
                     <field name="name"/>
