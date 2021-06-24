@@ -345,7 +345,7 @@ class Registration(models.Model):
         context["form_view_initial_mode"] = "edit"
 
         # Indexing the beneficiary
-        # print("Indexing.......")
+        print("Indexing.......")
         self.index_beneficiary()
 
         return {
@@ -359,7 +359,9 @@ class Registration(models.Model):
 
     @api.multi
     def find_duplicates(self):
+        print("Finding Duplicates.......")
         my_list = self.search_beneficiary()
+        print(my_list)
         if my_list:
             my_list = json.loads(my_list)
             benf_ids = [li["beneficiary"] for li in my_list]
@@ -369,16 +371,17 @@ class Registration(models.Model):
     def archive_data(self):
         beneficiary_data = self.env["openg2p.beneficiary"].browse(self.retained_id)
 
-        self.write({"merged_beneficiary_ids": [(4, 0, beneficiary_data)]})
+        # beneficiary_data.write({"merged_beneficiary_ids": (beneficiary_data)})
+        beneficiary_data.write({"merged_beneficiary_ids": [(4, [beneficiary_data])]})
 
     @api.multi
     def merge_beneficiaries(self):
 
         idr = self.retained_id
-        # print(idr)
+        print(idr)
         beneficiary_data = self.env["openg2p.beneficiary"].browse(idr)
         self.archive_data()
-        # print(beneficiary_data)
+        print(beneficiary_data)
 
         beneficiary_data.write(
             {
@@ -427,7 +430,7 @@ class Registration(models.Model):
         }
         # Deleting null fields
         new_data = self.del_none(data)
-        # print(new_data)
+        print(new_data)
         url_endpoint = "http://localhost:8080/index"
         try:
             r = requests.post(url_endpoint, json=new_data)
@@ -436,6 +439,7 @@ class Registration(models.Model):
             print(e)
 
     def search_beneficiary(self):
+        print("Searching Beneficiaries.....")
         search_data = {
             "attributes": {
                 "first_name": str(self.firstname),
@@ -455,7 +459,7 @@ class Registration(models.Model):
             }
         }
         new_data = self.del_none(search_data)
-        # print(new_data)
+        print(new_data)
         search_url = "http://localhost:8080/index/search"
         try:
             r = requests.post(search_url, json=new_data)
