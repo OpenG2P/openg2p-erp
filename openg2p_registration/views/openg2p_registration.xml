@@ -22,7 +22,7 @@
         </record>
 
         <!--below code produced error while upgrading module-->
-       <record id="openg2p_registration_view_tree_activity" model="ir.ui.view">
+       <!-- <record id="openg2p_registration_view_tree_activity" model="ir.ui.view">
            <field name="name">openg2p.registration.view.tree.activity</field>
            <field name="model">openg2p.registration</field>
            <field name="arch" type="xml">
@@ -35,7 +35,7 @@
                    <field name="stage_id"/>
                </tree>
            </field>
-       </record>
+       </record> -->
 
         <record model="ir.ui.view" id="crm_case_form_view_beneficiary">
             <field name="name">Beneficiaries - Registration Form</field>
@@ -152,7 +152,6 @@
                                     </tree>
                                 </field>
                             </group>
-<<<<<<< HEAD
                             
                             
                         </group>
@@ -165,11 +164,9 @@
                                     <field name="lastname"/>
                                 </tree>
                             </field>
-=======
                             <group name="internal_notes_right">
                                 
                             </group>
->>>>>>> regd_bank
                         </group>
                             
                         <field placeholder="Enter the ID to retain" name="retained_id" widget ="char"/>
