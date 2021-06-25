@@ -526,8 +526,9 @@ class Beneficiary(models.Model):
                         ("country_id", "=", country_id),
                     ]
                     state = States.search(state_domain, limit=1)
-                    # replace state or remove it if not found
-                    vals["state_id"] = state.id
+                    vals[
+                        "state_id"
+                    ] = state.id  # replace state or remove it if not found
 
     @api.multi
     def _get_country_name(self):
