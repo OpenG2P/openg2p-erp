@@ -20,14 +20,26 @@
         "views/openg2p_disbursement_advice_report.xml",
         "views/openg2p_disbursement_batch.xml",
         "views/openg2p_disbursement_slip.xml",
+<<<<<<< HEAD
         "views/openg2p_registration.xml",
         "views/openg2p_registration.xml",
         "views/report_disbursement_advice.xml",
         "views/report_disbursementslip.xml",
+=======
+        "views/report_disbursement_advice.xml",
+        "views/report_disbursementslip.xml",
+        "views/openg2p_registration.xml",
+>>>>>>> e1b9a1decb840d3dabe3c3ce5d229f9662229eb4
         "views/report_disbursementslipdetails.xml",
         "views/res_bank.xml",
         "views/res_partner_bank.xml",
         "views/openg2p_gateway_transaction.xml",
+<<<<<<< HEAD
+=======
+        "views/openg2p_disbursement_single_transaction.xml",
+        "views/openg2p_disbursement_batch_transaction.xml",
+        "views/openg2p_disbursement_main.xml",
+>>>>>>> e1b9a1decb840d3dabe3c3ce5d229f9662229eb4
     ],
     "demo": ["data/demo.xml"],
 }

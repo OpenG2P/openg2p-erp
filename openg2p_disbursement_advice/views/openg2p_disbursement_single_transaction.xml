@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_openg2p_disbursement_single_transaction_tree" model="ir.ui.view">
+        <field name="name">openg2p.disbursement.single.transaction.tree</field>
+        <field name="model">openg2p.disbursement.single.transaction</field>
+        <field name="arch" type="xml">
+            <tree string="Single Transaction">
+                <field name="beneficiary_id"/>
+                <field name="program_id"/>
+                <field name="request_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <data>
+        <record id="view_openg2p_disbursement_single_transaction" model="ir.ui.view">
+            <field name="name">openg2p.disbursement.single.transaction.form</field>
+            <field name="model">openg2p.disbursement.single.transaction</field>
+            <field name="arch" type="xml">
+                <form string="Single Transaction Form">
+                    <header>
+                        <button name="action_confirm" type="object"  states="draft" string="Confirm" class="oe_highlight"/>
+                        <button name="action_pending" type="object"  states="confirm" string="Pending" class="oe_highlight"/>
+                        <button name="action_transaction" type="object"  states="pending" string="Complete" class="oe_highlight"/>
+                        <button name="create_single_transfer" type="object"  states="confirm" string="Make Transfer" class="oe_highlight"/>
+                        <button name="single_transfer_status" type="object"  states="pending" string="Check Status" class="oe_highlight"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                            
+                                <field name="beneficiary_id"/>
+                                <field name="program_id" options="{'no_create_edit': True}"/>
+
+                            </group>
+                            <group>
+                                <field name="amount"/>
+                                <field name="currency_id"/>
+                            </group>
+                            <group>
+                                <field name="bank_account_id"/>
+                                <field name="name"/>
+                                <field name="request_id" invisible="1"/>
+                                <field name="acc_holder_name"/>
+                                <field name="payment_mode"/>
+                            </group>
+                            <group name="secondary">
+                                <label for="date_start" string="Period"/>
+                                    <div name="date">
+                                        <field name="date_start" class="oe_inline"/>-
+                                        <field name="date_end" class="oe_inline"/>
+                                    </div>
+                            </group>
+                            <group>
+                                <field name="transaction_status" attrs="{'invisible':[('state','!=','pending'),('state','!=','paymentstatus')]}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"
+                            widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+    </data>
+    <!--action of the single transaction menu-->
+    <record id="action_single_transaction" model="ir.actions.act_window">
+        <field name="name">Single Transaction</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.disbursement.single.transaction</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree,kanban</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create your Transaction !
+          </p>
+        </field>
+    </record>
+
+    <!--creating menus-->
+    <menuitem id="single_root" name="Make Single Transaction" sequence="1" web_icon="Single Transaction,static/description/single.png"/>
+    <menuitem id="single_transaction" name="Beneficiaries" parent="single_root" action="action_single_transaction" sequence="10"/>
+</odoo>
