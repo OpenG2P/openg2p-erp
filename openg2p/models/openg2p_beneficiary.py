@@ -38,7 +38,6 @@ _PARTNER_FIELDS = [
 ]
 
 
-
 class Beneficiary(models.Model):
     _name = "openg2p.beneficiary"
     _description = "Beneficiary"
@@ -160,15 +159,7 @@ class Beneficiary(models.Model):
         string="Birth Country",
         ondelete="restrict",
         default=lambda self: self.env.user.company_id.country_id.id,
-<<<<<<< HEAD
         track_visibility="onchange",
-=======
-        track_visibility="onchange"
-    )
-    birthday = fields.Date(
-        "Birth Date",
-        track_visibility='onchange'
->>>>>>> e1b9a1decb840d3dabe3c3ce5d229f9662229eb4
     )
     birthday = fields.Date("Birth Date", track_visibility="onchange")
     age = fields.Integer(

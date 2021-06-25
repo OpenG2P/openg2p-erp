@@ -66,21 +66,4 @@
             </field>
         </record>
     </data>
-    <!--action of the single transaction menu-->
-    <record id="action_single_transaction" model="ir.actions.act_window">
-        <field name="name">Single Transaction</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">openg2p.disbursement.single.transaction</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">form,tree,kanban</field>
-        <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Create your Transaction !
-          </p>
-        </field>
-    </record>
-
-    <!--creating menus-->
-    <menuitem id="single_root" name="Make Single Transaction" sequence="1" web_icon="Single Transaction,static/description/single.png"/>
-    <menuitem id="single_transaction" name="Beneficiaries" parent="single_root" action="action_single_transaction" sequence="10"/>
 </odoo>

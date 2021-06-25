@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem 
+        id="transaction_menu" 
+        name="Make Transaction" 
+        sequence="1"/>
+
+    <menuitem 
+        id="single_root" 
+        name="Make Single Transaction" 
+        sequence="4" 
+        parent="transaction_menu"
+        action="action_single_transaction"/>
+
+    <menuitem 
+        id="main_root" 
+        name="Main Transaction" 
+        sequence="5"
+        parent="transaction_menu"
+        action="action_main_transaction"/>
+
+    <menuitem 
+        id="batch_root" 
+        name="Make Batch Transaction" 
+        sequence="6" 
+        parent="transaction_menu"
+        action="action_batch_transaction"/>
+</odoo>

@@ -27,19 +27,10 @@ class DisbursementAdviceLine(models.Model):
         "Bank Account No.",
         related="bank_account_id.acc_number",
         store=True,
-<<<<<<< HEAD
-        # readonly=True
-    )
-    acc_holder_name = fields.Char(
-        string="Account Holder Name",
-        # compute="_compute_acc_holder_name",
-        store=True,
-=======
         readonly=True,
     )
     acc_holder_name = fields.Char(
         string="Account Holder Name", compute="_compute_acc_holder_name", store=True
->>>>>>> e1b9a1decb840d3dabe3c3ce5d229f9662229eb4
     )
     bank_account_id = fields.Many2one(
         "res.partner.bank", "Account ID", ondelete="restrict"

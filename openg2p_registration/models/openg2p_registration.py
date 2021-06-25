@@ -11,10 +11,7 @@ from odoo.tools.translate import _
 import requests
 import json
 
-<<<<<<< HEAD
 
-=======
->>>>>>> e1b9a1decb840d3dabe3c3ce5d229f9662229eb4
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
 
@@ -559,10 +556,7 @@ class Registration(models.Model):
             "marital": self.marital,
             "national_id": self.identity_national,
             "passport_id": self.identity_passport,
-<<<<<<< HEAD
-            "bank_account_id": self.bank_accound_id.id,
-=======
->>>>>>> e1b9a1decb840d3dabe3c3ce5d229f9662229eb4
+            "bank_account_id": self.bank_account_id.id,
             "emergency_contact": self.emergency_contact,
             "emergency_phone": self.emergency_phone,
         }
@@ -586,13 +580,10 @@ class Registration(models.Model):
         context = dict(self.env.context)
         context["form_view_initial_mode"] = "edit"
 
-<<<<<<< HEAD
         # Indexing the beneficiary
         print("Indexing.......")
         self.index_beneficiary()
 
-=======
->>>>>>> e1b9a1decb840d3dabe3c3ce5d229f9662229eb4
         return {
             "type": "ir.actions.act_window",
             "view_type": "form",
@@ -616,7 +607,6 @@ class Registration(models.Model):
     def archive_data(self):
         beneficiary_data = self.env["openg2p.beneficiary"].browse(self.retained_id)
 
-        # beneficiary_data.write({"merged_beneficiary_ids": (beneficiary_data)})
         beneficiary_data.write({"merged_beneficiary_ids": [(4, [beneficiary_data])]})
 
     @api.multi

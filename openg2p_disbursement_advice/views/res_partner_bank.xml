@@ -14,10 +14,6 @@
                                 <field name="sequence" invisible="1"/>
                                 <field name="bank_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                                 <field name="acc_number"/>
-<<<<<<< HEAD
-=======
-                                <!-- <field name="beneficiary_id"/> -->
->>>>>>> e1b9a1decb840d3dabe3c3ce5d229f9662229eb4
                                 <field name="payment_mode"/>
                                 <field name="company_id" groups="base.group_multi_company"
                                        options="{'no_create_edit': True, 'no_quick_create': True}"/>

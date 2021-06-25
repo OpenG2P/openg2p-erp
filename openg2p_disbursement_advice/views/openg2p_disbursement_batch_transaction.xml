@@ -87,21 +87,5 @@
             </kanban>
         </field>
     </record>
-    <!--action of the batch menu-->
-    <record id="action_batch_transaction" model="ir.actions.act_window">
-        <field name="name">Batch Transaction</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">openg2p.disbursement.batch.transaction</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form,kanban</field>
-        <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Create your Batch !
-          </p>
-        </field>
-    </record>
-
-    <!--creating menus-->
-    <menuitem id="batch_root" name="Make Batch Transaction" sequence="1" web_icon="Single Transaction,static/description/batch.png"/>
-    <menuitem id="batch_transaction" name="Beneficiaries" parent="batch_root" action="action_batch_transaction" sequence="10"/>
+    
 </odoo>
