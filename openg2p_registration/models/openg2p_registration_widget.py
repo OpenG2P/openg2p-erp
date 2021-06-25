@@ -4,6 +4,7 @@ from odoo import fields, models, api
 class UpdateWizard(models.TransientModel):
     _name = 'openg2p.registration.update_att'
 
+    @api.multi
     def _default_stage_id(self):
         ids = self.env['openg2p.registration.stage'].search([
             ('fold', '=', False)
