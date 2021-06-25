@@ -631,7 +631,7 @@ class Registration(models.Model):
                 "postal_code": str(self.zip),
                 "identity": str(self.identity_passport),
                 "bank": str(self.bank_account_id.name),
-                "bank_account": str(self.bank_accound_id.acc_number),
+                "bank_account": str(self.bank_account_id.acc_number),
                 "emergency_contact_name": str(self.emergency_contact),
                 "emergency_contact_phone": str(self.emergency_phone),
             }
