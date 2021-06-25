@@ -10,30 +10,36 @@ _logger = logging.getLogger(__name__)
 
 
 class BatchExportXlsx(models.AbstractModel):
-    _inherit = 'report.openg2p_disbursement.batch_export_xlsx'
+    _inherit = "report.openg2p_disbursement.batch_export_xlsx"
 
     def _batch_report_colspec(self):
         colspec = super(BatchExportXlsx, self)._batch_report_colspec()
-        colspec.update({
-            'bank': {
-                'header': {
-                    'value': 'Bank',
+        colspec.update(
+            {
+                "bank": {
+                    "header": {
+                        "value": "Bank",
+                    },
+                    "data": {
+                        "value": self._render(
+                            "beneficiary.bank_account_id.bank_id.name or ''"
+                        ),
+                    },
+                    "width": 20,
+                    "sequence": 5,
                 },
-                'data': {
-                    'value': self._render("beneficiary.bank_account_id.bank_id.name or ''"),
+                "account": {
+                    "header": {
+                        "value": "Account Number",
+                    },
+                    "data": {
+                        "value": self._render(
+                            "beneficiary.bank_account_id.acc_number or ''"
+                        ),
+                    },
+                    "width": 20,
+                    "sequence": 6,
                 },
-                'width': 20,
-                'sequence': 5
-            },
-            'account': {
-                'header': {
-                    'value': 'Account Number',
-                },
-                'data': {
-                    'value': self._render("beneficiary.bank_account_id.acc_number or ''"),
-                },
-                'width': 20,
-                'sequence': 6
             }
-        })
+        )
         return colspec

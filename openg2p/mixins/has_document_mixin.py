@@ -7,26 +7,28 @@ from odoo import models, fields, api
 
 
 class Openg2pMixinHasDocument(models.AbstractModel):
-    _name = 'openg2p.mixin.has_document'
+    _name = "openg2p.mixin.has_document"
     _description = "OpenG2P Mixin: Has Document"
 
     document_ids = fields.One2many(
-        'ir.attachment',
-        compute='_compute_document_ids',
-        string='Documents',
+        "ir.attachment",
+        compute="_compute_document_ids",
+        string="Documents",
     )
     documents_count = fields.Integer(
-        compute='_compute_document_ids',
-        string='Document Count',
+        compute="_compute_document_ids",
+        string="Document Count",
     )
 
     def _compute_document_ids(self):
-        attachments = self.env['ir.attachment'].search([
-            ('res_model', '=', self._name),
-            ('res_id', 'in', self.ids),
-        ])
+        attachments = self.env["ir.attachment"].search(
+            [
+                ("res_model", "=", self._name),
+                ("res_id", "in", self.ids),
+            ]
+        )
 
-        result = dict.fromkeys(self.ids, self.env['ir.attachment'])
+        result = dict.fromkeys(self.ids, self.env["ir.attachment"])
         for attachment in attachments:
             result[attachment.res_id] |= attachment
 
@@ -36,14 +38,16 @@ class Openg2pMixinHasDocument(models.AbstractModel):
 
     @api.multi
     def action_get_attachment_tree_view(self):
-        action = self.env.ref('base.action_attachment').read()[0]
-        action['context'] = {
-            'default_res_model': self._name,
-            'default_res_id': self.ids[0]
+        action = self.env.ref("base.action_attachment").read()[0]
+        action["context"] = {
+            "default_res_model": self._name,
+            "default_res_id": self.ids[0],
         }
-        action['domain'] = str([
-            ('res_model', '=', self._name),
-            ('res_id', 'in', self.ids),
-        ])
-        action['search_view_id'] = (self.env.ref('base.view_attachment_search').id,)
+        action["domain"] = str(
+            [
+                ("res_model", "=", self._name),
+                ("res_id", "in", self.ids),
+            ]
+        )
+        action["search_view_id"] = (self.env.ref("base.view_attachment_search").id,)
         return action
