@@ -7,19 +7,18 @@ from odoo import fields, models
 
 
 class Bank(models.Model):
-    _inherit = 'res.bank'
+    _inherit = "res.bank"
 
     country = fields.Many2one(
-        'res.country',
-        default=lambda self: self.env.user.company_id.country_id
+        "res.country", default=lambda self: self.env.user.company_id.country_id
     )
     validation_regex = fields.Char()
     type = fields.Selection(
-        [('normal', 'Normal'), ('mobile', 'Mobile Money')],
+        [("normal", "Normal"), ("mobile", "Mobile Money")],
         required=True,
-        default='normal'
+        default="normal",
     )
     gateway_account = fields.Char(
         "Gateway Account",
-        help="Account that your organization is paying from with this bank"
+        help="Account that your organization is paying from with this bank",
     )
