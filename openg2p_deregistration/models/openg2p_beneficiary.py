@@ -6,12 +6,10 @@ from odoo import fields, models, api
 
 
 class Openg2pBeneficiary(models.Model):
-    _inherit = 'openg2p.beneficiary'
+    _inherit = "openg2p.beneficiary"
 
     deregistration_ids = fields.One2many(
-        'openg2p.deregistration',
-        'beneficiary_id',
-        'De-Registration Records'
+        "openg2p.deregistration", "beneficiary_id", "De-Registration Records"
     )
 
     @api.multi
@@ -20,9 +18,9 @@ class Openg2pBeneficiary(models.Model):
         deactivations = self.filtered(lambda r: not r.active)
 
         if deactivations:
-            self.env['openg2p.program.enrollment'].search(
+            self.env["openg2p.program.enrollment"].search(
                 [
-                    ('beneficiary_id', 'in', deactivations.ids),
-                    ('state', '!=', 'close'),
+                    ("beneficiary_id", "in", deactivations.ids),
+                    ("state", "!=", "close"),
                 ]
-            ).write({'date_end': fields.Date.today(), 'state': 'close'})
+            ).write({"date_end": fields.Date.today(), "state": "close"})

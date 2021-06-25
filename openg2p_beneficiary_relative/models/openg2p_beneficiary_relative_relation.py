@@ -5,16 +5,11 @@ from odoo import fields, models
 
 
 class BeneficiaryRelativeRelation(models.Model):
-    _name = 'openg2p.beneficiary.relative.relation'
-    _description = 'Beneficiary Relative Relation'
+    _name = "openg2p.beneficiary.relative.relation"
+    _description = "Beneficiary Relative Relation"
 
-    name = fields.Char(
-        string='Relation',
-        required=True,
-        translate=True
-    )
+    name = fields.Char(string="Relation", required=True, translate=True)
 
     _sql_constraints = [
-        ('name_id_uniq', 'unique(name)',
-         'Name must be unique.'),
+        ("name_id_uniq", "unique(name)", "Name must be unique."),
     ]
