@@ -11,7 +11,6 @@ from odoo.tools.translate import _
 import requests
 import json
 
-
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
 
@@ -391,8 +390,6 @@ class Registration(models.Model):
         if not stage_id:
             return {"value": {}}
         stage = self.env["openg2p.registration.stage"].browse(stage_id)
-        # print("Changed:"+stage[0])
-        # print("Stage:"+stage.fold)
         if stage.fold:
             return {"value": {"date_closed": fields.datetime.now()}}
         return {"value": {"date_closed": False}}
@@ -607,7 +604,6 @@ class Registration(models.Model):
     def archive_data(self):
         beneficiary_data = self.env["openg2p.beneficiary"].browse(self.retained_id)
 
-        # beneficiary_data.write({"merged_beneficiary_ids": (beneficiary_data)})
         beneficiary_data.write({"merged_beneficiary_ids": [(4, [beneficiary_data])]})
 
     @api.multi
@@ -630,7 +626,7 @@ class Registration(models.Model):
                 "city": str(self.city),
                 "postal_code": str(self.zip),
                 "identity": str(self.identity_passport),
-                "bank": str(self.bank_account_id.name),
+                "bank": str(self.bank_account_id.bank_id.name),
                 "bank_account": str(self.bank_account_id.acc_number),
                 "emergency_contact_name": str(self.emergency_contact),
                 "emergency_contact_phone": str(self.emergency_phone),
@@ -659,8 +655,8 @@ class Registration(models.Model):
             "postal_code": str(self.zip),
             "dob": str(self.birthday),
             "identity": str(self.identity_passport),
-            "bank": str(self.bank_account_id.name),
-            "bank_account": str(self.bank_accound_id.acc_number),
+            "bank": str(self.bank_account_id.bank_id.name),
+            "bank_account": str(self.bank_account_id.acc_number),
             "emergency_contact_name": str(self.emergency_contact),
             "emergency_contact_phone": str(self.emergency_phone),
         }
@@ -688,8 +684,8 @@ class Registration(models.Model):
                 "postal_code": str(self.zip),
                 "dob": str(self.birthday),
                 "identity": str(self.identity_passport),
-                "bank": str(self.bank_account_id.name),
-                "bank_account": str(self.bank_accound_id.acc_number),
+                "bank": str(self.bank_account_id.bank_id.name),
+                "bank_account": str(self.bank_account_id.acc_number),
                 "emergency_contact_name": str(self.emergency_contact),
                 "emergency_contact_phone": str(self.emergency_phone),
             }

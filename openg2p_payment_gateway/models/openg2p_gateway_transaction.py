@@ -41,6 +41,8 @@ class GatewayTransaction(models.Model):
     provider = fields.Char(
         required=True,
     )
+    bank_id = fields.Many2one("res.bank", "Bank", required=True, index=True)
+    provider = fields.Char(required=True, readonly=True)
     partner_id = fields.Many2one(
         "res.partner",
         "Partner",
