@@ -5,9 +5,9 @@ from .odk import ODK
 
 
 class ODKConfig(models.Model):
-    _name = 'odk.config'
-    _description = 'ODK Form Configuration'
-    _order = 'id'
+    _name = "odk.config"
+    _description = "ODK Form Configuration"
+    _order = "id"
 
     # Columns
     form_name = fields.Char(
@@ -15,42 +15,36 @@ class ODKConfig(models.Model):
         required=True,
     )
     odk_endpoint = fields.Char(
-        string='ODK Base URL',
+        string="ODK Base URL",
         required=True,
         # readonly=True
     )
     odk_project_id = fields.Integer(
-        string='ODK Project ID',
+        string="ODK Project ID",
         required=True,
         # readonly=True
     )
     odk_form_id = fields.Char(
-        string='ODK Form ID',
+        string="ODK Form ID",
         required=True,
         # readonly=True
     )
     odk_email = fields.Char(
-        string='ODK User EMail',
+        string="ODK User EMail",
         required=True,
         # readonly=True
     )
     odk_password = fields.Char(
-        string='ODK User Password',
+        string="ODK User Password",
         required=True,
         # readonly=True
     )
-    is_active = fields.Boolean(
-        string="Active",
-        default=False
-    )
+    is_active = fields.Boolean(string="Active", default=False)
     odk_last_sync_date = fields.Datetime(
-        string='Last Sync Date with ODK',
-        readonly=True
+        string="Last Sync Date with ODK", readonly=True
     )
     odk_submissions_count = fields.Integer(
-        string='Submissions Count',
-        readonly=True,
-        default=0
+        string="Submissions Count", readonly=True, default=0
     )
 
     @api.multi
@@ -59,7 +53,7 @@ class ODKConfig(models.Model):
 
     # Method executed by cron job to fetch submissions
     def cron_update_all_active_forms(self):
-        configs = self.search([('is_active', '=', True)])
+        configs = self.search([("is_active", "=", True)])
         configs.odk_button_update_all_form_submissions()
         return True
 
@@ -71,11 +65,6 @@ class ODKConfig(models.Model):
 
     # Method calling submissions call to fetch data
     def call_submission(self):
-        submissions_obj = self.env['odk.submissions']
+        submissions_obj = self.env["odk.submissions"]
         submissions_obj.update_submissions(self)
         print("Call Submission ends")
-
-
-
-
-
