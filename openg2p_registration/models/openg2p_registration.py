@@ -593,52 +593,65 @@ class Registration(models.Model):
 
     @api.multi
     def find_duplicates(self):
-        # print("Finding Duplicates.......")
+        print("Finding Duplicates.......")
         beneficiary_list = self.search_beneficiary()
-        # print(beneficiary_list)
+        print(beneficiary_list)
         if beneficiary_list:
             beneficiary_list = json.loads(beneficiary_list)
             beneficiary_ids = [li["beneficiary"] for li in beneficiary_list]
-            # print(beneficiary_ids)
+            print(beneficiary_ids)
             self.update(
                 {"duplicate_beneficiaries_ids": [(6, 0, list(beneficiary_ids))]}
             )
 
     def archive_data(self):
         beneficiary_data = self.env["openg2p.beneficiary"].browse(self.retained_id)
-
-        beneficiary_data.write({"merged_beneficiary_ids": [(4, [beneficiary_data])]})
+        print(beneficiary_data)
+        beneficiary_data.write(
+            {"merged_beneficiary_ids": [(4, (beneficiary_data.id,))]}
+        )
 
     @api.multi
     def merge_beneficiaries(self):
 
         idr = self.retained_id
-        # print(idr)
+        print(idr)
         beneficiary_data = self.env["openg2p.beneficiary"].browse(idr)
+        print(beneficiary_data)
         self.archive_data()
-        # print(beneficiary_data)
 
         beneficiary_data.write(
             {
-                "first_name": str(self.firstname),
-                "last_name": str(self.firstname),
-                "email": str(self.firstname),
-                "phone": str(self.phone),
-                "street": str(self.street),
-                "street2": str(self.street),
-                "city": str(self.city),
-                "postal_code": str(self.zip),
-                "identity": str(self.identity_passport),
-                "bank": str(self.bank_account_id.bank_id.name),
-                "bank_account": str(self.bank_account_id.sanitized_acc_number),
-                "emergency_contact_name": str(self.emergency_contact),
-                "emergency_contact_phone": str(self.emergency_phone),
+                "firstname": self.firstname,
+                "lastname": self.lastname,
+                "othernames": self.othernames,
+                "location_id": self.location_id.id,
+                "street": self.street,
+                "street2": self.street2,
+                "city": self.city,
+                "state_id": self.state_id.id,
+                "zip": self.zip,
+                "country_id": self.country_id.id,
+                "phone": self.phone,
+                "mobile": self.mobile,
+                "email": self.email,
+                "title": self.title.id,
+                "lang": self.lang,
+                "gender": self.gender,
+                "birthday": self.birthday,
+                "image": self.image,
+                "marital": self.marital,
+                "national_id": self.identity_national,
+                "passport_id": self.identity_passport,
+                "bank_account_id": self.bank_accound_id.id,
+                "emergency_contact": self.emergency_contact,
+                "emergency_phone": self.emergency_phone,
             }
         )
-
+        print(beneficiary_data)
         delete_url = BASE_URL + "/index/" + str(idr)
-        r = requests.post(delete_url)
-        # print(r)
+        r = requests.delete(delete_url)
+        print(r.text)
         self.clear_beneficiaries()
         self.retained_id = 0
 
@@ -665,7 +678,7 @@ class Registration(models.Model):
         }
         # Deleting null fields
         index_data = self.del_none(data)
-        # print(index_data)
+        print(index_data)
         url_endpoint = BASE_URL + "/index"
         try:
             r = requests.post(url_endpoint, json=index_data)
@@ -674,7 +687,7 @@ class Registration(models.Model):
             print(e)
 
     def search_beneficiary(self):
-        # print("Searching Beneficiaries.....")
+        print("Searching Beneficiaries.....")
         search_data = {
             "attributes": {
                 "first_name": str(self.firstname),
@@ -694,7 +707,7 @@ class Registration(models.Model):
             }
         }
         beneficiary_new_data = self.del_none(search_data)
-        # print(new_data)
+        print(beneficiary_new_data)
         search_url = BASE_URL + "/index/search"
         try:
             r = requests.post(search_url, json=beneficiary_new_data)
