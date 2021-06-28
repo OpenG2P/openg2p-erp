@@ -13,6 +13,8 @@ import json
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
+BASE_URL = "http://localhost:8080"
+
 
 class Registration(models.Model):
     _name = "openg2p.registration"
@@ -578,7 +580,6 @@ class Registration(models.Model):
         context["form_view_initial_mode"] = "edit"
 
         # Indexing the beneficiary
-        print("Indexing.......")
         self.index_beneficiary()
 
         return {
@@ -592,14 +593,16 @@ class Registration(models.Model):
 
     @api.multi
     def find_duplicates(self):
-        print("Finding Duplicates.......")
-        my_list = self.search_beneficiary()
-        print(my_list)
-        if my_list:
-            my_list = json.loads(my_list)
-            benf_ids = [li["beneficiary"] for li in my_list]
-            print(benf_ids)
-            self.update({"duplicate_beneficiaries_ids": [(6, 0, list(benf_ids))]})
+        # print("Finding Duplicates.......")
+        beneficiary_list = self.search_beneficiary()
+        # print(beneficiary_list)
+        if beneficiary_list:
+            beneficiary_list = json.loads(beneficiary_list)
+            beneficiary_ids = [li["beneficiary"] for li in beneficiary_list]
+            # print(beneficiary_ids)
+            self.update(
+                {"duplicate_beneficiaries_ids": [(6, 0, list(beneficiary_ids))]}
+            )
 
     def archive_data(self):
         beneficiary_data = self.env["openg2p.beneficiary"].browse(self.retained_id)
@@ -610,10 +613,10 @@ class Registration(models.Model):
     def merge_beneficiaries(self):
 
         idr = self.retained_id
-        print(idr)
+        # print(idr)
         beneficiary_data = self.env["openg2p.beneficiary"].browse(idr)
         self.archive_data()
-        print(beneficiary_data)
+        # print(beneficiary_data)
 
         beneficiary_data.write(
             {
@@ -633,9 +636,9 @@ class Registration(models.Model):
             }
         )
 
-        delete_url = "http://localhost:8080/index/" + str(idr)
+        delete_url = BASE_URL + "/index/" + str(idr)
         r = requests.post(delete_url)
-        print(r)
+        # print(r)
         self.clear_beneficiaries()
         self.retained_id = 0
 
@@ -661,17 +664,17 @@ class Registration(models.Model):
             "emergency_contact_phone": str(self.emergency_phone),
         }
         # Deleting null fields
-        new_data = self.del_none(data)
-        print(new_data)
-        url_endpoint = "http://localhost:8080/index"
+        index_data = self.del_none(data)
+        # print(index_data)
+        url_endpoint = BASE_URL + "/index"
         try:
-            r = requests.post(url_endpoint, json=new_data)
+            r = requests.post(url_endpoint, json=index_data)
             return r.status_code
         except requests.exceptions.RequestException as e:
             print(e)
 
     def search_beneficiary(self):
-        print("Searching Beneficiaries.....")
+        # print("Searching Beneficiaries.....")
         search_data = {
             "attributes": {
                 "first_name": str(self.firstname),
@@ -690,11 +693,11 @@ class Registration(models.Model):
                 "emergency_contact_phone": str(self.emergency_phone),
             }
         }
-        new_data = self.del_none(search_data)
-        print(new_data)
-        search_url = "http://localhost:8080/index/search"
+        beneficiary_new_data = self.del_none(search_data)
+        # print(new_data)
+        search_url = BASE_URL + "/index/search"
         try:
-            r = requests.post(search_url, json=new_data)
+            r = requests.post(search_url, json=beneficiary_new_data)
             return r.text
         except requests.exceptions.RequestException as e:
             print(e)
