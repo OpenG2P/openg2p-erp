@@ -146,8 +146,13 @@
                             <group string="Internal Info" name="internal_notes_right">
 
                             </group>
+<<<<<<< HEAD
                             <group name="Verification Status">
                                 <field name="verification_error"/>
+=======
+                            <group string="Verification">
+                                <field name="error_verification"/>
+>>>>>>> bug fixing, verification-error
                             </group>
                             <group string="Organization">
                                 <field name="org_custom_field">
