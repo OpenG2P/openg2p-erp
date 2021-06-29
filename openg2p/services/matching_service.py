@@ -8,6 +8,7 @@ from odoo.osv import expression
 from odoo.exceptions import UserError
 from odoo import models
 import logging
+
 _logger = logging.getLogger(__name__)
 
 """
@@ -27,14 +28,14 @@ MATCH_MODE_COMPREHENSIVE = 3
 
 
 class MatchingService(AbstractComponent):
-    _name = 'matching.service'
-    _description = 'Matching Service'
-    _collection = 'openg2p.beneficiary'
-    _usage = 'beneficiary.matcher'
+    _name = "matching.service"
+    _description = "Matching Service"
+    _collection = "openg2p.beneficiary"
+    _usage = "beneficiary.matcher"
 
     @property
     def matcher_name(self):
-        return self._name.replace('matching.service.', '')
+        return self._name.replace("matching.service.", "")
 
     @property
     def mode(self):
@@ -53,8 +54,9 @@ class MatchingServiceExactIdentities(Component):
     performs exactness match against recorded identities. Runs only for 'openg2p.beneficiary' and 'openg2p.registration'
     models
     """
-    _inherit = 'matching.service'
-    _name = 'matching.service.exact_identities'
+
+    _inherit = "matching.service"
+    _name = "matching.service.exact_identities"
 
     @property
     def mode(self):
@@ -66,14 +68,23 @@ class MatchingServiceExactIdentities(Component):
 
     def match(self, query):
         query.ensure_one()
-        if not isinstance(query, models.Model) and query._name not in ('openg2p.beneficiary', 'openg2p.registration'):
+        if not isinstance(query, models.Model) and query._name not in (
+            "openg2p.beneficiary",
+            "openg2p.registration",
+        ):
             return False
 
         identities = query.get_identities()
         if not identities:
             return False
 
-        domain = expression.OR([('category_id.code', '=', ID), ('name', '=', number)]
-                               for ID, number in query.get_identities())
-        matches = self.with_context(active_test=False).env['openg2p.beneficiary.id_number'].search(domain)
-        return matches.mapped('beneficiary_id') if len(matches) > 0 else False
+        domain = expression.OR(
+            [("category_id.code", "=", ID), ("name", "=", number)]
+            for ID, number in query.get_identities()
+        )
+        matches = (
+            self.with_context(active_test=False)
+            .env["openg2p.beneficiary.id_number"]
+            .search(domain)
+        )
+        return matches.mapped("beneficiary_id") if len(matches) > 0 else False

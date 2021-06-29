@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 
 
 class NoCopyMixin(models.AbstractModel):
-    _name = 'openg2p.mixin.no_name_create'
+    _name = "openg2p.mixin.no_name_create"
     _description = "OpenG2P Mixin: No Name Create"
 
     @api.model

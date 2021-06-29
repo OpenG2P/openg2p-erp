@@ -155,7 +155,10 @@
                                 </field>
                             </group>
                             <group name="internal_notes_right">
-                                
+
+                            </group>
+                            <group name="Verification Status">
+                                <field name="verification_error"/>
                             </group>
                         </group>
                         <separator string="Registration Summary"/>
@@ -184,12 +187,11 @@
             <field name="arch" type="xml">
                 <form>
                     <group>
-                        <group>
-                            <field name="stage_id"/>
-                        </group>
-                        <group>
-                            <button string="Stage Change" name="update_stage" type="object" class="btn-primary"/>
-                        </group>
+                        <field name="val"/>
+                    </group>
+                    <group>
+                        <button string="Update" name="update_att" type="object" class="btn-primary"/>
+                        <button string="Stage Change" name="update_stage" type="object" class="btn-primary"/>
                     </group>
                 </form>
             </field>

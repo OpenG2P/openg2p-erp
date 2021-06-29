@@ -1,13 +1,13 @@
 {
-    'name': 'ODK Connector',
-    'summary': 'Connect ODK Central to Odoo',
-    'version': '12.0.2.2.2',
-    'category': 'Connector',
-    'author': 'Subham Pramanik',
-    'depends': [
-        'base',
-        'web',
-        'mail',
+    "name": "ODK Connector",
+    "summary": "Connect ODK Central to Odoo",
+    "version": "12.0.2.2.2",
+    "category": "Connector",
+    "author": "Subham Pramanik",
+    "depends": [
+        "base",
+        "web",
+        "mail",
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -17,7 +17,7 @@
         'views/action.xml',
         'views/menu.xml',
     ],
-    'demo': [],
-    'installable': True,
-    'application': True,
+    "demo": [],
+    "installable": True,
+    "application": True,
 }
