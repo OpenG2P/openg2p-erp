@@ -8,9 +8,6 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
-import uuid
-import hashlib
-import requests
 
 
 class Slip(models.Model):
@@ -621,68 +618,3 @@ class Slip(models.Model):
             return line[0].total
         else:
             return 0.0
-
-    def create_bulk_transfer(self):
-        query = """SELECT p.total, p.currency_id, c.sanitized_acc_number
-                        FROM public.openg2p_disbursement_advice AS p  
-                        LEFT JOIN public.openg2p_disbursement_advice FROM public.res_partner_bank AS c  
-                        ON p.id=c.id  
-                        INTO OUTFILE 'accounts.csv' """
-
-        headers = {
-            "Content-Type": "multipart/form-data",
-        }
-
-        files = {
-            "data": ("accounts.csv", open("accounts.csv", "rb")),
-            "note": (None, "Bulk transfers"),
-            "checksum": (None, str(self.hash_generate())),
-            "request_id": (None, str(self.requestID())),
-        }
-
-        response = requests.post(
-            "https://ph.ee/channel/{payment_mode}/bulk/transfer",
-            headers=headers,
-            files=files,
-        )
-
-    def create_single_transfer(self):
-        headers = {
-            "Content-Type": "application/json",
-        }
-        data = {
-            "request_id": str(self.requestID()),
-            "account_number": "7878780080316316",
-            "amount": 1000000,
-            "currency": "RWF",
-            "note": "Sample Transaction",
-        }
-        response = requests.post(
-            "https://ph.ee/channel/{payment_mode}/transfer", headers=headers, data=data
-        )
-
-    def bulk_transfer_status(self, val):
-        params = (("bulk_id", val),)
-        response = requests.get(
-            "https://ph.ee/channel/{payment_mode}/bulk/transfer", params=params
-        )
-        return response
-
-    def single_transfer_status(self, val):
-        params = (("id", val),)
-        response = requests.get(
-            "https://ph.ee/channel/{payment_mode}/transfer", params=params
-        )
-        return response
-
-    def all_transactions_status(self, mode_of_payment):
-        response = requests.get("https://ph.ee/channel/mode_of_payment/transfer")
-        return response
-
-    def hash_generate(self):
-        m = hashlib.sha256()
-        return m
-
-    def requestID(self):
-        u = uuid.uuid4()
-        return u

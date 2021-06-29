@@ -11,8 +11,9 @@ from odoo.tools.translate import _
 import requests
 import json
 
-
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
+
+BASE_URL = "http://localhost:8080"
 
 
 class Registration(models.Model):
@@ -391,8 +392,6 @@ class Registration(models.Model):
         if not stage_id:
             return {"value": {}}
         stage = self.env["openg2p.registration.stage"].browse(stage_id)
-        # print("Changed:"+stage[0])
-        # print("Stage:"+stage.fold)
         if stage.fold:
             return {"value": {"date_closed": fields.datetime.now()}}
         return {"value": {"date_closed": False}}
@@ -581,7 +580,6 @@ class Registration(models.Model):
         context["form_view_initial_mode"] = "edit"
 
         # Indexing the beneficiary
-        print("Indexing.......")
         self.index_beneficiary()
 
         return {
@@ -596,18 +594,22 @@ class Registration(models.Model):
     @api.multi
     def find_duplicates(self):
         print("Finding Duplicates.......")
-        my_list = self.search_beneficiary()
-        print(my_list)
-        if my_list:
-            my_list = json.loads(my_list)
-            benf_ids = [li["beneficiary"] for li in my_list]
-            print(benf_ids)
-            self.update({"duplicate_beneficiaries_ids": [(6, 0, list(benf_ids))]})
+        beneficiary_list = self.search_beneficiary()
+        print(beneficiary_list)
+        if beneficiary_list:
+            beneficiary_list = json.loads(beneficiary_list)
+            beneficiary_ids = [li["beneficiary"] for li in beneficiary_list]
+            print(beneficiary_ids)
+            self.update(
+                {"duplicate_beneficiaries_ids": [(6, 0, list(beneficiary_ids))]}
+            )
 
     def archive_data(self):
         beneficiary_data = self.env["openg2p.beneficiary"].browse(self.retained_id)
-
-        beneficiary_data.write({"merged_beneficiary_ids": [(4, [beneficiary_data])]})
+        print(beneficiary_data)
+        beneficiary_data.write(
+            {"merged_beneficiary_ids": [(4, (beneficiary_data.id,))]}
+        )
 
     @api.multi
     def merge_beneficiaries(self):
@@ -615,30 +617,41 @@ class Registration(models.Model):
         idr = self.retained_id
         print(idr)
         beneficiary_data = self.env["openg2p.beneficiary"].browse(idr)
-        self.archive_data()
         print(beneficiary_data)
+        self.archive_data()
 
         beneficiary_data.write(
             {
-                "first_name": str(self.firstname),
-                "last_name": str(self.firstname),
-                "email": str(self.firstname),
-                "phone": str(self.phone),
-                "street": str(self.street),
-                "street2": str(self.street),
-                "city": str(self.city),
-                "postal_code": str(self.zip),
-                "identity": str(self.identity_passport),
-                "bank": str(self.bank_account_id.bank_id.name),
-                "bank_account": str(self.bank_accound_id.acc_number),
-                "emergency_contact_name": str(self.emergency_contact),
-                "emergency_contact_phone": str(self.emergency_phone),
+                "firstname": self.firstname,
+                "lastname": self.lastname,
+                "othernames": self.othernames,
+                "location_id": self.location_id.id,
+                "street": self.street,
+                "street2": self.street2,
+                "city": self.city,
+                "state_id": self.state_id.id,
+                "zip": self.zip,
+                "country_id": self.country_id.id,
+                "phone": self.phone,
+                "mobile": self.mobile,
+                "email": self.email,
+                "title": self.title.id,
+                "lang": self.lang,
+                "gender": self.gender,
+                "birthday": self.birthday,
+                "image": self.image,
+                "marital": self.marital,
+                "national_id": self.identity_national,
+                "passport_id": self.identity_passport,
+                "bank_account_id": self.bank_accound_id.id,
+                "emergency_contact": self.emergency_contact,
+                "emergency_phone": self.emergency_phone,
             }
         )
-
-        delete_url = "http://localhost:8080/index/" + str(idr)
-        r = requests.post(delete_url)
-        print(r)
+        print(beneficiary_data)
+        delete_url = BASE_URL + "/index/" + str(idr)
+        r = requests.delete(delete_url)
+        print(r.text)
         self.clear_beneficiaries()
         self.retained_id = 0
 
@@ -659,16 +672,16 @@ class Registration(models.Model):
             "dob": str(self.birthday),
             "identity": str(self.identity_passport),
             "bank": str(self.bank_account_id.bank_id.name),
-            "bank_account": str(self.bank_account_id.acc_number),
+            "bank_account": str(self.bank_account_id.sanitized_acc_number),
             "emergency_contact_name": str(self.emergency_contact),
             "emergency_contact_phone": str(self.emergency_phone),
         }
         # Deleting null fields
-        new_data = self.del_none(data)
-        print(new_data)
-        url_endpoint = "http://localhost:8080/index"
+        index_data = self.del_none(data)
+        print(index_data)
+        url_endpoint = BASE_URL + "/index"
         try:
-            r = requests.post(url_endpoint, json=new_data)
+            r = requests.post(url_endpoint, json=index_data)
             return r.status_code
         except requests.exceptions.RequestException as e:
             print(e)
@@ -689,16 +702,16 @@ class Registration(models.Model):
                 "dob": str(self.birthday),
                 "identity": str(self.identity_passport),
                 "bank": str(self.bank_account_id.bank_id.name),
-                "bank_account": str(self.bank_account_id.acc_number),
+                "bank_account": str(self.bank_account_id.sanitized_acc_number),
                 "emergency_contact_name": str(self.emergency_contact),
                 "emergency_contact_phone": str(self.emergency_phone),
             }
         }
-        new_data = self.del_none(search_data)
-        print(new_data)
-        search_url = "http://localhost:8080/index/search"
+        beneficiary_new_data = self.del_none(search_data)
+        print(beneficiary_new_data)
+        search_url = BASE_URL + "/index/search"
         try:
-            r = requests.post(search_url, json=new_data)
+            r = requests.post(search_url, json=beneficiary_new_data)
             return r.text
         except requests.exceptions.RequestException as e:
             print(e)

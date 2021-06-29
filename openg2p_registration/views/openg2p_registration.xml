@@ -52,7 +52,7 @@
                                 attrs="{'invisible': ['|', '|', ('stage_id', '!=', 2),('duplicate_beneficiaries_ids', '!=', []),('active', '=', False)]}"/>
                         <button string="Merge" name="merge_beneficiaries" type="object"
                                 class="oe_highlight"
-                                attrs="{'invisible': ['|', '|', ('stage_id', '!=', 6),('duplicate_beneficiaries_ids', '=', []),('active', '=', False)]}"/>
+                                attrs="{'invisible': [ '|', ('stage_id', '!=', 6),('active', '=', False)]}"/>
                         <button string="Refuse" name="archive_registration" type="object"
                                 attrs="{'invisible': [('active', '=', False)]}"/>
                         <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"
