@@ -153,8 +153,9 @@ class BatchTransaction(models.Model):
 
         try:
             response = requests.post(url, headers=headers, files=files)
-            self.transaction_status = response.json().get("status")
-            print(response.text)
+            response_data = json.loads(response.text)
+            self.transaction_status = response_data["status"]
+            print(self.transaction_status)
         except requests.exceptions.RequestException as e:
             print(e)
 
@@ -165,8 +166,8 @@ class BatchTransaction(models.Model):
 
         try:
             response = requests.get(url, params=params)
-            print(response.text)
-            self.transaction_status = response.json()[0]["status"]
+            response_data = json.loads(response.text)
+            self.transaction_status = response_data[0]["status"]
             return response
         except requests.exceptions.RequestException as e:
             print(e)
