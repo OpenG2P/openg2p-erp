@@ -7,8 +7,8 @@ class UpdateWizard(models.TransientModel):
     def _default_stage_id(self):
         ids = (
             self.env["openg2p.registration.stage"]
-            .search([("fold", "=", False)], order="sequence asc", limit=1)
-            .ids
+                .search([("fold", "=", False)], order="sequence asc", limit=1)
+                .ids
         )
         if ids:
             return ids[0]
