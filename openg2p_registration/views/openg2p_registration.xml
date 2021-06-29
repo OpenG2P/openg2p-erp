@@ -207,14 +207,16 @@
         <record id="wizard_view" model="ir.ui.view">
             <field name="name">Update Attendance</field>
             <field name="model">openg2p.registration.update_att</field>
+            <field name="target">inline</field>
             <field name="arch" type="xml">
                 <form>
                     <group>
-                        <field name="val"/>
-                    </group>
-                    <group>
-                        <button string="Update" name="update_att" type="object" class="btn-primary"/>
-                        <button string="Stage Change" name="update_stage" type="object" class="btn-primary"/>
+                        <group>
+                            <field name="stage_id"/>
+                        </group>
+                        <group>
+                            <button string="Stage Change" name="update_stage" type="object" class="btn-primary"/>
+                        </group>
                     </group>
                 </form>
             </field>
