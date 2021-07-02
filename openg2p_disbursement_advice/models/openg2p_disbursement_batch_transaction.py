@@ -9,6 +9,12 @@ import logging
 import hashlib
 import uuid
 import csv
+import boto3
+import pandas as pd
+from io import StringIO
+import os
+from dotenv import load_dotenv
+
 from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
@@ -101,19 +107,24 @@ class BatchTransaction(models.Model):
     def create_bulk_transfer(self):
         self._generate_uuid()
 
-        # import os
-        # if os.path.exists('accounts.csv'):
-        #     os.remove('accounts.csv')
-
         limit = 100
         beneficiary_transactions = self.env["openg2p.disbursement.main"].search(
             [("batch_id", "=", self.id)], limit=limit
         )
 
         offset = 0
+
+        # CSV filename as RequestID+Datetime
+        csvname = (
+            self.request_id
+            + "-"
+            + str(datetime.now().strftime(r"%Y%m%d%H%M%S"))
+            + ".csv"
+        )
+
         while len(beneficiary_transactions) > 0:
 
-            with open("accounts.csv", "a") as csvfile:
+            with open(csvname, "a") as csvfile:
                 csvwriter = csv.writer(csvfile)
                 for rec in beneficiary_transactions:
                     entry = [
@@ -138,25 +149,30 @@ class BatchTransaction(models.Model):
                 [("batch_id", "=", self.id)], limit=limit, offset=offset
             )
 
-        headers = {
-            "Content-Type": "multipart/form-data",
-        }
+        # Uploading to AWS bucket
+        uploaded = self.upload_to_aws(csvname, "openg2p-dev")
 
+        headers = {
+            # "Content-Type": "multipart/form-data",
+        }
         files = {
-            "data": ("accounts.csv", open("accounts.csv", "rb")),
+            "data": (csvname, open(csvname, "rb")),
             "note": (None, "Bulk transfers"),
-            "checksum": (None, str(self.generate_hash())),
+            "checksum": (None, str(self.generate_hash(csvname))),
             "request_id": (None, str(self.request_id)),
         }
+
         print(self.request_id)
         url = "http://15.207.23.72:5000/channel/bulk/transfer"
 
         try:
             response = requests.post(url, headers=headers, files=files)
-            response_data = json.loads(response.text)
+
+            response_data = response.json()
+
             self.transaction_status = response_data["status"]
-            print(self.transaction_status)
-        except requests.exceptions.RequestException as e:
+            # print(self.transaction_status)
+        except ValueError as e:
             print(e)
 
     def bulk_transfer_status(self):
@@ -172,6 +188,29 @@ class BatchTransaction(models.Model):
         except requests.exceptions.RequestException as e:
             print(e)
 
+    def upload_to_aws(self, local_file, bucket):
+
+        try:
+            load_dotenv("F:\odoo12\odoo\openg2p-erp\.env")
+            hc = pd.read_csv(local_file)
+
+            s3 = boto3.client(
+                "s3",
+                aws_access_key_id=os.getenv("ACCESS_KEY"),
+                aws_secret_access_key=os.getenv("SECRET_KEY"),
+            )
+            csv_buf = StringIO()
+
+            hc.to_csv(csv_buf, header=True, index=False)
+            csv_buf.seek(0)
+
+            s3.put_object(Bucket=bucket, Body=csv_buf.getvalue(), Key=local_file)
+            # print("Upload Successful")
+
+        except FileNotFoundError:
+            # print("The file was not found")
+            return False
+
     def all_transactions_status(self):
         try:
             response = requests.get("https://15.207.23.72:5000/channel/transfer")
@@ -179,15 +218,17 @@ class BatchTransaction(models.Model):
         except BaseException as e:
             print(e)
 
-    def generate_hash(self):
+    def generate_hash(self, csvname):
         sha256 = hashlib.sha256()
         block_size = 256 * 128
 
         try:
-            with open("accounts.csv", "rb") as f:
+            with open(csvname, "rb") as f:
                 for chunk in iter(lambda: f.read(block_size), b""):
                     sha256.update(chunk)
-            return sha256.hexdigest()
+
+            res = sha256.hexdigest()
+            return res
         except BaseException as e:
             print(e)
 

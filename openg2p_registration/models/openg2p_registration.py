@@ -220,6 +220,9 @@ class Registration(models.Model):
         from datetime import datetime
 
         data = {}
+
+        # data["batch_id"]=batch_id
+
         temp = {}
         odk_map = (
             odk_data["odk_map"]
@@ -330,7 +333,7 @@ class Registration(models.Model):
                         "legend_done",
                         "legend_normal",
                     ]:
-                        if k == "name":
+                        if k == "name" and v:
                             name_parts = v.split(" ")
                             data["firstname"] = name_parts[0]
                             if len(name_parts) > 1:
