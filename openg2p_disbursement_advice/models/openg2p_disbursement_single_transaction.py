@@ -90,6 +90,15 @@ class SingleTransaction(models.Model):
         ("size_gt_zero", "CHECK (amount>0)", "Amount has to be greater than zero."),
     ]
 
+    @api.onchange("beneficiary_id")
+    def on_change_beneficiary_id(self):
+        for rec in self:
+            return {
+                "domain": {
+                    "bank_account_id": [("beneficiary_id", "=", rec.beneficiary_id.id)]
+                }
+            }
+
     @api.multi
     def _transaction_execution_amount(self):
         """

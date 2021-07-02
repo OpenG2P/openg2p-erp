@@ -83,3 +83,12 @@ class DisbursementMain(models.Model):
                 rec.bank_account_id.acc_holder_name
                 or rec.bank_account_id.beneficiary_id.name
             )
+
+    @api.onchange("beneficiary_id")
+    def on_change_beneficiary_id(self):
+        for rec in self:
+            return {
+                "domain": {
+                    "bank_account_id": [("beneficiary_id", "=", rec.beneficiary_id.id)]
+                }
+            }

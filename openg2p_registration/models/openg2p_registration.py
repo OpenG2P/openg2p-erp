@@ -611,8 +611,9 @@ class Registration(models.Model):
         beneficiary_data = self.env["openg2p.beneficiary"].browse(self.retained_id)
         print(beneficiary_data)
         beneficiary_data.write(
-            {"merged_beneficiary_ids": [(4, (beneficiary_data.id,))]}
+            {"merged_beneficiary_ids": [(4, (self.retained_id, id))]}
         )
+        self.archive_registration()
 
     @api.multi
     def merge_beneficiaries(self):
@@ -625,9 +626,6 @@ class Registration(models.Model):
 
         beneficiary_data.write(
             {
-                "firstname": self.firstname,
-                "lastname": self.lastname,
-                "othernames": self.othernames,
                 "location_id": self.location_id.id,
                 "street": self.street,
                 "street2": self.street2,
@@ -638,14 +636,9 @@ class Registration(models.Model):
                 "phone": self.phone,
                 "mobile": self.mobile,
                 "email": self.email,
-                "title": self.title.id,
                 "lang": self.lang,
-                "gender": self.gender,
-                "birthday": self.birthday,
                 "image": self.image,
                 "marital": self.marital,
-                "national_id": self.identity_national,
-                "passport_id": self.identity_passport,
                 "bank_account_id": self.bank_accound_id.id,
                 "emergency_contact": self.emergency_contact,
                 "emergency_phone": self.emergency_phone,
