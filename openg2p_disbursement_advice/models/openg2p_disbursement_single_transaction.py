@@ -35,7 +35,8 @@ class SingleTransaction(models.Model):
     beneficiary_id = fields.Many2one(
         "openg2p.beneficiary", "Beneficiary", required=True
     )
-    currency_id = fields.Many2one("res.currency", required=True)
+    currency_id = fields.Many2one("res.currency", required=True, default=0)
+
     program_id = fields.Many2one(
         "openg2p.program",
         string="Program",

@@ -68,7 +68,8 @@ class DisbursementMain(models.Model):
         ),
         track_visibility="onchange",
     )
-    currency_id = fields.Many2one("res.currency", required=True)
+    # currency_id = fields.Many2one("res.currency", required=False, default=0)
+    currency_id = fields.Many2one("res.currency", required=True, default=0)
     payment_mode = fields.Selection(
         "Payment Mode",
         related="bank_account_id.payment_mode",

@@ -52,33 +52,27 @@ class BatchTransaction(models.Model):
             ("draft", "Drafting"),
             ("confirm", "Confirmed"),
             ("pending", "Pending"),
-            ("paymentstatus", "Transaction Status"),
+            ("paymentstatus", "Completed"),
         ],
         string="Status",
-        index=True,
         readonly=True,
-        copy=False,
         default="draft",
-        track_visibility="onchange",
     )
     date_start = fields.Date(
         string="Date From",
         required=True,
-        readonly=True,
-        states={"draft": [("readonly", False)]},
         default=lambda self: fields.Date.to_string(date.today().replace(day=1)),
         track_visibility="onchange",
     )
     date_end = fields.Date(
         string="Date To",
         required=True,
-        readonly=True,
-        states={"draft": [("readonly", False)]},
         default=lambda self: fields.Date.to_string(
             (datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()
         ),
         track_visibility="onchange",
     )
+
     company_id = fields.Many2one(
         "res.company",
         "Company",
@@ -87,7 +81,10 @@ class BatchTransaction(models.Model):
         ondelete="restrict",
         default=lambda self: self.env.user.company_id,
     )
+    payment_hub_batch_id = fields.Char(readonly=True, string="Payment Hub Batch ID")
+
     request_id = fields.Char(string="UUID", compute="_generate_uuid", store=True)
+
     transaction_status = fields.Char(
         readonly=True,
     )
@@ -172,6 +169,7 @@ class BatchTransaction(models.Model):
 
             self.transaction_status = response_data["status"]
             # print(self.transaction_status)
+            self.payment_hub_batch_id = response_data["batch_id"]
         except ValueError as e:
             print(e)
 
