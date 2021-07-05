@@ -610,10 +610,48 @@ class Registration(models.Model):
     def archive_data(self):
         beneficiary_data = self.env["openg2p.beneficiary"].browse(self.retained_id)
         print(beneficiary_data)
+        # print(beneficiary_data.firstname)
+        print(id)
+        print(self.id)
         beneficiary_data.write(
-            {"merged_beneficiary_ids": [(4, (self.retained_id, id))]}
+            {
+                "merged_beneficiary_ids": (
+                    0,
+                    0,
+                    {
+                        "retained_id": self.retained_id,
+                        "merged_id": self.id,
+                    },
+                )
+            }
         )
         self.archive_registration()
+        # data = {
+        #     "firstname": self.firstname,
+        #     "lastname": self.lastname,
+        #     "othernames": self.othernames,
+        #     "location_id": self.location_id.id,
+        #     "street": self.street,
+        #     "street2": self.street2,
+        #     "city": self.city,
+        #     "state_id": self.state_id.id,
+        #     "zip": self.zip,
+        #     "country_id": self.country_id.id,
+        #     "phone": self.phone,
+        #     "mobile": self.mobile,
+        #     "email": self.email,
+        #     "title": self.title.id,
+        #     "lang": self.lang,
+        #     "gender": self.gender,
+        #     "birthday": self.birthday,
+        #     "image": self.image,
+        #     "marital": self.marital,
+        #     "national_id": self.identity_national,
+        #     "passport_id": self.identity_passport,
+        #     "bank_account_id": self.bank_account_id.id,
+        #     "emergency_contact": self.emergency_contact,
+        #     "emergency_phone": self.emergency_phone,
+        # }
 
     @api.multi
     def merge_beneficiaries(self):
@@ -639,7 +677,7 @@ class Registration(models.Model):
                 "lang": self.lang,
                 "image": self.image,
                 "marital": self.marital,
-                "bank_account_id": self.bank_accound_id.id,
+                "bank_account_id": self.bank_account_id.id,
                 "emergency_contact": self.emergency_contact,
                 "emergency_phone": self.emergency_phone,
             }
@@ -683,7 +721,7 @@ class Registration(models.Model):
             print(e)
 
     def search_beneficiary(self):
-        print(self.bank_account_id, " | ", self)
+
         print("Searching Beneficiaries.....")
         search_data = {
             "attributes": {

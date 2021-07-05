@@ -40,6 +40,7 @@
                 <form>
                     <group>
                         <group>    
+                            <field name="batch_name"/>
                             <button string="Create Batch Transaction" name="create_batch" type="object" class="btn-primary"/>
                             
                         </group>

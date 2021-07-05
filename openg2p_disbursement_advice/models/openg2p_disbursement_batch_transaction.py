@@ -125,13 +125,15 @@ class BatchTransaction(models.Model):
                 csvwriter = csv.writer(csvfile)
                 for rec in beneficiary_transactions:
                     entry = [
-                        rec.acc_holder_name,
+                        rec.id,
+                        rec.payment_mode,
                         rec.name,
+                        rec.acc_holder_name,
                         rec.amount,
                         rec.currency_id.name,
-                        rec.payment_mode,
                     ]
                     # print(entry)
+                    # id,request_id,payment_mode,acc_number,amount,currency,note
                     beneficiary_transaction_records = []
                     beneficiary_transaction_records.append(entry)
                     csvwriter.writerows(
