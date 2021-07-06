@@ -136,6 +136,16 @@ class Registration(models.Model):
         search="_search_att",
     )
 
+    error_verification = fields.Selection(
+        string='Error in Verification',
+        selection=[
+            ("none", "None"),
+            ("name_error", "Error Name"),
+            ("addr_error", "Error Address"),
+        ],
+        default='none',
+    )
+
     def _search_att(self, operator, val2):
         print("_search_att", "|", operator, "|", val2)
         res = []
