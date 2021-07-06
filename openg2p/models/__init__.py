@@ -14,3 +14,4 @@ from . import res_company
 from . import res_config_settings
 from . import res_country_state
 from . import res_users
+from . import openg2p_beneficiary_org_map
