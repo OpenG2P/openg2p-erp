@@ -59,7 +59,7 @@ class ODKSubmissions(models.Model):
         last_count = odk_config.odk_submissions_count
         new_count = count_response["@odata.count"]
         remaining_count = new_count - last_count
-
+        # create batch id
         # Over here 100 is the batch size we're considering. And 5 is the offset for additional margin.
         while remaining_count > 100:
             top_count = 100 + 5  # $top
@@ -71,7 +71,7 @@ class ODKSubmissions(models.Model):
                 (odk_config.odk_project_id, odk_config.odk_form_id),
                 {"$top": top_count, "$skip": skip_count, "$count": "true"},
             )
-            self.save_data_into_all(submission_response["value"], odk_config)
+            self.save_data_into_all(submission_response["value"], odk_config) # pass
 
             last_count = last_count + 100
             remaining_count = new_count - last_count
@@ -81,7 +81,7 @@ class ODKSubmissions(models.Model):
                 (odk_config.odk_project_id, odk_config.odk_form_id),
                 {"$top": top_count, "$count": "true"},
             )
-            self.save_data_into_all(submission_response["value"], odk_config)
+            self.save_data_into_all(submission_response["value"], odk_config) # pass
         return new_count
 
     # Umbrella method to save data in odk.submissions and openg2p.registration
