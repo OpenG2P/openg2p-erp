@@ -146,11 +146,9 @@ class Registration(models.Model):
     )
 
     def _search_att(self, operator, val2):
-        print("_search_att", "|", operator, "|", val2)
         res = []
         regds = self.env["openg2p.registration"].search([])
         for rec in regds:
-            print(rec)
             att = self.env["openg2p.registration.orgmap"].search(
                 [
                     "&",
@@ -164,7 +162,6 @@ class Registration(models.Model):
                 val = int(att.field_value)
             except BaseException as e:
                 continue
-            print(val, "|", operator, "|", val2)
             if operator == ">":
                 if val > val2:
                     res.append(rec)
@@ -183,7 +180,6 @@ class Registration(models.Model):
             elif operator == "<=":
                 if val <= val2:
                     res.append(rec)
-        print(res)
         return [("id", "in", [rec.id for rec in res])]
 
     @api.depends("org_custom_field")
@@ -199,7 +195,6 @@ class Registration(models.Model):
             try:
                 rec.attendance = int(att.field_value) if att else 0
             except BaseException as e:
-                print(e)
                 rec.attendance = 0
 
     def _get_default_odk_map(self):
@@ -220,7 +215,6 @@ class Registration(models.Model):
             }
         )
         id = regd.id
-        print(id)
         from datetime import datetime
         data = {}
         temp = {}
@@ -346,7 +340,6 @@ class Registration(models.Model):
                     org_data.update({k: v})
             except Exception as e:
                 print(e)
-        print('before fill')
         for k, v in org_data.items():
             self.env["openg2p.registration.orgmap"].create(
                 {
@@ -556,10 +549,7 @@ class Registration(models.Model):
         beneficiary = self.env["openg2p.beneficiary"].create(data)
 
         org_fields = self.env['openg2p.registration.orgmap'].search([('regd_id', '=', self.id)])
-        print(len(org_fields))
-        print(org_fields)
         for org_field in org_fields:
-            print(org_field)
             self.env["openg2p.beneficiary.orgmap"].create(
                 {
                     "field_name": org_field.field_name,
