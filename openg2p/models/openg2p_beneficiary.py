@@ -301,6 +301,71 @@ class Beneficiary(models.Model):
         compute="_compute_att",
         search="_search_att",
     )
+    org_custom_field = fields.One2many(
+        "openg2p.beneficiary.orgmap",
+        "beneficiary_id",
+    )
+    attendance = fields.Integer(
+        string="Attendance",
+        store=False,
+        required=False,
+        compute="_compute_att",
+        search="_search_att",
+    )
+
+    def _search_att(self, operator, val2):
+        res = []
+        for rec in self:
+            att = self.env["openg2p.beneficiary.orgmap"].search(
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "total_student_in_attendance_at_the_school"),
+                ]
+            )
+            if not att:
+                continue
+            try:
+                val = int(att.field_value)
+            except BaseException as e:
+                print(e)
+                continue
+            if operator == ">":
+                if val > val2:
+                    res.append(rec)
+            elif operator == "<":
+                if val < val2:
+                    res.append(rec)
+            elif operator == "=":
+                if val == val2:
+                    res.append(rec)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec)
+            elif operator == ">=":
+                if val >= val2:
+                    res.append(rec)
+            elif operator == "<=":
+                if val <= val2:
+                    res.append(rec)
+        return [("id", "in", [rec.id for rec in res])]
+
+    @api.depends("org_custom_field")
+    def _compute_att(self):
+        for rec in self:
+            att = self.env["openg2p.beneficiary.orgmap"].search(
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "total_student_in_attendance_at_the_school"),
+                ]
+            )
+            try:
+                rec.attendance = int(att.field_value) if att else 0
+                rec.attendance =  0
+            except BaseException as e:
+                print(e)
+                rec.attendance = 0
 
     # example for another filter
     school_approved = fields.Selection(
