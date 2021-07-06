@@ -136,13 +136,13 @@ class Registration(models.Model):
     )
 
     error_verification = fields.Selection(
-        string='Error in Verification',
+        string="Error in Verification",
         selection=[
             ("none", "None"),
             ("name_error", "Error Name"),
             ("addr_error", "Error Address"),
         ],
-        default='none',
+        default="none",
     )
 
     def _search_att(self, operator, val2):
