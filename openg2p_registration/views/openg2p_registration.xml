@@ -147,7 +147,7 @@
 
                             </group>
                             <group name="Verification Status">
-                                <field name="verification_error"/>
+                                <field name="error_verification"/>
                             </group>
                             <group string="Organization">
                                 <field name="org_custom_field">
