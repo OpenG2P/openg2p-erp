@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from odoo.addons.openg2p.services.matching_service import (
     MATCH_MODE_COMPREHENSIVE,
+    MATCH_MODE_NORMAL,
 )
+
 from odoo.addons.queue_job.job import job
 
 from odoo import api, fields, models, SUPERUSER_ID
@@ -550,7 +552,6 @@ class Registration(models.Model):
             "emergency_phone": self.emergency_phone,
         }
         beneficiary = self.env["openg2p.beneficiary"].create(data)
-
         org_fields = self.env["openg2p.registration.orgmap"].search(
             [("regd_id", "=", self.id)]
         )
@@ -562,7 +563,6 @@ class Registration(models.Model):
                     "beneficiary_id": beneficiary.id,
                 }
             )
-
         for code, number in self.get_identities():
             category = self.env["openg2p.beneficiary.id_category"].search(
                 [("type", "=", code)]
