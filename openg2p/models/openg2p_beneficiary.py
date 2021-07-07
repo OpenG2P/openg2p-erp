@@ -362,7 +362,7 @@ class Beneficiary(models.Model):
             )
             try:
                 rec.attendance = int(att.field_value) if att else 0
-                rec.attendance =  0
+                rec.attendance = 0
             except BaseException as e:
                 print(e)
                 rec.attendance = 0
