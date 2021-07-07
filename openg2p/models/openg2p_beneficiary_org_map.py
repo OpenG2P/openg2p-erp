@@ -6,12 +6,12 @@ class BeneficiaryOrgMap(models.Model):
     _description = "Beneficiary Org Map Model"
 
     field_name = fields.Char(
-        'Field Name',
+        "Field Name",
         required=True,
     )
 
     field_value = fields.Char(
-        'Field Value',
+        "Field Value",
         required=True,
     )
 

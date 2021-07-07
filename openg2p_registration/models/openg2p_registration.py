@@ -20,8 +20,8 @@ class Registration(models.Model):
     def _default_stage_id(self):
         ids = (
             self.env["openg2p.registration.stage"]
-                .search([("fold", "=", False)], order="sequence asc", limit=1)
-                .ids
+            .search([("fold", "=", False)], order="sequence asc", limit=1)
+            .ids
         )
         if ids:
             return ids[0]
@@ -138,9 +138,9 @@ class Registration(models.Model):
     error_verification = fields.Selection(
         string="Error in Verification",
         selection=[
-            ('none', 'None'),
-            ('error_name', 'Error in name'),
-            ('error_addr', 'Error in address'),
+            ("none", "None"),
+            ("error_name", "Error in name"),
+            ("error_addr", "Error in address"),
         ],
         default="none",
     )
@@ -165,19 +165,19 @@ class Registration(models.Model):
             if operator == ">":
                 if val > val2:
                     res.append(rec)
-            elif operator == '<':
+            elif operator == "<":
                 if val < val2:
                     res.append(rec)
-            elif operator == '=':
+            elif operator == "=":
                 if val == val2:
                     res.append(rec)
-            elif operator == '!=':
+            elif operator == "!=":
                 if val != val2:
                     res.append(rec)
-            elif operator == '>=':
+            elif operator == ">=":
                 if val >= val2:
                     res.append(rec)
-            elif operator == '<=':
+            elif operator == "<=":
                 if val <= val2:
                     res.append(rec)
         return [("id", "in", [rec.id for rec in res])]
@@ -216,6 +216,7 @@ class Registration(models.Model):
         )
         id = regd.id
         from datetime import datetime
+
         data = {}
         temp = {}
         odk_map = (
@@ -247,13 +248,13 @@ class Registration(models.Model):
                 ]:
                     continue
                 if k == "bank_account_number":
-                    if len(v or '') != 0:
+                    if len(v or "") != 0:
                         data["bank_account_number"] = odk_data["bank_account_number"]
                         res = self.env["res.partner.bank"].search(
                             [("acc_number", "=", str(odk_data["bank_account_number"]))]
                         )
                         if res:
-                            raise Exception('Duplicate Bank Account Number!')
+                            raise Exception("Duplicate Bank Account Number!")
                         if not res:
                             res = self.env["res.partner.bank"].create(
                                 {
@@ -261,7 +262,7 @@ class Registration(models.Model):
                                     "partner_id": self.env.ref("base.main_partner").id,
                                 }
                             )
-                        data['bank_account_id'] = res.id
+                        data["bank_account_id"] = res.id
                 elif k == "phone":
                     data["phone"] = odk_data["phone"]
                 elif hasattr(self, k):
@@ -274,7 +275,9 @@ class Registration(models.Model):
                     elif k == "registered_date":
                         data["registered_date"] = datetime.strptime(v, format)
                     elif k == "categ_ids":
-                        res = self.env["categ_ids"].search([("categ_ids", "=", v)], limit=1)
+                        res = self.env["categ_ids"].search(
+                            [("categ_ids", "=", v)], limit=1
+                        )
                         if res:
                             data["categ_ids"] = res.ids
                     elif k == "company_id":
@@ -419,10 +422,10 @@ class Registration(models.Model):
                     vals["stage_id"]
                 )
                 if (
-                        not registration.stage_id.fold
-                        and next_stage.fold
-                        and next_stage.sequence > 1
-                        and registration.active
+                    not registration.stage_id.fold
+                    and next_stage.fold
+                    and next_stage.sequence > 1
+                    and registration.active
                 ):  # ending stage
                     if not registration.beneficiary_id:
                         raise UserError(
@@ -439,8 +442,8 @@ class Registration(models.Model):
                         )
 
                 if (
-                        registration.stage_id.sequence > next_stage.sequence
-                        and registration.beneficiary_id
+                    registration.stage_id.sequence > next_stage.sequence
+                    and registration.beneficiary_id
                 ):
                     raise UserError(
                         _(
@@ -470,21 +473,21 @@ class Registration(models.Model):
     def _track_subtype(self, init_values):
         record = self[0]
         if (
-                "beneficiary_id" in init_values
-                and record.beneficiary_id
-                and record.beneficiary_id.active
+            "beneficiary_id" in init_values
+            and record.beneficiary_id
+            and record.beneficiary_id.active
         ):
             return "openg2p_registration.mt_registration_registered"
         elif (
-                "stage_id" in init_values
-                and record.stage_id
-                and record.stage_id.sequence <= 1
+            "stage_id" in init_values
+            and record.stage_id
+            and record.stage_id.sequence <= 1
         ):
             return "openg2p_registration.mt_registration_new"
         elif (
-                "stage_id" in init_values
-                and record.stage_id
-                and record.stage_id.sequence > 1
+            "stage_id" in init_values
+            and record.stage_id
+            and record.stage_id.sequence > 1
         ):
             return "openg2p_registration.mt_registration_stage_changed"
         return super(Registration, self)._track_subtype(init_values)
@@ -510,12 +513,12 @@ class Registration(models.Model):
         self.ensure_one()
 
         if (
-                not self.duplicate_beneficiaries_ids
+            not self.duplicate_beneficiaries_ids
         ):  # last chance to make sure no duplicates
             self.ensure_unique(mode=MATCH_MODE_COMPREHENSIVE)
 
         if (
-                self.duplicate_beneficiaries_ids
+            self.duplicate_beneficiaries_ids
         ):  # TODO ability to force create if maanger... pass via context
             raise ValidationError(
                 _("Potential duplicates exists for this record and so can not be added")
@@ -548,7 +551,9 @@ class Registration(models.Model):
         }
         beneficiary = self.env["openg2p.beneficiary"].create(data)
 
-        org_fields = self.env['openg2p.registration.orgmap'].search([('regd_id', '=', self.id)])
+        org_fields = self.env["openg2p.registration.orgmap"].search(
+            [("regd_id", "=", self.id)]
+        )
         for org_field in org_fields:
             self.env["openg2p.beneficiary.orgmap"].create(
                 {
