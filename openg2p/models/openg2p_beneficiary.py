@@ -291,6 +291,8 @@ class Beneficiary(models.Model):
         "openg2p.beneficiary.orgmap",
         "beneficiary_id",
     )
+
+    # example for filtering on org custom fields
     attendance = fields.Integer(
         string="Attendance",
         store=False,
@@ -299,6 +301,7 @@ class Beneficiary(models.Model):
         search="_search_att",
     )
 
+    # example for filtering on org custom fields
     def _search_att(self, operator, val2):
         res = []
         for rec in self:
@@ -336,6 +339,7 @@ class Beneficiary(models.Model):
                     res.append(rec)
         return [("id", "in", [rec.id for rec in res])]
 
+    # example for filtering on org custom fields
     @api.depends("org_custom_field")
     def _compute_att(self):
         for rec in self:
