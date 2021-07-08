@@ -129,6 +129,7 @@ class Registration(models.Model):
         "regd_id",
     )
 
+    # example for filtering on org custom fields
     attendance = fields.Integer(
         string="Attendance",
         store=False,
@@ -147,6 +148,7 @@ class Registration(models.Model):
         default="none",
     )
 
+    # example for filtering on org custom fields
     def _search_att(self, operator, val2):
         res = []
         regds = self.env["openg2p.registration"].search([])
@@ -184,6 +186,7 @@ class Registration(models.Model):
                     res.append(rec)
         return [("id", "in", [rec.id for rec in res])]
 
+    # example for filtering on org custom fields
     @api.depends("org_custom_field")
     def _compute_att(self):
         for rec in self:
@@ -320,27 +323,16 @@ class Registration(models.Model):
                         if state:
                             data["state_id"] = state.id
                     else:
-                        if k not in [
-                            "description",
-                            "color",
-                            "beneficiary_name",
-                            "identity_national",
-                            "identity_passport",
-                            "legend_blocked",
-                            "legend_done",
-                            "legend_normal",
-                        ]:
-                            if k == "name":
-                                if v is None:
-                                    continue
-                                name_parts = v.split(" ")
-                                data["firstname"] = name_parts[0]
-                                if len(name_parts) > 1:
-                                    data["lastname"] = " ".join(name_parts[1:])
-                            else:
-                                org_data.update({k: v})
+                        if k == "name":
+                            if v is None:
+                                continue
+                            name_parts = v.split(" ")
+                            data["firstname"] = name_parts[0]
+                            if len(name_parts) > 1:
+                                data["lastname"] = " ".join(name_parts[1:])
                         else:
-                            data[k] = v
+                            org_data.update({k: v})
+
                 else:
                     org_data.update({k: v})
             except Exception as e:
