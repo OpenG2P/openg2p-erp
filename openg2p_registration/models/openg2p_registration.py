@@ -141,12 +141,6 @@ class Registration(models.Model):
         search="_search_att",
     )
 
-    # beneficiary = fields.Many2one(
-    #     "openg2p.beneficiary",
-    #     # "merged_registrations",
-    #     string="Beneficiary",
-    # )
-
     def _search_att(self, operator, val2):
         print("_search_att", "|", operator, "|", val2)
         res = []
@@ -613,56 +607,17 @@ class Registration(models.Model):
                 {"duplicate_beneficiaries_ids": [(6, 0, list(beneficiary_ids))]}
             )
 
-    def archive_data(self):
-        beneficiary_data = self.env["openg2p.beneficiary"].browse(self.retained_id)
-
-        data = {
-            "firstname": beneficiary_data.firstname,
-            "lastname": beneficiary_data.lastname,
-            "othernames": beneficiary_data.othernames,
-            "location_id": beneficiary_data.location_id.id,
-            "street": beneficiary_data.street,
-            "street2": beneficiary_data.street2,
-            "city": beneficiary_data.city,
-            "state_id": beneficiary_data.state_id.id,
-            "zip": beneficiary_data.zip,
-            "country_id": beneficiary_data.country_id.id,
-            "phone": beneficiary_data.phone,
-            "mobile": beneficiary_data.mobile,
-            "email": beneficiary_data.email,
-            "title": beneficiary_data.title.id,
-            "lang": beneficiary_data.lang,
-            "gender": beneficiary_data.gender,
-            "birthday": beneficiary_data.birthday,
-            "image": beneficiary_data.image,
-            "marital": beneficiary_data.marital,
-            "national_id": beneficiary_data.identity_national,
-            "passport_id": beneficiary_data.identity_passport,
-            "bank_account_id": beneficiary_data.bank_account_id.id,
-            "emergency_contact": beneficiary_data.emergency_contact,
-            "emergency_phone": beneficiary_data.emergency_phone,
-        }
-        filtered_data = self.del_none(data)
-        new_registration = self.env["openg2p.registration"].create(filtered_data)
-
-        beneficiary_data.write()
-
-        self.write(
-            {
-                "beneficiary": beneficiary_data.id,
-            }
-        )
-        self.archive_registration()
-
     @api.multi
     def merge_beneficiaries(self):
 
+        # ID to be retained
         idr = self.retained_id
 
-        beneficiary_data = self.env["openg2p.beneficiary"].browse(idr)
-        print(beneficiary_data)
+        # Browsing that existing beneficiary
+        existing_beneficiary = self.env["openg2p.beneficiary"].browse(idr)
 
-        retained_data = {
+        # Fields to be merged
+        overwrite_data = {
             "location_id": self.location_id.id,
             "street": self.street,
             "street2": self.street2,
@@ -681,15 +636,66 @@ class Registration(models.Model):
             "emergency_phone": self.emergency_phone,
         }
 
-        beneficiary_data.write(retained_data)
-        self.del_none(retained_data)
+        # Removing None fields
+        cleaned_overwrite_data = self.del_none(overwrite_data)
 
-        # self.archive_data()
+        # Deriving existing fields to create new beneficiary
+        existing_data = {
+            "firstname": existing_beneficiary.firstname,
+            "lastname": existing_beneficiary.lastname,
+            "othernames": existing_beneficiary.othernames,
+            "location_id": existing_beneficiary.location_id.id,
+            "street": existing_beneficiary.street,
+            "street2": existing_beneficiary.street2,
+            "city": existing_beneficiary.city,
+            "state_id": existing_beneficiary.state_id.id,
+            "zip": existing_beneficiary.zip,
+            "country_id": existing_beneficiary.country_id.id,
+            "phone": existing_beneficiary.phone,
+            "mobile": existing_beneficiary.mobile,
+            "email": existing_beneficiary.email,
+            "title": existing_beneficiary.title.id,
+            "lang": existing_beneficiary.lang,
+            "gender": existing_beneficiary.gender,
+            "birthday": existing_beneficiary.birthday,
+            "image": existing_beneficiary.image,
+            "marital": existing_beneficiary.marital,
+            "bank_account_id": existing_beneficiary.bank_account_id.id,
+            "emergency_contact": existing_beneficiary.emergency_contact,
+            "emergency_phone": existing_beneficiary.emergency_phone,
+        }
 
-        delete_url = BASE_URL + "/index/" + str(idr)
-        r = requests.delete(delete_url)
-        print(r.text)
-        self.clear_beneficiaries()
+        cleaned_existing_data = self.del_none(existing_data)
+
+        # Merging specfic fields to beneficiary
+        existing_beneficiary.write(cleaned_overwrite_data)
+
+        # Creating new beneficiary whose active=False
+        new_beneficiary = self.env["openg2p.beneficiary"].create(cleaned_existing_data)
+        print("Hello")
+        print(existing_beneficiary.id)  # Not archived
+        print(new_beneficiary.id)  # archived
+
+        # Storing merged id's in fields
+        existing_beneficiary.write(
+            {
+                "merged_beneficiary_ids": (
+                    0,
+                    0,
+                    {
+                        "retained_id": existing_beneficiary.id,  # Not archived
+                        "merged_id": new_beneficiary.id,  # Archived
+                    },
+                )
+            }
+        )
+        # Setting active false
+        new_beneficiary.active = False
+
+        # self.clear_beneficiaries()
+
+        # Archiving the current Registration
+        self.archive_registration()
         self.retained_id = 0
 
     def clear_beneficiaries(self):
@@ -715,17 +721,16 @@ class Registration(models.Model):
         }
         # Deleting null fields
         index_data = self.del_none(data)
-        print(index_data)
+
         url_endpoint = BASE_URL + "/index"
         try:
             r = requests.post(url_endpoint, json=index_data)
-            return r.status_code
-        except requests.exceptions.RequestException as e:
-            print(e)
+            return r
+        except BaseException as e:
+            return e
 
     def search_beneficiary(self):
 
-        print("Searching Beneficiaries.....")
         search_data = {
             "attributes": {
                 "first_name": str(self.firstname),
@@ -745,13 +750,13 @@ class Registration(models.Model):
             }
         }
         beneficiary_new_data = self.del_none(search_data)
-        print(beneficiary_new_data)
+
         search_url = BASE_URL + "/index/search"
         try:
             r = requests.post(search_url, json=beneficiary_new_data)
             return r.text
         except requests.exceptions.RequestException as e:
-            print(e)
+            return e
 
     def del_none(self, d):
         for key, value in list(d.items()):
