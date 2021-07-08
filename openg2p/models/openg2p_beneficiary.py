@@ -289,6 +289,12 @@ class Beneficiary(models.Model):
         " Primary function is to allow to reference of merged records ",
     )
 
+    # merged_registrations = fields.One2many(
+    #     "openg2p.registration",
+    #     "beneficiary",
+    #     string="Merged Registrations",
+    # )
+
     _sql_constraints = [
         ("ref_id_uniq", "unique(ref)", "The Beneficiary reference must be unique."),
     ]

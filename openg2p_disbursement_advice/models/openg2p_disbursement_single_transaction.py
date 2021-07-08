@@ -84,7 +84,7 @@ class SingleTransaction(models.Model):
         ),
         track_visibility="onchange",
     )
-    request_id = fields.Char(string="UUID", compute="_generate_uuid", store=True)
+    request_id = fields.Char(string="Request ID", compute="_generate_uuid", store=True)
     transaction_status = fields.Char(readonly=True)
 
     _sql_constraints = [
@@ -112,7 +112,7 @@ class SingleTransaction(models.Model):
     @api.depends("bank_account_id")
     def _compute_acc_holder_name(self):
         for rec in self:
-            print(rec)
+
             rec.acc_holder_name = (
                 rec.bank_account_id.acc_holder_name
                 or rec.bank_account_id.beneficiary_id.name
@@ -148,22 +148,22 @@ class SingleTransaction(models.Model):
 
         try:
             response = requests.post(url, headers=headers, data=json_data)
-            print(response.text)
+
             self.transaction_status = response.json().get("status")
-        except requests.exceptions.RequestException as e:
-            print(e)
+
+        except BaseException as e:
+            return e
 
     def single_transfer_status(self):
         params = (("request_id", str(self.request_id)),)
         url = "http://15.207.23.72:5000/channel/" + str(self.payment_mode) + "/transfer"
 
-        print(url)
         try:
             response = requests.get(url, params=params)
-            print(response.text)
             self.transaction_status = response.json()[0]["status"]
-        except requests.exceptions.RequestException as e:
-            print(e)
+
+        except BaseException as e:
+            return e
 
     def _generate_uuid(self):
         for rec in self:

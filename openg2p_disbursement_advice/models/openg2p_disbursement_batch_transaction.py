@@ -81,13 +81,19 @@ class BatchTransaction(models.Model):
         ondelete="restrict",
         default=lambda self: self.env.user.company_id,
     )
-    payment_hub_batch_id = fields.Char(readonly=True, string="Payment Hub Batch ID")
+    transaction_batch_id = fields.Char(readonly=True, string="Batch ID")
 
-    request_id = fields.Char(string="UUID", compute="_generate_uuid", store=True)
+    request_id = fields.Char(string="Request ID", compute="_generate_uuid", store=True)
 
     transaction_status = fields.Char(
         readonly=True,
     )
+
+    total = fields.Char(string="Total", readonly=True)
+
+    successful = fields.Char(string="Successful", readonly=True)
+
+    failed = fields.Char(string="Failed", readonly=True)
 
     def action_confirm(self):
         for rec in self:
@@ -100,6 +106,11 @@ class BatchTransaction(models.Model):
     def action_transaction(self):
         for rec in self:
             rec.state = "paymentstatus"
+
+    def _generate_uuid(self):
+        for rec in self:
+            if not rec.request_id:
+                rec.request_id = uuid.uuid4().hex
 
     def create_bulk_transfer(self):
         self._generate_uuid()
@@ -126,14 +137,15 @@ class BatchTransaction(models.Model):
                 for rec in beneficiary_transactions:
                     entry = [
                         rec.id,
+                        rec.beneficiary_request_id,
                         rec.payment_mode,
                         rec.name,
                         rec.acc_holder_name,
                         rec.amount,
                         rec.currency_id.name,
                     ]
-                    # print(entry)
-                    # id,request_id,payment_mode,acc_number,amount,currency,note
+
+                    # id,request_id,payment_mode,acc_number,acc_holder_name,amount,currency,note
                     beneficiary_transaction_records = []
                     beneficiary_transaction_records.append(entry)
                     csvwriter.writerows(
@@ -161,7 +173,6 @@ class BatchTransaction(models.Model):
             "request_id": (None, str(self.request_id)),
         }
 
-        print(self.request_id)
         url = "http://15.207.23.72:5000/channel/bulk/transfer"
 
         try:
@@ -170,23 +181,33 @@ class BatchTransaction(models.Model):
             response_data = response.json()
 
             self.transaction_status = response_data["status"]
-            # print(self.transaction_status)
-            self.payment_hub_batch_id = response_data["batch_id"]
-        except ValueError as e:
-            print(e)
+
+            self.transaction_batch_id = response_data["batch_id"]
+        except BaseException as e:
+            return e
 
     def bulk_transfer_status(self):
-        params = (("request_id", str(self.request_id)),)
+        params = (
+            ("batch_id", str(self.transaction_batch_id)),
+            ("detailed", "true"),
+        )
 
         url = "http://15.207.23.72:5000/channel/bulk/transfer"
 
         try:
             response = requests.get(url, params=params)
-            response_data = json.loads(response.text)
-            self.transaction_status = response_data[0]["status"]
-            return response
-        except requests.exceptions.RequestException as e:
-            print(e)
+            response_data = response.json()
+
+            self.transaction_status = response_data["status"]
+
+            self.total = response_data["total"]
+
+            self.successful = response_data["successful"]
+
+            self.failed = response_data["failed"]
+
+        except BaseException as e:
+            return e
 
     def upload_to_aws(self, local_file, bucket):
 
@@ -205,10 +226,8 @@ class BatchTransaction(models.Model):
             csv_buf.seek(0)
 
             s3.put_object(Bucket=bucket, Body=csv_buf.getvalue(), Key=local_file)
-            # print("Upload Successful")
 
         except FileNotFoundError:
-            # print("The file was not found")
             return False
 
     def all_transactions_status(self):
@@ -216,7 +235,7 @@ class BatchTransaction(models.Model):
             response = requests.get("https://15.207.23.72:5000/channel/transfer")
             return response
         except BaseException as e:
-            print(e)
+            return e
 
     def generate_hash(self, csvname):
         sha256 = hashlib.sha256()
@@ -230,9 +249,4 @@ class BatchTransaction(models.Model):
             res = sha256.hexdigest()
             return res
         except BaseException as e:
-            print(e)
-
-    def _generate_uuid(self):
-        for rec in self:
-            if not rec.request_id:
-                rec.request_id = uuid.uuid4().hex
+            return e

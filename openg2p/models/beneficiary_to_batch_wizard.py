@@ -20,24 +20,26 @@ class BeneficiaryTransactionWizard(models.TransientModel):
         beneficiaries = self.env["openg2p.beneficiary"].browse(
             self.env.context.get("active_ids")
         )
-        # print(beneficiaries)
+
         for b in beneficiaries:
             bank_id = self._get_bank_id(b)
-            single = self.env["openg2p.disbursement.single.transaction"].create(
-                {
-                    "bank_account_id": bank_id[0].id,
-                    "name": str(b.id),
-                    "program_id": b.program_ids.ids[0],
-                    "state": "draft",
-                    "date_start": datetime.now(),
-                    "date_end": datetime.now(),
-                    "beneficiary_id": b.id,
-                    "amount": 100.0,
-                    "currency_id": 1,
-                    "payment_mode": bank_id[0].payment_mode,
-                }
-            )
-            # single.create_single_transfer()
+            for program_id in b.program_ids.ids:
+
+                single = self.env["openg2p.disbursement.single.transaction"].create(
+                    {
+                        "bank_account_id": bank_id[0].id,
+                        "name": str(b.id),
+                        "program_id": program_id,
+                        "state": "draft",
+                        "date_start": datetime.now(),
+                        "date_end": datetime.now(),
+                        "beneficiary_id": b.id,
+                        "amount": 100.0,
+                        "currency_id": 1,
+                        "payment_mode": bank_id[0].payment_mode,
+                    }
+                )
+
         return {"type": "ir.actions.act_window_close"}
 
     @api.multi
@@ -47,42 +49,39 @@ class BeneficiaryTransactionWizard(models.TransientModel):
         )
         program_wise = {}
         for b in beneficiaries_selected:
-            if b.program_ids[0] in program_wise.keys():
-                program_wise[b.program_ids[0]].append(b)
-            else:
-                program_wise[b.program_ids[0]] = [b]
+            for program_id in b.program_ids.ids:
+                if program_id in program_wise.keys():
+                    program_wise[program_id].append(b)
+                else:
+                    program_wise[program_id] = [b]
 
-        # print(program_wise)
+        print(program_wise)
 
         for program, beneficiaries in program_wise.items():
-            batch_id = uuid.uuid4().hex
+            request_id = uuid.uuid4().hex
             batch_size = 1000
             count = 0
-            # lbs = len(beneficiaries)
+
             while len(beneficiaries[count:]) > 0:
 
                 beneficiaries_list = beneficiaries[
                     count : min(count + batch_size, len(beneficiaries))
                 ]
 
-                # print("Hello")
-                # print(program.id)
                 # Creating batch
                 batch = self.env["openg2p.disbursement.batch.transaction"].create(
                     {
                         "name": self.batch_name
                         + "-"
                         + str(datetime.now().strftime("%d%m%y-%I:%M")),
-                        "program_id": program.id,
+                        "program_id": program,
                         "state": "draft",
                         "date_start": datetime.now(),
                         "date_end": datetime.now(),
-                        "request_id": batch_id,
+                        "request_id": request_id,
                     }
                 )
 
-                print(batch)
-                print("Batch Created")
                 for b in beneficiaries_list:
                     bank_id = self._get_bank_id(b)
                     m = self.env["openg2p.disbursement.main"].create(
@@ -100,6 +99,6 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                             "payment_mode": bank_id[0].payment_mode,
                         }
                     )
-                # batch.create_bulk_transfer()
+                    m.generate_uuid()
                 count += 1000
         return {"type": "ir.actions.act_window_close"}

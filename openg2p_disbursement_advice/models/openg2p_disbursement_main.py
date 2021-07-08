@@ -75,6 +75,14 @@ class DisbursementMain(models.Model):
         store=True,
         readonly=True,
     )
+    beneficiary_request_id = fields.Char(
+        string="Request ID", compute="generate_uuid", store=True
+    )
+
+    def generate_uuid(self):
+        for rec in self:
+            if not rec.beneficiary_request_id:
+                rec.beneficiary_request_id = uuid.uuid4().hex
 
     @api.depends("bank_account_id")
     def _compute_acc_holder_name(self):
@@ -92,3 +100,4 @@ class DisbursementMain(models.Model):
                     "bank_account_id": [("beneficiary_id", "=", rec.beneficiary_id.id)]
                 }
             }
+        self.generate_uuid()

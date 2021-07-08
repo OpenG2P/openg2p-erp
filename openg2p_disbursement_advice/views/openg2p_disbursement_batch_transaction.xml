@@ -47,6 +47,9 @@
                         </group>
                         <group>
                             <field name="transaction_status" attrs="{'invisible':[('state','!=','pending'),('state','!=','paymentstatus')]}"/>
+                            <field name="total" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                            <field name="successful" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                            <field name="failed" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
                         </group>
                     </sheet>
                     <div class="oe_chatter">
@@ -55,6 +58,29 @@
                         <field name="message_ids" widget="mail_thread"/>
                     </div>
                 </form>
+            </field>
+        </record>
+        <act_window id="action_check_transaction"
+                    name="Check Detailed Status"
+                    src_model="openg2p.disbursement.batch.transaction"
+                    res_model="openg2p.disbursement.batch.transaction.wizard"
+                    view_type="form" view_mode="form"
+                    key2="client_action_multi" target="new"
+                    groups="openg2p_registration.group_openg2p_registration_user"/>
+        
+        <record id="wizard_batch" model="ir.ui.view">
+            <field name="name">bulk_transfer_detailed_status</field>
+            <field name="model">openg2p.disbursement.batch.transaction.wizard</field>
+            <field name="target">inline</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="file_url" widget="url" readonly="1" text="Click to see CSV File"/>
+                        <button string="Get CSV URL" name="bulk_transfer_detailed_status" type="object" class="btn-primary"/>
+                    </group>
+                </form>
+                    <footer>   
+                    </footer>
             </field>
         </record>
     </data>

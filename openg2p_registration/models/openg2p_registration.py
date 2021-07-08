@@ -141,6 +141,12 @@ class Registration(models.Model):
         search="_search_att",
     )
 
+    # beneficiary = fields.Many2one(
+    #     "openg2p.beneficiary",
+    #     # "merged_registrations",
+    #     string="Beneficiary",
+    # )
+
     def _search_att(self, operator, val2):
         print("_search_att", "|", operator, "|", val2)
         res = []
@@ -596,93 +602,90 @@ class Registration(models.Model):
 
     @api.multi
     def find_duplicates(self):
-        print("Finding Duplicates.......")
+
         beneficiary_list = self.search_beneficiary()
-        print(beneficiary_list)
+
         if beneficiary_list:
             beneficiary_list = json.loads(beneficiary_list)
             beneficiary_ids = [li["beneficiary"] for li in beneficiary_list]
-            print(beneficiary_ids)
+
             self.update(
                 {"duplicate_beneficiaries_ids": [(6, 0, list(beneficiary_ids))]}
             )
 
     def archive_data(self):
         beneficiary_data = self.env["openg2p.beneficiary"].browse(self.retained_id)
-        print(beneficiary_data)
-        # print(beneficiary_data.firstname)
-        print(id)
-        print(self.id)
-        beneficiary_data.write(
+
+        data = {
+            "firstname": beneficiary_data.firstname,
+            "lastname": beneficiary_data.lastname,
+            "othernames": beneficiary_data.othernames,
+            "location_id": beneficiary_data.location_id.id,
+            "street": beneficiary_data.street,
+            "street2": beneficiary_data.street2,
+            "city": beneficiary_data.city,
+            "state_id": beneficiary_data.state_id.id,
+            "zip": beneficiary_data.zip,
+            "country_id": beneficiary_data.country_id.id,
+            "phone": beneficiary_data.phone,
+            "mobile": beneficiary_data.mobile,
+            "email": beneficiary_data.email,
+            "title": beneficiary_data.title.id,
+            "lang": beneficiary_data.lang,
+            "gender": beneficiary_data.gender,
+            "birthday": beneficiary_data.birthday,
+            "image": beneficiary_data.image,
+            "marital": beneficiary_data.marital,
+            "national_id": beneficiary_data.identity_national,
+            "passport_id": beneficiary_data.identity_passport,
+            "bank_account_id": beneficiary_data.bank_account_id.id,
+            "emergency_contact": beneficiary_data.emergency_contact,
+            "emergency_phone": beneficiary_data.emergency_phone,
+        }
+        filtered_data = self.del_none(data)
+        new_registration = self.env["openg2p.registration"].create(filtered_data)
+
+        beneficiary_data.write()
+
+        self.write(
             {
-                "merged_beneficiary_ids": (
-                    0,
-                    0,
-                    {
-                        "retained_id": self.retained_id,
-                        "merged_id": self.id,
-                    },
-                )
+                "beneficiary": beneficiary_data.id,
             }
         )
         self.archive_registration()
-        # data = {
-        #     "firstname": self.firstname,
-        #     "lastname": self.lastname,
-        #     "othernames": self.othernames,
-        #     "location_id": self.location_id.id,
-        #     "street": self.street,
-        #     "street2": self.street2,
-        #     "city": self.city,
-        #     "state_id": self.state_id.id,
-        #     "zip": self.zip,
-        #     "country_id": self.country_id.id,
-        #     "phone": self.phone,
-        #     "mobile": self.mobile,
-        #     "email": self.email,
-        #     "title": self.title.id,
-        #     "lang": self.lang,
-        #     "gender": self.gender,
-        #     "birthday": self.birthday,
-        #     "image": self.image,
-        #     "marital": self.marital,
-        #     "national_id": self.identity_national,
-        #     "passport_id": self.identity_passport,
-        #     "bank_account_id": self.bank_account_id.id,
-        #     "emergency_contact": self.emergency_contact,
-        #     "emergency_phone": self.emergency_phone,
-        # }
 
     @api.multi
     def merge_beneficiaries(self):
 
         idr = self.retained_id
-        print(idr)
+
         beneficiary_data = self.env["openg2p.beneficiary"].browse(idr)
         print(beneficiary_data)
-        self.archive_data()
 
-        beneficiary_data.write(
-            {
-                "location_id": self.location_id.id,
-                "street": self.street,
-                "street2": self.street2,
-                "city": self.city,
-                "state_id": self.state_id.id,
-                "zip": self.zip,
-                "country_id": self.country_id.id,
-                "phone": self.phone,
-                "mobile": self.mobile,
-                "email": self.email,
-                "lang": self.lang,
-                "image": self.image,
-                "marital": self.marital,
-                "bank_account_id": self.bank_account_id.id,
-                "emergency_contact": self.emergency_contact,
-                "emergency_phone": self.emergency_phone,
-            }
-        )
-        print(beneficiary_data)
+        retained_data = {
+            "location_id": self.location_id.id,
+            "street": self.street,
+            "street2": self.street2,
+            "city": self.city,
+            "state_id": self.state_id.id,
+            "zip": self.zip,
+            "country_id": self.country_id.id,
+            "phone": self.phone,
+            "mobile": self.mobile,
+            "email": self.email,
+            "lang": self.lang,
+            "image": self.image,
+            "marital": self.marital,
+            "bank_account_id": self.bank_account_id.id,
+            "emergency_contact": self.emergency_contact,
+            "emergency_phone": self.emergency_phone,
+        }
+
+        beneficiary_data.write(retained_data)
+        self.del_none(retained_data)
+
+        # self.archive_data()
+
         delete_url = BASE_URL + "/index/" + str(idr)
         r = requests.delete(delete_url)
         print(r.text)
