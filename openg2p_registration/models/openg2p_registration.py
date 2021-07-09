@@ -672,27 +672,16 @@ class Registration(models.Model):
 
         # Creating new beneficiary whose active=False
         new_beneficiary = self.env["openg2p.beneficiary"].create(cleaned_existing_data)
-        print("Hello")
-        print(existing_beneficiary.id)  # Not archived
-        print(new_beneficiary.id)  # archived
 
         # Storing merged id's in fields
         existing_beneficiary.write(
-            {
-                "merged_beneficiary_ids": (
-                    0,
-                    0,
-                    {
-                        "retained_id": existing_beneficiary.id,  # Not archived
-                        "merged_id": new_beneficiary.id,  # Archived
-                    },
-                )
-            }
+            {"merged_beneficiary_ids": [(4, new_beneficiary.id)]}
         )
+
         # Setting active false
         new_beneficiary.active = False
 
-        # self.clear_beneficiaries()
+        self.clear_beneficiaries()
 
         # Archiving the current Registration
         self.archive_registration()

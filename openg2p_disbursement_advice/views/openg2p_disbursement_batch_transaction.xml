@@ -51,6 +51,10 @@
                             <field name="successful" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
                             <field name="failed" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
                         </group>
+                        <group>
+                            <field name="transaction_batch_id" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                            <field name="request_id" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                        </group>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids"

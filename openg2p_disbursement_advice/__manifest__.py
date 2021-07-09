@@ -32,6 +32,7 @@
         "views/openg2p_disbursement_single_transaction.xml",
         "views/openg2p_disbursement_batch_transaction.xml",
         "views/openg2p_disbursement_main.xml",
+        "views/openg2p_disbursement_file.xml",
     ],
     "demo": ["data/demo.xml"],
 }
