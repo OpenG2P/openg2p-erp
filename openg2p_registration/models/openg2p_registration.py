@@ -141,16 +141,6 @@ class Registration(models.Model):
         search="_search_att",
     )
 
-    error_verification = fields.Selection(
-        string="Error in Verification",
-        selection=[
-            ("none", "None"),
-            ("name_error", "Error Name"),
-            ("addr_error", "Error Address"),
-        ],
-        default="none",
-    )
-
     def _search_att(self, operator, val2):
         print("_search_att", "|", operator, "|", val2)
         res = []
@@ -230,6 +220,9 @@ class Registration(models.Model):
         from datetime import datetime
 
         data = {}
+
+        # data["batch_id"]=batch_id
+
         temp = {}
         odk_map = (
             odk_data["odk_map"]
@@ -340,7 +333,7 @@ class Registration(models.Model):
                         "legend_done",
                         "legend_normal",
                     ]:
-                        if k == "name":
+                        if k == "name" and v:
                             name_parts = v.split(" ")
                             data["firstname"] = name_parts[0]
                             if len(name_parts) > 1:
@@ -565,7 +558,7 @@ class Registration(models.Model):
             "marital": self.marital,
             "national_id": self.identity_national,
             "passport_id": self.identity_passport,
-            "bank_account_id": self.bank_accound_id.id,
+            "bank_account_id": self.bank_account_id.id,
             "emergency_contact": self.emergency_contact,
             "emergency_phone": self.emergency_phone,
         }
@@ -603,66 +596,95 @@ class Registration(models.Model):
 
     @api.multi
     def find_duplicates(self):
-        print("Finding Duplicates.......")
+
         beneficiary_list = self.search_beneficiary()
-        print(beneficiary_list)
+
         if beneficiary_list:
             beneficiary_list = json.loads(beneficiary_list)
             beneficiary_ids = [li["beneficiary"] for li in beneficiary_list]
-            print(beneficiary_ids)
+
             self.update(
                 {"duplicate_beneficiaries_ids": [(6, 0, list(beneficiary_ids))]}
             )
 
-    def archive_data(self):
-        beneficiary_data = self.env["openg2p.beneficiary"].browse(self.retained_id)
-        print(beneficiary_data)
-        beneficiary_data.write(
-            {"merged_beneficiary_ids": [(4, (beneficiary_data.id,))]}
-        )
-
     @api.multi
     def merge_beneficiaries(self):
 
+        # ID to be retained
         idr = self.retained_id
-        print(idr)
-        beneficiary_data = self.env["openg2p.beneficiary"].browse(idr)
-        print(beneficiary_data)
-        self.archive_data()
 
-        beneficiary_data.write(
-            {
-                "firstname": self.firstname,
-                "lastname": self.lastname,
-                "othernames": self.othernames,
-                "location_id": self.location_id.id,
-                "street": self.street,
-                "street2": self.street2,
-                "city": self.city,
-                "state_id": self.state_id.id,
-                "zip": self.zip,
-                "country_id": self.country_id.id,
-                "phone": self.phone,
-                "mobile": self.mobile,
-                "email": self.email,
-                "title": self.title.id,
-                "lang": self.lang,
-                "gender": self.gender,
-                "birthday": self.birthday,
-                "image": self.image,
-                "marital": self.marital,
-                "national_id": self.identity_national,
-                "passport_id": self.identity_passport,
-                "bank_account_id": self.bank_accound_id.id,
-                "emergency_contact": self.emergency_contact,
-                "emergency_phone": self.emergency_phone,
-            }
+        # Browsing that existing beneficiary
+        existing_beneficiary = self.env["openg2p.beneficiary"].browse(idr)
+
+        # Fields to be merged
+        overwrite_data = {
+            "location_id": self.location_id.id,
+            "street": self.street,
+            "street2": self.street2,
+            "city": self.city,
+            "state_id": self.state_id.id,
+            "zip": self.zip,
+            "country_id": self.country_id.id,
+            "phone": self.phone,
+            "mobile": self.mobile,
+            "email": self.email,
+            "lang": self.lang,
+            "image": self.image,
+            "marital": self.marital,
+            "bank_account_id": self.bank_account_id.id,
+            "emergency_contact": self.emergency_contact,
+            "emergency_phone": self.emergency_phone,
+        }
+
+        # Removing None fields
+        cleaned_overwrite_data = self.del_none(overwrite_data)
+
+        # Deriving existing fields to create new beneficiary
+        existing_data = {
+            "firstname": existing_beneficiary.firstname,
+            "lastname": existing_beneficiary.lastname,
+            "othernames": existing_beneficiary.othernames,
+            "location_id": existing_beneficiary.location_id.id,
+            "street": existing_beneficiary.street,
+            "street2": existing_beneficiary.street2,
+            "city": existing_beneficiary.city,
+            "state_id": existing_beneficiary.state_id.id,
+            "zip": existing_beneficiary.zip,
+            "country_id": existing_beneficiary.country_id.id,
+            "phone": existing_beneficiary.phone,
+            "mobile": existing_beneficiary.mobile,
+            "email": existing_beneficiary.email,
+            "title": existing_beneficiary.title.id,
+            "lang": existing_beneficiary.lang,
+            "gender": existing_beneficiary.gender,
+            "birthday": existing_beneficiary.birthday,
+            "image": existing_beneficiary.image,
+            "marital": existing_beneficiary.marital,
+            "bank_account_id": existing_beneficiary.bank_account_id.id,
+            "emergency_contact": existing_beneficiary.emergency_contact,
+            "emergency_phone": existing_beneficiary.emergency_phone,
+        }
+
+        cleaned_existing_data = self.del_none(existing_data)
+
+        # Merging specfic fields to beneficiary
+        existing_beneficiary.write(cleaned_overwrite_data)
+
+        # Creating new beneficiary whose active=False
+        new_beneficiary = self.env["openg2p.beneficiary"].create(cleaned_existing_data)
+
+        # Storing merged id's in fields
+        existing_beneficiary.write(
+            {"merged_beneficiary_ids": [(4, new_beneficiary.id)]}
         )
-        print(beneficiary_data)
-        delete_url = BASE_URL + "/index/" + str(idr)
-        r = requests.delete(delete_url)
-        print(r.text)
+
+        # Setting active false
+        new_beneficiary.active = False
+
         self.clear_beneficiaries()
+
+        # Archiving the current Registration
+        self.archive_registration()
         self.retained_id = 0
 
     def clear_beneficiaries(self):
@@ -688,16 +710,16 @@ class Registration(models.Model):
         }
         # Deleting null fields
         index_data = self.del_none(data)
-        print(index_data)
+
         url_endpoint = BASE_URL + "/index"
         try:
             r = requests.post(url_endpoint, json=index_data)
-            return r.status_code
-        except requests.exceptions.RequestException as e:
-            print(e)
+            return r
+        except BaseException as e:
+            return e
 
     def search_beneficiary(self):
-        print("Searching Beneficiaries.....")
+
         search_data = {
             "attributes": {
                 "first_name": str(self.firstname),
@@ -717,13 +739,13 @@ class Registration(models.Model):
             }
         }
         beneficiary_new_data = self.del_none(search_data)
-        print(beneficiary_new_data)
+
         search_url = BASE_URL + "/index/search"
         try:
             r = requests.post(search_url, json=beneficiary_new_data)
             return r.text
         except requests.exceptions.RequestException as e:
-            print(e)
+            return e
 
     def del_none(self, d):
         for key, value in list(d.items()):
