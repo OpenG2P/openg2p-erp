@@ -16,7 +16,7 @@ class DisbursementFile(models.Model):
 
     @api.multi
     def parse_csv(self):
-        # id,firstname,lastname,location,street,city,state,country,acc_number,payment_mode,currency
+        # id,firstname,lastname,program,location,street,gender,city,state,country,acc_number,amount,payment_mode,currency
         csv_data = base64.b64decode(self.file)
         data_file = io.StringIO(csv_data.decode("utf-8"))
 
@@ -25,23 +25,52 @@ class DisbursementFile(models.Model):
         df = pd.DataFrame(df.values,
                           columns=["ID", "firstname", "lastname", "program","location", "street","gender", "city", "state",
                                    "country", "acc_number", "amount", "payment_mode", "currency"])
-        print(df)
+
 
         beneficiary_list = []
         # Creating beneficiaries
         for index, b in df.iterrows():
+
+            #Checking country
+            country_id=self.env["res.country"].search([("name","=",str(b["country"]))]).id
+            if not country_id:
+                country_id=self.env["res.country"].create({
+                    "name":b["country"]
+                }).id
+
+            #Checking state
+            state_id=self.env["res.country.state"].search([("name","=",str(b["state"]))]).id
+            if not state_id:
+                state_id=self.env["res.country.state"].create({
+                    "name":b["state"]
+                }).id
+
+            #Checking location
+            location_id=self.env["openg2p.location"].search([("name","=",str(b["location"]))]).id
+            if not location_id:
+                location_id=self.env["openg2p.location"].create({
+                    "name":b["location"]
+                }).id
+
+            #Checking program
+            program_id=self.env["openg2p.program"].search([("name","=",str(b["program"]))]).id
+            if not program_id:
+                program_id=self.env["openg2p.program"].create({
+                    "name":b["program"]
+                }).id
+
             bank_id, existing = self._get_bank_id(b)
             if not existing:
                 beneficiary = self.env["openg2p.beneficiary"].create(
                     {
                         "firstname": b["firstname"],
                         "lastname": b["lastname"],
-                        "location_id": b["location"],
+                        "location_id": location_id,
                         "street": b["street"],
                         "gender": b["gender"],
                         "city": b["city"],
-                        "state_id": b["state"],
-                        "country_id": b["country"],
+                        "state_id": state_id,
+                        "country_id": country_id,
                         "bank_account_id": bank_id.id,
                     }
                 )
@@ -49,11 +78,9 @@ class DisbursementFile(models.Model):
             else:
                 beneficiary = self.env["openg2p.beneficiary"].search([("bank_account_id", "=", bank_id.id)])
             beneficiary.write(
-                {"program_ids": [(4, b["program"])]}
+                {"program_ids": [(4, program_id)]}
             )
-            print(beneficiary.program_ids.ids)
             beneficiary_list.append(beneficiary)
-        print(beneficiary_list)
         self.create_batch_transaction(beneficiary_list)
 
     @api.multi
@@ -66,6 +93,7 @@ class DisbursementFile(models.Model):
         if len(bank_id) == 0:
             bank_id = self.env["res.partner.bank"].create(
                 {
+                    "acc_holder_name":str(data["firstname"]+" "+data["lastname"]),
                     "acc_number": str(data["acc_number"]),
                     "partner_id": self.env.ref("base.main_partner").id,
                     "payment_mode": data["payment_mode"],
@@ -78,8 +106,7 @@ class DisbursementFile(models.Model):
 
     @api.multi
     def create_batch_transaction(self, beneficiaries_selected):
-        # id,firstname,lastname,location,street,city,state,country,acc_number,payment_mode,currency
-
+        # id,firstname,lastname,program,location,street,gender,city,state,country,acc_number,amount,payment_mode,currency
         program_wise = {}
         for b in beneficiaries_selected:
             print(b.program_ids.ids)
@@ -89,8 +116,6 @@ class DisbursementFile(models.Model):
                 else:
                     program_wise[program_id] = [b]
 
-        print(program_wise)
-        print("Hello")
         for program, beneficiaries in program_wise.items():
             request_id = uuid.uuid4().hex
             batch_size = 1000
