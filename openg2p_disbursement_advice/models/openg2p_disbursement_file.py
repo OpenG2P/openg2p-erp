@@ -1,59 +1,102 @@
-
 from datetime import datetime
 from odoo import fields, models, api
 import csv
 import base64
 import io
 import uuid
+import pandas as pd
+
 
 class DisbursementFile(models.Model):
     _name = "openg2p.disbursement.file"
 
-    batch_name=fields.Char(string="Batch Name",required=True)
+    batch_name = fields.Char(string="Batch Name", required=True)
 
-    file=fields.Binary(string="CSV File",required=True)
-
-    def create_batch(self):
-        print("hello")
-        return
-        print(type(self.file),self.file)
-
-        # with open(self.file,"rb") as f:
-        #     print(f.read())
-        csv_data = base64.b64decode(self.file)
-        data_file = io.StringIO(csv_data.decode("utf-8"))
-        # data_file.seek(0)
-        file_reader = []
-        csv_reader = csv.reader(data_file, delimiter=',')
-        file_reader.extend(csv_reader)
-        print(file_reader)
-
-
-
-
-    def _get_bank_id(self, data=None):
-        bank_id = self.env["res.partner.bank"].search([("acc_number", "=", data["acc_number"])],limit=1)
-        if len(bank_id)==0:
-            bank_id=self.env["res.partner.bank"].create(
-                        {
-                            "acc_number":data["acc_number"] ,
-                            "partner_id":self.env.ref("base.main_partner").id,
-                            "payment_mode":data["payment_mode"],
-                            "currency_id":self.env["res.currency"].search([("name","=",data["currency"])]).id,
-                        }
-                    )
-        return bank_id
+    file = fields.Binary(string="CSV File", required=True)
 
     @api.multi
-    def create_batch(self,csv_data):
-        # id,request_id,payment_mode,acc_number,acc_holder_name,amount,currency,note
-        for program, beneficiaries in csv_data.items():
+    def parse_csv(self):
+        # id,firstname,lastname,location,street,city,state,country,acc_number,payment_mode,currency
+        csv_data = base64.b64decode(self.file)
+        data_file = io.StringIO(csv_data.decode("utf-8"))
+
+
+        df = pd.read_csv(data_file, delimiter=',', header=None)
+        df = pd.DataFrame(df.values,
+                          columns=["ID", "firstname", "lastname", "program","location", "street","gender", "city", "state",
+                                   "country", "acc_number", "amount", "payment_mode", "currency"])
+        print(df)
+
+        beneficiary_list = []
+        # Creating beneficiaries
+        for index, b in df.iterrows():
+            bank_id, existing = self._get_bank_id(b)
+            if not existing:
+                beneficiary = self.env["openg2p.beneficiary"].create(
+                    {
+                        "firstname": b["firstname"],
+                        "lastname": b["lastname"],
+                        "location_id": b["location"],
+                        "street": b["street"],
+                        "gender": b["gender"],
+                        "city": b["city"],
+                        "state_id": b["state"],
+                        "country_id": b["country"],
+                        "bank_account_id": bank_id.id,
+                    }
+                )
+
+            else:
+                beneficiary = self.env["openg2p.beneficiary"].search([("bank_account_id", "=", bank_id.id)])
+            beneficiary.write(
+                {"program_ids": [(4, b["program"])]}
+            )
+            print(beneficiary.program_ids.ids)
+            beneficiary_list.append(beneficiary)
+        print(beneficiary_list)
+        self.create_batch_transaction(beneficiary_list)
+
+    @api.multi
+    def _get_bank_id(self, data=None):
+        if isinstance(data,pd.core.series.Series):
+            bank_id = self.env["res.partner.bank"].search([("acc_number", "=", str(data["acc_number"]))], limit=1)
+        else:
+            bank_id = self.env["res.partner.bank"].search([("acc_number", "=", data.bank_account_id.acc_number)], limit=1)
+
+        if len(bank_id) == 0:
+            bank_id = self.env["res.partner.bank"].create(
+                {
+                    "acc_number": str(data["acc_number"]),
+                    "partner_id": self.env.ref("base.main_partner").id,
+                    "payment_mode": data["payment_mode"],
+                    "currency_id": self.env["res.currency"].search([("name", "=", data["currency"])]).id,
+                }
+            )
+            return bank_id, False
+        else:
+            return bank_id, True
+
+    @api.multi
+    def create_batch_transaction(self, beneficiaries_selected):
+        # id,firstname,lastname,location,street,city,state,country,acc_number,payment_mode,currency
+
+        program_wise = {}
+        for b in beneficiaries_selected:
+            print(b.program_ids.ids)
+            for program_id in b.program_ids.ids:
+                if program_id in program_wise.keys():
+                    program_wise[program_id].append(b)
+                else:
+                    program_wise[program_id] = [b]
+
+        print(program_wise)
+        print("Hello")
+        for program, beneficiaries in program_wise.items():
             request_id = uuid.uuid4().hex
             batch_size = 1000
             count = 0
 
             while len(beneficiaries[count:]) > 0:
-
                 beneficiaries_list = beneficiaries[
                                      count: min(count + batch_size, len(beneficiaries))
                                      ]
@@ -73,8 +116,7 @@ class DisbursementFile(models.Model):
                 )
                 # id,request_id,payment_mode,acc_number,acc_holder_name,amount,currency,note
                 for b in beneficiaries_list:
-
-                    bank_id = self._get_bank_id(b)
+                    bank_id,existing = self._get_bank_id(b)
                     m = self.env["openg2p.disbursement.main"].create(
                         {
                             "bank_account_id": bank_id.id,
@@ -86,7 +128,7 @@ class DisbursementFile(models.Model):
                             "program_id": b.program_ids.ids[0],
                             "date_start": datetime.now(),
                             "date_end": datetime.now(),
-                            "currency_id": bank_id.currency_id,
+                            "currency_id": 1,
                             "payment_mode": bank_id.payment_mode,
                         }
                     )

@@ -28,11 +28,8 @@ class BeneficiaryTransactionWizard(models.TransientModel):
 
             response_data = response.json()
 
-            print(response_data)
-            print(response_data["file"])
-
             self.file_url = response_data["file"]
-            print(self.file_url)
+
         except BaseException as e:
             print(e)
 

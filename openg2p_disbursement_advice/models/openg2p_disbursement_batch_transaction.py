@@ -130,11 +130,13 @@ class BatchTransaction(models.Model):
             + ".csv"
         )
 
+
         while len(beneficiary_transactions) > 0:
 
-            with open(csvname, "a") as csvfile:
+            with open(csvname, "w",newline='', encoding='utf-8') as csvfile:
                 csvwriter = csv.writer(csvfile)
                 for rec in beneficiary_transactions:
+                    # id,request_id,payment_mode,acc_number,acc_holder_name,amount,currency,note
                     entry = [
                         rec.id,
                         rec.beneficiary_request_id,
@@ -142,15 +144,11 @@ class BatchTransaction(models.Model):
                         rec.name,
                         rec.acc_holder_name,
                         rec.amount,
-                        rec.currency_id.name,
+                        rec.currency_id.name
                     ]
 
-                    # id,request_id,payment_mode,acc_number,acc_holder_name,amount,currency,note
-                    beneficiary_transaction_records = []
-                    beneficiary_transaction_records.append(entry)
-                    csvwriter.writerows(
-                        map(lambda x: [x], beneficiary_transaction_records)
-                    )
+
+                    csvwriter.writerow(entry)
 
             offset += len(beneficiary_transactions)
 

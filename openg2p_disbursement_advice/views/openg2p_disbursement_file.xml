@@ -8,13 +8,17 @@
 
                 <form string="Disbursement Form">
                     <header>
-                        <button name="create_batch" type="button" string="Create Batch" class="oe_highlight"/>
+                        <button name="parse_csv" type="object" string="Create Batch" class="oe_highlight"/>
                     </header>
                     <sheet>
-
-                        <field name="batch_name"/>
-                        <field name="file"/>
-<!--                        <button name="create_batch" string="Create Batch"/>-->
+                        <group>
+                            <group>
+                                <field name="batch_name"/>
+                            </group>
+                            <group>
+                                <field name="file"/>
+                            </group>
+                        </group>
                     </sheet>
 
                 </form>
