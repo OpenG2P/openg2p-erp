@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_openg2p_odk_submissions,access.odk.submissions,model_odk_submissions,,1,1,1,1
+access_openg2p_odk_config,access.odk.config,model_odk_config,,1,1,1,1

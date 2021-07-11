@@ -5,6 +5,7 @@ from odoo.addons.openg2p.services.matching_service import (
 )
 
 from odoo.addons.queue_job.job import job
+
 from odoo import api, fields, models, SUPERUSER_ID
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.translate import _
@@ -13,7 +14,9 @@ import json
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
+
 BASE_URL = "http://localhost:8080"
+
 
 
 class Registration(models.Model):
@@ -127,10 +130,12 @@ class Registration(models.Model):
     )
     identities = fields.One2many("openg2p.registration.identity", "registration_id")
     retained_id = fields.Integer(string="Retained_ID")
+    
+    identities = fields.One2many("openg2p.registration.identity", "registration_id")
 
     org_custom_field = fields.One2many(
-        "openg2p.beneficiary.orgmap",
-        "registration",
+        "openg2p.registration.orgmap",
+        "regd_id",
     )
 
     attendance = fields.Integer(
@@ -145,22 +150,20 @@ class Registration(models.Model):
         string="Error in Verification",
         selection=[
             ("none", "None"),
-            ("name_error", "Error Name"),
-            ("addr_error", "Error Address"),
+            ("error_name", "Error in name"),
+            ("error_addr", "Error in address"),
         ],
         default="none",
     )
 
     def _search_att(self, operator, val2):
-        print("_search_att", "|", operator, "|", val2)
         res = []
         regds = self.env["openg2p.registration"].search([])
         for rec in regds:
-            print(rec)
-            att = self.env["openg2p.beneficiary.orgmap"].search(
+            att = self.env["openg2p.registration.orgmap"].search(
                 [
                     "&",
-                    ("registration", "=", rec.id),
+                    ("regd_id", "=", rec.id),
                     ("field_name", "=", "total_student_in_attendance_at_the_school"),
                 ]
             )
@@ -170,7 +173,6 @@ class Registration(models.Model):
                 val = int(att.field_value)
             except BaseException as e:
                 continue
-            print(val, "|", operator, "|", val2)
             if operator == ">":
                 if val > val2:
                     res.append(rec)
@@ -189,23 +191,22 @@ class Registration(models.Model):
             elif operator == "<=":
                 if val <= val2:
                     res.append(rec)
-        print(res)
+
         return [("id", "in", [rec.id for rec in res])]
 
     @api.depends("org_custom_field")
     def _compute_att(self):
         for rec in self:
-            att = self.env["openg2p.beneficiary.orgmap"].search(
+            att = self.env["openg2p.registration.orgmap"].search(
                 [
                     "&",
-                    ("registration", "=", rec.id),
+                    ("regd_id", "=", rec.id),
                     ("field_name", "=", "total_student_in_attendance_at_the_school"),
                 ]
             )
             try:
                 rec.attendance = int(att.field_value) if att else 0
             except BaseException as e:
-                print(e)
                 rec.attendance = 0
 
     def _get_default_odk_map(self):
@@ -226,13 +227,10 @@ class Registration(models.Model):
             }
         )
         id = regd.id
-        print("SUB->REG", id)
+
         from datetime import datetime
 
         data = {}
-
-        # data["batch_id"]=batch_id
-
         temp = {}
         odk_map = (
             odk_data["odk_map"]
@@ -249,132 +247,125 @@ class Registration(models.Model):
         org_data = {}
         format = "%Y-%m-%dT%H:%M:%SZ"
         for k, v in odk_data.items():
-            if k in [
-                "Status",
-                "AttachmentsExpected",
-                "AttachmentsPresent",
-                "SubmitterName",
-                "SubmitterID",
-                "KEY",
-                "meta-instanceID",
-                "__version__",
-                "bank_name",
-            ]:
-                continue
-            print("odk->regd".upper(), k)
-            if k == "bank_account_number":
-                print("odk->regd".upper(), odk_data["bank_account_number"])
-                data["bank_account_number"] = odk_data["bank_account_number"]
-                res = self.env["res.partner.bank"].search(
-                    [("acc_number", "=", str(odk_data["bank_account_number"]))]
-                )
-                print("odk->regd".upper(), "ban-res1", res)
-                if not res:
-                    res = self.env["res.partner.bank"].create(
-                        {
-                            "acc_number": odk_data["bank_account_number"],
-                            "partner_id": self.env.ref("base.main_partner").id,
-                        }
-                    )
-                print("odk->regd".upper(), "ban-res2", res)
-                if res:
-                    data["bank_account_id"] = res.id
-                print("odk->regd".upper(), "ban-res3", res)
-            elif k == "phone":
-                data["phone"] = odk_data["phone"]
-            elif hasattr(self, k):
-                if k == "partner_id":
-                    res = self.env["res.partner"].search(
-                        [("partner_id", "=", v)], limit=1
-                    )
-                    if res:
-                        data[k] = res.id
-                elif k == "registered_date":
-                    data["registered_date"] = datetime.strptime(v, format)
-                elif k == "categ_ids":
-                    res = self.env["categ_ids"].search([("categ_ids", "=", v)], limit=1)
-                    if res:
-                        data["categ_ids"] = res.ids
-                elif k == "company_id":
-                    res = self.env["company_id"].search(
-                        [("company_id", "=", v)], limit=1
-                    )
-                    if res:
-                        data["company_id"] = res.id
-                elif k == "user_id":
-                    res = self.env["user_id"].search([("user_id", "=", v)], limit=1)
-                    if res:
-                        data["user_id"] = res.id
-                elif k == "priority":
-                    if v in [i[0] for i in AVAILABLE_PRIORITIES]:
-                        data["priority"] = v
-                elif k == "beneficiary_id":
-                    res = self.env["openg2p.beneficiary"].search(
-                        [("beneficiary_id", "=", id)], limit=1
-                    )
-                    if res:
-                        data["beneficiary_id"] = res.id
-                elif k == "identities":
-                    for vi in v:
-                        self.env["openg2p.registration.identity"].create(
-                            {
-                                "name": list(vi.keys())[0],
-                                "type": list(vi.values())[0],
-                                "registration_id": id,
-                            }
+            try:
+                if k in [
+                    "Status",
+                    "AttachmentsExpected",
+                    "AttachmentsPresent",
+                    "SubmitterName",
+                    "SubmitterID",
+                    "KEY",
+                    "meta-instanceID",
+                    "__version__",
+                    "bank_name",
+                ]:
+                    continue
+                if k == "bank_account_number":
+                    if len(v or "") != 0:
+                        data["bank_account_number"] = odk_data["bank_account_number"]
+                        res = self.env["res.partner.bank"].search(
+                            [("acc_number", "=", str(odk_data["bank_account_number"]))]
                         )
-                    res = self.env["openg2p.registration.identity"].search(
-                        [("registration_id", "=", id)]
-                    )
-                    if res:
-                        data["identities"] = res.ids
-                elif k == "state_id":
-                    state = self.env["res.country.state"].search([("name", "=", v)])
-                    if state:
-                        data["state_id"] = state.id
-                else:
-                    if k not in [
-                        "description",
-                        "color",
-                        "beneficiary_name",
-                        "identity_national",
-                        "identity_passport",
-                        "legend_blocked",
-                        "legend_done",
-                        "legend_normal",
-                    ]:
-                        if k == "name" and v:
-                            name_parts = v.split(" ")
-                            data["firstname"] = name_parts[0]
-                            if len(name_parts) > 1:
-                                data["lastname"] = " ".join(name_parts[1:])
-                        else:
-                            org_data.update({k: v})
+                        if res:
+                            raise Exception("Duplicate Bank Account Number!")
+                        if not res:
+                            res = self.env["res.partner.bank"].create(
+                                {
+                                    "acc_number": odk_data["bank_account_number"],
+                                    "partner_id": self.env.ref("base.main_partner").id,
+                                }
+                            )
+                        data["bank_account_id"] = res.id
+                elif k == "phone":
+                    data["phone"] = odk_data["phone"]
+                elif hasattr(self, k):
+                    if k == "partner_id":
+                        res = self.env["res.partner"].search(
+                            [("partner_id", "=", v)], limit=1
+                        )
+                        if res:
+                            data[k] = res.id
+                    elif k == "registered_date":
+                        data["registered_date"] = datetime.strptime(v, format)
+                    elif k == "categ_ids":
+                        res = self.env["categ_ids"].search(
+                            [("categ_ids", "=", v)], limit=1
+                        )
+                        if res:
+                            data["categ_ids"] = res.ids
+                    elif k == "company_id":
+                        res = self.env["company_id"].search(
+                            [("company_id", "=", v)], limit=1
+                        )
+                        if res:
+                            data["company_id"] = res.id
+                    elif k == "user_id":
+                        res = self.env["user_id"].search([("user_id", "=", v)], limit=1)
+                        if res:
+                            data["user_id"] = res.id
+                    elif k == "priority":
+                        if v in [i[0] for i in AVAILABLE_PRIORITIES]:
+                            data["priority"] = v
+                    elif k == "beneficiary_id":
+                        res = self.env["openg2p.beneficiary"].search(
+                            [("beneficiary_id", "=", id)], limit=1
+                        )
+                        if res:
+                            data["beneficiary_id"] = res.id
+                    elif k == "identities":
+                        for vi in v:
+                            self.env["openg2p.registration.identity"].create(
+                                {
+                                    "name": list(vi.keys())[0],
+                                    "type": list(vi.values())[0],
+                                    "registration_id": id,
+                                }
+                            )
+                        res = self.env["openg2p.registration.identity"].search(
+                            [("registration_id", "=", id)]
+                        )
+                        if res:
+                            data["identities"] = res.ids
+                    elif k == "state_id":
+                        state = self.env["res.country.state"].search([("name", "=", v)])
+                        if state:
+                            data["state_id"] = state.id
                     else:
-                        data[k] = v
-            else:
-                org_data.update({k: v})
+                        if k not in [
+                            "description",
+                            "color",
+                            "beneficiary_name",
+                            "identity_national",
+                            "identity_passport",
+                            "legend_blocked",
+                            "legend_done",
+                            "legend_normal",
+                        ]:
+                            if k == "name":
+                                if v is None:
+                                    continue
+                                name_parts = v.split(" ")
+                                data["firstname"] = name_parts[0]
+                                if len(name_parts) > 1:
+                                    data["lastname"] = " ".join(name_parts[1:])
+                            else:
+                                org_data.update({k: v})
+                        else:
+                            data[k] = v
+                else:
+                    org_data.update({k: v})
+            except Exception as e:
+                print(e)
         for k, v in org_data.items():
-            self.env["openg2p.beneficiary.orgmap"].create(
+            self.env["openg2p.registration.orgmap"].create(
                 {
                     "field_name": k,
                     "field_value": v or "",
-                    "registration": id,
+                    "regd_id": id,
                 }
             )
         regd.write(data)
         return regd
-
-    def increase_atten_20(self, selected_ids):
-        for r in self:
-            if r.id in selected_ids:
-                for org_item in r.org_custom_field:
-                    if (
-                        org_item.field_name
-                        == "total_student_in_attendance_at_the_school"
-                    ):
-                        print(org_item.field_value)
-        return True
 
     @api.depends("date_open", "date_closed")
     @api.one
@@ -574,6 +565,18 @@ class Registration(models.Model):
         }
         beneficiary = self.env["openg2p.beneficiary"].create(data)
 
+        org_fields = self.env["openg2p.registration.orgmap"].search(
+            [("regd_id", "=", self.id)]
+        )
+        for org_field in org_fields:
+            self.env["openg2p.beneficiary.orgmap"].create(
+                {
+                    "field_name": org_field.field_name,
+                    "field_value": org_field.field_value,
+                    "beneficiary_id": beneficiary.id,
+                }
+            )
+
         for code, number in self.get_identities():
             category = self.env["openg2p.beneficiary.id_category"].search(
                 [("type", "=", code)]
@@ -591,10 +594,10 @@ class Registration(models.Model):
         )
         context = dict(self.env.context)
         context["form_view_initial_mode"] = "edit"
-
+                  
         # Indexing the beneficiary
         self.index_beneficiary()
-
+                  
         return {
             "type": "ir.actions.act_window",
             "view_type": "form",
@@ -602,6 +605,7 @@ class Registration(models.Model):
             "res_model": "openg2p.beneficiary",
             "res_id": beneficiary.id,
             "context": context,
+
         }
 
     @api.multi
@@ -673,6 +677,7 @@ class Registration(models.Model):
             "bank_account_id": existing_beneficiary.bank_account_id.id,
             "emergency_contact": existing_beneficiary.emergency_contact,
             "emergency_phone": existing_beneficiary.emergency_phone,
+
         }
 
         cleaned_existing_data = self.del_none(existing_data)
