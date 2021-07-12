@@ -25,7 +25,6 @@ _logger = logging.getLogger(__name__)
 def _lang_get(self):
     return self.env["res.lang"].get_installed()
 
-
 _PARTNER_FIELDS = [
     "firstname",
     "lastname",
@@ -288,6 +287,70 @@ class Beneficiary(models.Model):
         help="Duplicate records that have been merged with this."
         " Primary function is to allow to reference of merged records ",
     )
+    org_custom_field = fields.One2many(
+        "openg2p.beneficiary.orgmap",
+        "beneficiary_id",
+    )
+    attendance = fields.Integer(
+        string="Attendance",
+        store=False,
+        required=False,
+        compute="_compute_att",
+        search="_search_att",
+    )
+
+    def _search_att(self, operator, val2):
+        res = []
+        for rec in self:
+            att = self.env["openg2p.beneficiary.orgmap"].search(
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "total_student_in_attendance_at_the_school"),
+                ]
+            )
+            if not att:
+                continue
+            try:
+                val = int(att.field_value)
+            except BaseException as e:
+                print(e)
+                continue
+            if operator == ">":
+                if val > val2:
+                    res.append(rec)
+            elif operator == "<":
+                if val < val2:
+                    res.append(rec)
+            elif operator == "=":
+                if val == val2:
+                    res.append(rec)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec)
+            elif operator == ">=":
+                if val >= val2:
+                    res.append(rec)
+            elif operator == "<=":
+                if val <= val2:
+                    res.append(rec)
+        return [("id", "in", [rec.id for rec in res])]
+
+    @api.depends("org_custom_field")
+    def _compute_att(self):
+        for rec in self:
+            att = self.env["openg2p.beneficiary.orgmap"].search(
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "total_student_in_attendance_at_the_school"),
+                ]
+            )
+            try:
+                rec.attendance = int(att.field_value) if att else 0
+            except BaseException as e:
+                print(e)
+                rec.attendance = 0
 
     _sql_constraints = [
         ("ref_id_uniq", "unique(ref)", "The Beneficiary reference must be unique."),
@@ -297,7 +360,6 @@ class Beneficiary(models.Model):
         res = []
         bs = self.env["openg2p.beneficiary"].search([])
         for b in bs:
-            print(b.age, operator, val)
             if operator == "=":
                 if b.age == val:
                     res.append(b)
@@ -526,8 +588,11 @@ class Beneficiary(models.Model):
                         ("country_id", "=", country_id),
                     ]
                     state = States.search(state_domain, limit=1)
-                    # replace state or remove it if not found
-                    vals["state_id"] = state.id
+
+                    vals[
+                        "state_id"
+                    ] = state.id  # replace state or remove it if not found
+
 
     @api.multi
     def _get_country_name(self):
