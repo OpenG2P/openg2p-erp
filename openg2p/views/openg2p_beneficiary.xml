@@ -187,19 +187,6 @@
                             </page>
                         </notebook>
 
-                        <!-- Merged Beneficiaries -->
-                        <group string="Merged Beneficiaries">
-                            <field nolabel="1" readonly="1" name="merged_beneficiary_ids" widget="many2many">
-                                <tree>
-                                    <field name="id" />
-                                    <field name="firstname"/>
-                                    <field name="lastname"/>
-                                </tree>
-                            </field>
-                            <group name="internal_notes_right">
-                                
-                            </group>
-                        </group>
                         
                     </sheet>
                     <div class="o_attachment_preview"/>

@@ -11,10 +11,8 @@
                         <button name="create_batch" type="button" string="Create Batch" class="oe_highlight"/>
                     </header>
                     <sheet>
-
                         <field name="batch_name"/>
                         <field name="file"/>
-<!--                        <button name="create_batch" string="Create Batch"/>-->
                     </sheet>
 
                 </form>
