@@ -23,38 +23,6 @@
                 groups="group_openg2p_manager"
                 sequence="100"/>
 
-
-        <act_window id="action_make_transaction"
-                    name="Create Transaction"
-                    src_model="openg2p.beneficiary"
-                    res_model="openg2p.beneficiary.transaction.wizard"
-                    view_type="tree" view_mode="form"
-                    key2="client_action_multi" target="new"
-                    groups="openg2p_registration.group_openg2p_registration_user"/>
-        
-        <record id="wizard_batch" model="ir.ui.view">
-            <field name="name">Create Transaction</field>
-            <field name="model">openg2p.beneficiary.transaction.wizard</field>
-            <field name="target">inline</field>
-            <field name="arch" type="xml">
-                <form>
-                    <group>
-                        <group>    
-                            <field name="batch_name"/>
-                            <button string="Create Batch Transaction" name="create_batch" type="object" class="btn-primary"/>
-                            
-                        </group>
-                        <group>    
-                            <button string="Create Single Transactions" name="create_single" type="object" class="btn-primary"/>
-                            
-                        </group>
-                    </group>
-                    <footer>
-                        <button string="Cancel" class="btn-default" special="cancel"/>   
-                    </footer>
-                </form>
-            </field>
-        </record>
         <!-- Beneficiary -->
         <record id="view_beneficiary_tree" model="ir.ui.view">
             <field name="name">openg2p.beneficiary.tree</field>

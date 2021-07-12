@@ -157,9 +157,6 @@
                             <group string="Internal Info" name="internal_notes_right">
 
                             </group>
-                            <group string="Verification">
-                                <field name="error_verification"/>
-                            </group>
                             <group string="Organization">
                                 <field name="org_custom_field">
                                     <tree editable="bottom">
