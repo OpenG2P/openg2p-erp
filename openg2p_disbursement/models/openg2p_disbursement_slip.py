@@ -20,7 +20,7 @@ class Slip(models.Model):
         string="Structure",
         readonly=True,
         states={"draft": [("readonly", False)]},
-        required=False,
+        required=True,
         help="Defines rules that have to be applied to this disbursement slip, accordingly to the enrollment chosen.",
     )
     name = fields.Char(

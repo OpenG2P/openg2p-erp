@@ -10,6 +10,7 @@
         "mail",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "data/ir_cron.xml",
         "views/odk_submissions_view.xml",
         "views/odk_config_form.xml",
