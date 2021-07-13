@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from odoo import fields, models, api
 import csv
@@ -6,17 +5,18 @@ import base64
 import io
 import uuid
 
+
 class DisbursementFile(models.Model):
     _name = "openg2p.disbursement.file"
 
-    batch_name=fields.Char(string="Batch Name",required=True)
+    batch_name = fields.Char(string="Batch Name", required=True)
 
-    file=fields.Binary(string="CSV File",required=True)
+    file = fields.Binary(string="CSV File", required=True)
 
     def create_batch(self):
         print("hello")
         return
-        print(type(self.file),self.file)
+        print(type(self.file), self.file)
 
         # with open(self.file,"rb") as f:
         #     print(f.read())
@@ -24,28 +24,29 @@ class DisbursementFile(models.Model):
         data_file = io.StringIO(csv_data.decode("utf-8"))
         # data_file.seek(0)
         file_reader = []
-        csv_reader = csv.reader(data_file, delimiter=',')
+        csv_reader = csv.reader(data_file, delimiter=",")
         file_reader.extend(csv_reader)
         print(file_reader)
 
-
-
-
     def _get_bank_id(self, data=None):
-        bank_id = self.env["res.partner.bank"].search([("acc_number", "=", data["acc_number"])],limit=1)
-        if len(bank_id)==0:
-            bank_id=self.env["res.partner.bank"].create(
-                        {
-                            "acc_number":data["acc_number"] ,
-                            "partner_id":self.env.ref("base.main_partner").id,
-                            "payment_mode":data["payment_mode"],
-                            "currency_id":self.env["res.currency"].search([("name","=",data["currency"])]).id,
-                        }
-                    )
+        bank_id = self.env["res.partner.bank"].search(
+            [("acc_number", "=", data["acc_number"])], limit=1
+        )
+        if len(bank_id) == 0:
+            bank_id = self.env["res.partner.bank"].create(
+                {
+                    "acc_number": data["acc_number"],
+                    "partner_id": self.env.ref("base.main_partner").id,
+                    "payment_mode": data["payment_mode"],
+                    "currency_id": self.env["res.currency"]
+                    .search([("name", "=", data["currency"])])
+                    .id,
+                }
+            )
         return bank_id
 
     @api.multi
-    def create_batch(self,csv_data):
+    def create_batch(self, csv_data):
         # id,request_id,payment_mode,acc_number,acc_holder_name,amount,currency,note
         for program, beneficiaries in csv_data.items():
             request_id = uuid.uuid4().hex
@@ -55,15 +56,15 @@ class DisbursementFile(models.Model):
             while len(beneficiaries[count:]) > 0:
 
                 beneficiaries_list = beneficiaries[
-                                     count: min(count + batch_size, len(beneficiaries))
-                                     ]
+                    count : min(count + batch_size, len(beneficiaries))
+                ]
 
                 # Creating batch
                 batch = self.env["openg2p.disbursement.batch.transaction"].create(
                     {
                         "name": self.batch_name
-                                + "-"
-                                + str(datetime.now().strftime("%d%m%y-%I:%M")),
+                        + "-"
+                        + str(datetime.now().strftime("%d%m%y-%I:%M")),
                         "program_id": program,
                         "state": "draft",
                         "date_start": datetime.now(),

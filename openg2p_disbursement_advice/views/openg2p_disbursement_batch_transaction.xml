@@ -82,9 +82,10 @@
                         <field name="file_url" widget="url" readonly="1" text="Click to see CSV File" attrs="{'invisible': [('file_url', '=', False)]}"/>
                         <button string="Get CSV URL" name="bulk_transfer_detailed_status" type="object" class="btn-primary"/>
                     </group>
-                </form>
-                    <footer>   
+
+                    <footer>
                     </footer>
+                </form>
             </field>
         </record>
     </data>
