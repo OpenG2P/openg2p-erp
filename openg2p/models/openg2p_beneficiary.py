@@ -25,6 +25,7 @@ _logger = logging.getLogger(__name__)
 def _lang_get(self):
     return self.env["res.lang"].get_installed()
 
+
 _PARTNER_FIELDS = [
     "firstname",
     "lastname",
@@ -592,7 +593,6 @@ class Beneficiary(models.Model):
                     vals[
                         "state_id"
                     ] = state.id  # replace state or remove it if not found
-
 
     @api.multi
     def _get_country_name(self):

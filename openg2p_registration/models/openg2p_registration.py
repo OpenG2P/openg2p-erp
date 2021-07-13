@@ -18,7 +18,6 @@ AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "
 BASE_URL = "http://localhost:8080"
 
 
-
 class Registration(models.Model):
     _name = "openg2p.registration"
     _description = "Registration"
@@ -130,12 +129,11 @@ class Registration(models.Model):
     )
     identities = fields.One2many("openg2p.registration.identity", "registration_id")
     retained_id = fields.Integer(string="Retained_ID")
-    
+
     org_custom_field = fields.One2many(
         "openg2p.registration.orgmap",
         "regd_id",
     )
-
 
     attendance = fields.Integer(
         string="Attendance",
