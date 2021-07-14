@@ -236,15 +236,15 @@ class Beneficiary(models.Model):
         "Medium-sized image",
         attachment=True,
         help="Medium-sized image of this beneficiary. It is automatically "
-             "resized as a 128x128px image, with aspect ratio preserved. "
-             "Use this field in form views or some kanban views.",
+        "resized as a 128x128px image, with aspect ratio preserved. "
+        "Use this field in form views or some kanban views.",
     )
     image_small = fields.Binary(
         "Small-sized image",
         attachment=True,
         help="Small-sized image of this beneficiary. It is automatically "
-             "resized as a 64x64px image, with aspect ratio preserved. "
-             "Use this field anywhere a small image is required.",
+        "resized as a 64x64px image, with aspect ratio preserved. "
+        "Use this field anywhere a small image is required.",
     )
     location_id = fields.Many2one(
         "openg2p.location",
@@ -286,7 +286,7 @@ class Beneficiary(models.Model):
         index=True,
         context={"active_test": False},
         help="Duplicate records that have been merged with this."
-             " Primary function is to allow to reference of merged records ",
+        " Primary function is to allow to reference of merged records ",
     )
     org_custom_field = fields.One2many(
         "openg2p.beneficiary.orgmap",
@@ -314,9 +314,7 @@ class Beneficiary(models.Model):
                     ("field_name", "=", "total_student_in_attendance_at_the_school"),
                 ]
             )
-            print(rec, att)
             if not att:
-                print('not att')
                 continue
             try:
                 val = int(att.field_value)
@@ -342,7 +340,6 @@ class Beneficiary(models.Model):
             elif operator == "<=":
                 if val <= val2:
                     res.append(rec.id)
-            print(res)
         return [("id", "in", res)]
 
     # example for filtering on org custom fields
@@ -356,13 +353,11 @@ class Beneficiary(models.Model):
                     ("field_name", "=", "total_student_in_attendance_at_the_school"),
                 ]
             )
-            print(rec, att)
             try:
                 rec.attendance = int(att.field_value) if att else 0
             except BaseException as e:
                 print(e)
                 rec.attendance = 0
-            print(rec.attendance)
 
     _sql_constraints = [
         ("ref_id_uniq", "unique(ref)", "The Beneficiary reference must be unique."),
@@ -818,7 +813,7 @@ class Beneficiary(models.Model):
 
     @api.model
     def matches(
-            self, query, mode=MATCH_MODE_NORMAL, stop_on_first=False, threshold=None
+        self, query, mode=MATCH_MODE_NORMAL, stop_on_first=False, threshold=None
     ):
         """
         Given an query find recordset that is strongly similar
