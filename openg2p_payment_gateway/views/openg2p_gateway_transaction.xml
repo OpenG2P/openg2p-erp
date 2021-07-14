@@ -10,7 +10,7 @@
                 <field name="provider"/>
                 <field name="partner_id"/>
                 <field name="external_id"/>
-                <field name="currency_id" invisible="1"/>
+                <field name="currency_id"/>
                 <field name="amount" widget="monetary"/>
                 <field name="state"/>
                 <button
@@ -77,7 +77,7 @@
                             <field name="execute_method"/>
                         </group>
                         <group>
-                            <field name="currency_id" invisible="1"/>
+                            <field name="currency_id"/>
                             <field name="amount" widget="monetary"/>
                             <field name="partner_id"/>
                             <field name="origin_id"/>

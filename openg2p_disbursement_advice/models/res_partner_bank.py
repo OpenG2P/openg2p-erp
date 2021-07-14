@@ -53,6 +53,9 @@ class ResPartnerBank(models.Model):
     currency_id = fields.Many2one(
         default=lambda self: self.env.user.company_id.currency_id, readonly=True
     )
+    payment_mode = fields.Selection(
+        [("AFM", "AfriMoney"), ("SLB", "Sierra Leone Commercial Bank")], required=True
+    )
 
     @api.model
     def create(self, vals):

@@ -89,7 +89,7 @@ class Openg2pDisbursementBatch(models.Model):
 
         self.advice_ids.unlink()
 
-        # let's get all the banks in this run. We use plain sql for optimizationr easons
+        # let's get all the banks in this run. We use plain sql for optimization reasons
         query = """SELECT DISTINCT(account.bank_id) AS bank
         FROM openg2p_disbursement_slip AS slip
         LEFT JOIN openg2p_beneficiary AS beneficiary ON slip.beneficiary_id = beneficiary.id

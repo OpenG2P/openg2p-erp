@@ -22,7 +22,8 @@
             </field>
         </record>
 
-        <record id="openg2p_registration_view_tree_activity" model="ir.ui.view">
+
+<!--         <record id="openg2p_registration_view_tree_activity" model="ir.ui.view">
             <field name="name">openg2p.registration.view.tree.activity</field>
             <field name="model">openg2p.registration</field>
             <field name="arch" type="xml">
@@ -35,7 +36,8 @@
                     <field name="stage_id"/>
                 </tree>
             </field>
-        </record>
+        </record> -->
+
 
         <record model="ir.ui.view" id="crm_case_form_view_beneficiary">
             <field name="name">Beneficiaries - Registration Form</field>
@@ -46,7 +48,13 @@
                     <header>
                         <button string="Create Beneficiary" name="create_beneficiary_from_registration" type="object"
                                 class="oe_highlight"
-                                attrs="{'invisible': ['|', '|', ('stage_action', '!=', 'create_beneficiary'), ('beneficiary_id', '!=', False),('active', '=', False)]}"/>
+                                attrs="{'invisible': ['|', '|', ('stage_action', '!=', 'create_beneficiary'),('beneficiary_id', '!=', False),('active', '=', False)]}"/>
+                        <button string="Check Duplicates" name="find_duplicates" type="object"
+                                class="oe_highlight"
+                                attrs="{'invisible': ['|', '|', ('stage_id', '!=', 2),('duplicate_beneficiaries_ids', '!=', []),('active', '=', False)]}"/>
+                        <button string="Merge" name="merge_beneficiaries" type="object"
+                                class="oe_highlight"
+                                attrs="{'invisible': [ '|','|', ('stage_id', '!=', 6),('active', '=', False),('duplicate_beneficiaries_ids', '!=', [])]}"/>
                         <button string="Refuse" name="archive_registration" type="object"
                                 attrs="{'invisible': [('active', '=', False)]}"/>
                         <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"
@@ -135,6 +143,9 @@
                                 <field name="emergency_phone"/>
                                 <field name="birthday"/>
                             </group>
+                            
+
+
                             <group string="Identifications">
                                 <field name="identities" nolabel="1">
                                     <tree string="Identifications" editable="bottom">
@@ -146,9 +157,7 @@
                             <group string="Internal Info" name="internal_notes_right">
 
                             </group>
-                            <group name="Verification Status">
-                                <field name="error_verification"/>
-                            </group>
+
                             <group string="Organization">
                                 <field name="org_custom_field">
                                     <tree editable="bottom">
@@ -157,7 +166,28 @@
                                     </tree>
                                 </field>
                             </group>
+        
                         </group>
+                            <!-- Duplicate Beneficiaries -->
+                        <group string="Potential Duplicates">
+                            <field nolabel="1" readonly="1" name="duplicate_beneficiaries_ids" widget="many2many">
+                                <tree>
+                                    <field name="id" />
+                                    <field name="firstname"/>
+                                    <field name="lastname"/>
+                                </tree>
+                            </field>
+                            <group name="internal_notes_right">
+                                
+                            </group>
+
+                        </group>
+                            
+                        <field placeholder="Enter the ID to retain" name="retained_id" widget ="char"/>
+
+                        <button string="Clear" name="clear_beneficiaries" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', '|', ('stage_id', '!=', 2),('duplicate_beneficiaries_ids', '=', []),('active', '=', False)]}"/>
                         <separator string="Registration Summary"/>
                         <field name="description" placeholder="Details of Registrations..."/>
                     </sheet>
@@ -226,6 +256,7 @@
                 <search string="Search Registrations">
                     <field name="name" context="{'active_test': False}" string="Registration"
                            filter_domain="['|','|', '|', ('firstname','ilike',self), ('firstname','%',self), ('lastname','ilike',self), ('lastname','%',self)]"/>
+
                     <separator/>
                     <filter string="My Registrations" name="my_registrations" domain="[('user_id', '=', uid)]"/>
                     <filter string="Unassigned" name="unassigned" domain="[('user_id', '=', False)]"/>

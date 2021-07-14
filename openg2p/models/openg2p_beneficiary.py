@@ -2,12 +2,12 @@
 # Copyright 2020 OpenG2P (https://openg2p.org)
 # @author: Salton Massally <saltonmassally@gmail.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
 import base64
 import copy
 import logging
 import random
 import string
+import requests
 
 from dateutil.relativedelta import relativedelta
 from odoo.addons.component.core import WorkContext
@@ -170,6 +170,7 @@ class Beneficiary(models.Model):
         store=False,
         search="_search_age",
     )
+
     identities = fields.One2many(
         comodel_name="openg2p.beneficiary.id_number",
         inverse_name="beneficiary_id",
@@ -537,7 +538,6 @@ class Beneficiary(models.Model):
 
     @api.multi
     def _display_address(self):
-
         """
         The purpose of this function is to build and return an address formatted accordingly to the
         standards of the country where it belongs.
@@ -596,6 +596,7 @@ class Beneficiary(models.Model):
                         ("country_id", "=", country_id),
                     ]
                     state = States.search(state_domain, limit=1)
+
                     vals[
                         "state_id"
                     ] = state.id  # replace state or remove it if not found
