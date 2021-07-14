@@ -168,23 +168,23 @@ class Registration(models.Model):
                 continue
             if operator == ">":
                 if val > val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "<":
                 if val < val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "=":
                 if val == val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "!=":
                 if val != val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == ">=":
                 if val >= val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "<=":
                 if val <= val2:
-                    res.append(rec)
-        return [("id", "in", [rec.id for rec in res])]
+                    res.append(rec.id)
+        return [("id", "in", res)]
 
     # example for filtering on org custom fields
     @api.depends("org_custom_field")
