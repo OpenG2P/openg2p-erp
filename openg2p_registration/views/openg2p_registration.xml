@@ -170,17 +170,17 @@
             </field>
         </record>
 
-        <act_window id="action_update_att"
-                name="Update Record"
+        <act_window id="action_update_regd"
+                name="Update Records"
                 src_model="openg2p.registration"
-                res_model="openg2p.registration.update_att"
+                res_model="openg2p.registration.update_regd"
                 view_type="tree" view_mode="form"
                 key2="client_action_multi" target="new"
                 groups="openg2p_registration.group_openg2p_registration_user"/>
 
         <record id="wizard_view" model="ir.ui.view">
-            <field name="name">Update Attendance</field>
-            <field name="model">openg2p.registration.update_att</field>
+            <field name="name">Bulk Update Registrations</field>
+            <field name="model">openg2p.registration.update_regd</field>
             <field name="target">inline</field>
             <field name="arch" type="xml">
                 <form>
