@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_openg2p_disbursement_file" model="ir.ui.view">
+            <field name="name">openg2p.disbursement.file.form</field>
+            <field name="model">openg2p.disbursement.file</field>
+            <field name="arch" type="xml">
+
+                <form string="Disbursement Form">
+                    <header>
+                        <button name="create_batch" type="button" string="Create Batch" class="oe_highlight"/>
+                    </header>
+                    <sheet>
+                        <field name="batch_name"/>
+                        <field name="file"/>
+                    </sheet>
+
+                </form>
+            </field>
+        </record>
+    </data>
+    <record id="view_openg2p_disbursement_file_tree" model="ir.ui.view">
+        <field name="name">openg2p.disbursement.file.tree</field>
+        <field name="model">openg2p.disbursement.file</field>
+        <field name="arch" type="xml">
+            <tree import="0">
+                <field name="batch_name"/>
+                <field name="file"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

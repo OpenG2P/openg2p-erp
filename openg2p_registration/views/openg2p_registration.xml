@@ -23,7 +23,7 @@
         </record>
 
 
-<!--         <record id="openg2p_registration_view_tree_activity" model="ir.ui.view">
+        <record id="openg2p_registration_view_tree_activity" model="ir.ui.view">
             <field name="name">openg2p.registration.view.tree.activity</field>
             <field name="model">openg2p.registration</field>
             <field name="arch" type="xml">
@@ -36,8 +36,7 @@
                     <field name="stage_id"/>
                 </tree>
             </field>
-        </record> -->
-
+        </record>
 
         <record model="ir.ui.view" id="crm_case_form_view_beneficiary">
             <field name="name">Beneficiaries - Registration Form</field>

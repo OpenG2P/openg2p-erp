@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem 
+        id="transaction_menu" 
+        name="Create Transaction"
+        sequence="1"
+        web_icon="static/description/single.png"/>
+
+    <menuitem 
+        id="batch_root" 
+        name="Create Batch Transaction"
+        sequence="5" 
+        parent="transaction_menu"
+        action="action_batch_transaction"/>
+    <menuitem 
+        id="main_root" 
+        name="Map Beneficiaries" 
+        sequence="6"
+        parent="transaction_menu"
+        action="action_main_transaction"/>
+    <menuitem 
+        id="single_root" 
+        name="Create Single Transaction"
+        sequence="7" 
+        parent="transaction_menu"
+        action="action_single_transaction"/>
+    <menuitem
+        id="upload_csv"
+        name="Create Batch Transaction from CSV"
+        sequence="8"
+        parent="transaction_menu"
+        action="action_file_transaction"/>
+</odoo>
