@@ -10,13 +10,13 @@ import string
 import requests
 from dateutil.relativedelta import relativedelta
 from odoo.addons.component.core import WorkContext
+from odoo.addons.openg2p.services.matching_service import MATCH_MODE_NORMAL
 
 from odoo import api, fields, models
 from odoo import tools, _
 from odoo.addons.base.models.res_partner import ADDRESS_FIELDS
 from odoo.exceptions import ValidationError, UserError
 from odoo.modules.module import get_module_resource
-from odoo.addons.openg2p.services.matching_service import MATCH_MODE_NORMAL
 
 _logger = logging.getLogger(__name__)
 
@@ -292,6 +292,8 @@ class Beneficiary(models.Model):
         "openg2p.beneficiary.orgmap",
         "beneficiary_id",
     )
+
+    # example for filtering on org custom fields
     attendance = fields.Integer(
         string="Attendance",
         store=False,
@@ -300,9 +302,11 @@ class Beneficiary(models.Model):
         search="_search_att",
     )
 
+    # example for filtering on org custom fields
     def _search_att(self, operator, val2):
         res = []
-        for rec in self:
+        beneficiaries = self.env["openg2p.beneficiary"].search([])
+        for rec in beneficiaries:
             att = self.env["openg2p.beneficiary.orgmap"].search(
                 [
                     "&",
@@ -314,29 +318,31 @@ class Beneficiary(models.Model):
                 continue
             try:
                 val = int(att.field_value)
+                print(val)
             except BaseException as e:
                 print(e)
                 continue
             if operator == ">":
                 if val > val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "<":
                 if val < val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "=":
                 if val == val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "!=":
                 if val != val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == ">=":
                 if val >= val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "<=":
                 if val <= val2:
-                    res.append(rec)
-        return [("id", "in", [rec.id for rec in res])]
+                    res.append(rec.id)
+        return [("id", "in", res)]
 
+    # example for filtering on org custom fields
     @api.depends("org_custom_field")
     def _compute_att(self):
         for rec in self:
@@ -589,6 +595,7 @@ class Beneficiary(models.Model):
                         ("country_id", "=", country_id),
                     ]
                     state = States.search(state_domain, limit=1)
+
                     vals[
                         "state_id"
                     ] = state.id  # replace state or remove it if not found
