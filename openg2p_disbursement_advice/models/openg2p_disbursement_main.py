@@ -68,6 +68,7 @@ class DisbursementMain(models.Model):
         ),
         track_visibility="onchange",
     )
+    note = fields.Text(string="Notes", required=False)
     currency_id = fields.Many2one("res.currency", required=True, default=1)
     payment_mode = fields.Selection(
         "Payment Mode",
@@ -88,8 +89,8 @@ class DisbursementMain(models.Model):
     def _compute_acc_holder_name(self):
         for rec in self:
             rec.acc_holder_name = (
-                rec.bank_account_id.acc_holder_name
-                or rec.bank_account_id.beneficiary_id.name
+                    rec.bank_account_id.acc_holder_name
+                    or rec.bank_account_id.beneficiary_id.name
             )
 
     @api.onchange("beneficiary_id")

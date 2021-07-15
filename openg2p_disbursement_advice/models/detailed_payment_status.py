@@ -6,6 +6,7 @@ from datetime import datetime
 import os
 from urllib.parse import urlparse
 from . import secret_keys
+import boto3
 
 
 class BeneficiaryTransactionWizard(models.TransientModel):
@@ -40,8 +41,6 @@ class BeneficiaryTransactionWizard(models.TransientModel):
 
             file_name = os.path.basename(a.path)
 
-            import boto3
-
             s3 = boto3.resource(
                 "s3",
                 aws_access_key_id=secret_keys.ACCESS_KEY,
@@ -50,14 +49,14 @@ class BeneficiaryTransactionWizard(models.TransientModel):
 
             s3.Bucket("openg2p-dev").download_file(file_name, file_name)
             # print("Download Successful!")
-            file_data = ""
+            # file_data = ""
 
-            with open(file_name) as f:
-                file_data += "".join(f.readlines())
+            # with open(file_name) as f:
+            #     file_data += "".join(f.readlines())
 
-            print(file_data)
+            # print(file_data)
 
-            self.csv_data = file_data
+            # self.csv_data = file_data
 
         except BaseException as e:
             print(e)
