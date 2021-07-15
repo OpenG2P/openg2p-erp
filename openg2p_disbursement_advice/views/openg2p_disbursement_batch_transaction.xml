@@ -83,9 +83,9 @@
                         <field name="csv_data" readonly="1" attrs="{'invisible': [('file_url', '=', False)]}"/>
                         <button string="Get CSV URL" name="bulk_transfer_detailed_status" type="object" class="btn-primary"/>
                     </group>
-                </form>
-                    <footer>   
+                    <footer>
                     </footer>
+                </form>
             </field>
         </record>
     </data>

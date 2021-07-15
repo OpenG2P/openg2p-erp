@@ -13,7 +13,7 @@ import json
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://3.139.225.16:9080"
 
 
 class Registration(models.Model):
