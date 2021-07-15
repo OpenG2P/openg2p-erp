@@ -211,6 +211,7 @@
             <field name="arch" type="xml">
                 <kanban class="o_res_beneficiary_kanban" duplicate="0">
                     <field name="id"/>
+                    <field name="school_approved" invisible="1"/>
                     <field name="display_name"/>
                     <field name="name"/>
                     <field name="title"/>
