@@ -27,8 +27,8 @@ class Registration(models.Model):
     def _default_stage_id(self):
         ids = (
             self.env["openg2p.registration.stage"]
-                .search([("fold", "=", False)], order="sequence asc", limit=1)
-                .ids
+            .search([("fold", "=", False)], order="sequence asc", limit=1)
+            .ids
         )
         if ids:
             return ids[0]
@@ -465,10 +465,10 @@ class Registration(models.Model):
                     vals["stage_id"]
                 )
                 if (
-                        not registration.stage_id.fold
-                        and next_stage.fold
-                        and next_stage.sequence > 1
-                        and registration.active
+                    not registration.stage_id.fold
+                    and next_stage.fold
+                    and next_stage.sequence > 1
+                    and registration.active
                 ):  # ending stage
                     if not registration.beneficiary_id:
                         raise UserError(
@@ -485,8 +485,8 @@ class Registration(models.Model):
                         )
 
                 if (
-                        registration.stage_id.sequence > next_stage.sequence
-                        and registration.beneficiary_id
+                    registration.stage_id.sequence > next_stage.sequence
+                    and registration.beneficiary_id
                 ):
                     raise UserError(
                         _(
@@ -516,21 +516,21 @@ class Registration(models.Model):
     def _track_subtype(self, init_values):
         record = self[0]
         if (
-                "beneficiary_id" in init_values
-                and record.beneficiary_id
-                and record.beneficiary_id.active
+            "beneficiary_id" in init_values
+            and record.beneficiary_id
+            and record.beneficiary_id.active
         ):
             return "openg2p_registration.mt_registration_registered"
         elif (
-                "stage_id" in init_values
-                and record.stage_id
-                and record.stage_id.sequence <= 1
+            "stage_id" in init_values
+            and record.stage_id
+            and record.stage_id.sequence <= 1
         ):
             return "openg2p_registration.mt_registration_new"
         elif (
-                "stage_id" in init_values
-                and record.stage_id
-                and record.stage_id.sequence > 1
+            "stage_id" in init_values
+            and record.stage_id
+            and record.stage_id.sequence > 1
         ):
             return "openg2p_registration.mt_registration_stage_changed"
         return super(Registration, self)._track_subtype(init_values)
@@ -556,12 +556,12 @@ class Registration(models.Model):
         self.ensure_one()
 
         if (
-                not self.duplicate_beneficiaries_ids
+            not self.duplicate_beneficiaries_ids
         ):  # last chance to make sure no duplicates
             self.ensure_unique(mode=MATCH_MODE_COMPREHENSIVE)
 
         if (
-                self.duplicate_beneficiaries_ids
+            self.duplicate_beneficiaries_ids
         ):  # TODO ability to force create if maanger... pass via context
             raise ValidationError(
                 _("Potential duplicates exists for this record and so can not be added")
