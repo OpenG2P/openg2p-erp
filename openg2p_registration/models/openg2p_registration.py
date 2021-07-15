@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
+import json
+
+import requests
 from odoo.addons.openg2p.services.matching_service import (
     MATCH_MODE_COMPREHENSIVE,
-    MATCH_MODE_NORMAL,
 )
 from odoo.addons.queue_job.job import job
 
 from odoo import api, fields, models, SUPERUSER_ID
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.translate import _
-import requests
-import json
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
@@ -253,33 +253,34 @@ class Registration(models.Model):
         return odk_map_data
 
     def create_registration_from_odk(self, odk_data):
-        regd = self.create(
-            {
-                "firstname": "",
-                "lastname": "",
-                "street": "",
-                "location_id": 1,
-                "city": "",
-                "state_id": 1,
-                "gender": "male",
-            }
-        )
-        id = regd.id
-        from datetime import datetime
-
-        data = {}
-        temp = {}
         odk_map = (
             odk_data["odk_map"]
             if "odk_map" in odk_data.keys()
             else self._get_default_odk_map()
         )
+        temp = {}
         for k, v in odk_data.items():
             if k.startswith("group"):
                 for k2, v2 in v.items():
                     if k2 in odk_map.keys():
                         k2 = odk_map[k2]
                     temp[k2] = v2
+        regd = self.create(
+            {
+                "firstname": "_",
+                "lastname": "_",
+                "street": "_",
+                "location_id": 1,
+                "city": temp["city"] or "_",
+                "state_id": 1,
+                "gender": "male",
+            }
+        )
+        print(regd)
+        id = regd.id
+        from datetime import datetime
+
+        data = {}
         odk_data = temp
         org_data = {}
         format = "%Y-%m-%dT%H:%M:%SZ"
@@ -295,6 +296,7 @@ class Registration(models.Model):
                     "meta-instanceID",
                     "__version__",
                     "bank_name",
+                    "city",
                 ]:
                     continue
                 if k == "bank_account_number":
@@ -376,7 +378,7 @@ class Registration(models.Model):
                             if len(name_parts) > 1:
                                 data["lastname"] = " ".join(name_parts[1:])
                         else:
-                            org_data.update({k: v})
+                            data.update({k: v})
 
                 else:
                     org_data.update({k: v})
