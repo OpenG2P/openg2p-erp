@@ -3,7 +3,6 @@ from odoo.addons.openg2p.services.matching_service import (
     MATCH_MODE_COMPREHENSIVE,
     MATCH_MODE_NORMAL,
 )
-
 from odoo.addons.queue_job.job import job
 
 from odoo import api, fields, models, SUPERUSER_ID
@@ -145,6 +144,20 @@ class Registration(models.Model):
         compute="_compute_att",
         search="_search_att",
     )
+
+    # example for another filter
+    school_approved = fields.Selection(
+        string="Is School Approved",
+        required=False,
+        store=False,
+        selection=[
+            ("yes", "Yes"),
+            ("no", "No"),
+        ],
+        compute="_compute_approved",
+        search="_search_approved",
+    )
+
     error_verification = fields.Selection(
         string="Error in Verification",
         selection=[
@@ -160,20 +173,7 @@ class Registration(models.Model):
         res = []
         regds = self.env["openg2p.registration"].search([])
         for rec in regds:
-            att = self.env["openg2p.registration.orgmap"].search(
-                [
-                    "&",
-                    ("regd_id", "=", rec.id),
-                    ("field_name", "=", "total_student_in_attendance_at_the_school"),
-                ]
-            )
-            if not att:
-                continue
-            try:
-                val = int(att.field_value)
-            except BaseException as e:
-                continue
-
+            val = rec.attendance
             if operator == ">":
                 if val > val2:
                     res.append(rec.id)
@@ -209,6 +209,46 @@ class Registration(models.Model):
                 rec.attendance = int(att.field_value) if att else 0
             except BaseException as e:
                 rec.attendance = 0
+
+    # example for another filtering on org custom fields
+    def _search_approved(self, operator, val2):
+        res = []
+        regds = self.env["openg2p.registration"].search([])
+        for rec in regds:
+            if isinstance(val2, bool):
+                continue
+            try:
+                val = rec.school_approved
+            except BaseException as e:
+                print(e)
+                continue
+            if operator == "=":
+                if val == val2:
+                    res.append(rec.id)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec.id)
+        return [("id", "in", res)]
+
+    # example for another filtering on org custom fields
+    @api.depends("org_custom_field")
+    def _compute_approved(self):
+        for rec in self:
+            approved = self.env["openg2p.registration.orgmap"].search(
+                [
+                    "&",
+                    ("regd_id", "=", rec.id),
+                    ("field_name", "=", "is_the_school_approved"),
+                ]
+            )
+            try:
+                if approved.field_value != "yes":
+                    rec.school_approved = "no"
+                else:
+                    rec.school_approved = "yes"
+            except BaseException as e:
+                print(e)
+                rec.school_approved = "no"
 
     def _get_default_odk_map(self):
         from .openg2p_submission_registration_map import odk_map_data
