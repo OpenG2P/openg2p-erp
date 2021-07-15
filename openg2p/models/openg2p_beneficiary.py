@@ -2,12 +2,12 @@
 # Copyright 2020 OpenG2P (https://openg2p.org)
 # @author: Salton Massally <saltonmassally@gmail.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
 import base64
 import copy
 import logging
 import random
 import string
+import requests
 
 from dateutil.relativedelta import relativedelta
 from odoo.addons.component.core import WorkContext
@@ -170,6 +170,7 @@ class Beneficiary(models.Model):
         store=False,
         search="_search_age",
     )
+
     identities = fields.One2many(
         comodel_name="openg2p.beneficiary.id_number",
         inverse_name="beneficiary_id",
@@ -236,15 +237,15 @@ class Beneficiary(models.Model):
         "Medium-sized image",
         attachment=True,
         help="Medium-sized image of this beneficiary. It is automatically "
-             "resized as a 128x128px image, with aspect ratio preserved. "
-             "Use this field in form views or some kanban views.",
+        "resized as a 128x128px image, with aspect ratio preserved. "
+        "Use this field in form views or some kanban views.",
     )
     image_small = fields.Binary(
         "Small-sized image",
         attachment=True,
         help="Small-sized image of this beneficiary. It is automatically "
-             "resized as a 64x64px image, with aspect ratio preserved. "
-             "Use this field anywhere a small image is required.",
+        "resized as a 64x64px image, with aspect ratio preserved. "
+        "Use this field anywhere a small image is required.",
     )
     location_id = fields.Many2one(
         "openg2p.location",
@@ -286,7 +287,7 @@ class Beneficiary(models.Model):
         index=True,
         context={"active_test": False},
         help="Duplicate records that have been merged with this."
-             " Primary function is to allow to reference of merged records ",
+        " Primary function is to allow to reference of merged records ",
     )
     org_custom_field = fields.One2many(
         "openg2p.beneficiary.orgmap",
@@ -305,6 +306,8 @@ class Beneficiary(models.Model):
         "openg2p.beneficiary.orgmap",
         "beneficiary_id",
     )
+
+    # example for filtering on org custom fields
     attendance = fields.Integer(
         string="Attendance",
         store=False,
@@ -313,9 +316,11 @@ class Beneficiary(models.Model):
         search="_search_att",
     )
 
+    # example for filtering on org custom fields
     def _search_att(self, operator, val2):
         res = []
-        for rec in self:
+        beneficiaries = self.env["openg2p.beneficiary"].search([])
+        for rec in beneficiaries:
             att = self.env["openg2p.beneficiary.orgmap"].search(
                 [
                     "&",
@@ -327,29 +332,31 @@ class Beneficiary(models.Model):
                 continue
             try:
                 val = int(att.field_value)
+                print(val)
             except BaseException as e:
                 print(e)
                 continue
             if operator == ">":
                 if val > val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "<":
                 if val < val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "=":
                 if val == val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "!=":
                 if val != val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == ">=":
                 if val >= val2:
-                    res.append(rec)
+                    res.append(rec.id)
             elif operator == "<=":
                 if val <= val2:
-                    res.append(rec)
-        return [("id", "in", [rec.id for rec in res])]
+                    res.append(rec.id)
+        return [("id", "in", res)]
 
+    # example for filtering on org custom fields
     @api.depends("org_custom_field")
     def _compute_att(self):
         for rec in self:
@@ -373,11 +380,11 @@ class Beneficiary(models.Model):
         required=False,
         store=False,
         selection=[
-            ('yes', 'Yes'),
-            ('no', 'No'),
+            ("yes", "Yes"),
+            ("no", "No"),
         ],
         compute="_compute_approved",
-        search="_search_approved"
+        search="_search_approved",
     )
 
     # example for filtering on org custom fields
@@ -428,7 +435,7 @@ class Beneficiary(models.Model):
         res = []
         beneficiaries = self.env["openg2p.beneficiary"].search([])
         for rec in beneficiaries:
-            if isinstance(val2,bool):
+            if isinstance(val2, bool):
                 continue
             try:
                 val = rec.school_approved
@@ -438,7 +445,7 @@ class Beneficiary(models.Model):
             if operator == "=":
                 if val == val2:
                     res.append(rec.id)
-            elif operator == '!=':
+            elif operator == "!=":
                 if val != val2:
                     res.append(rec.id)
         return [("id", "in", res)]
@@ -455,13 +462,13 @@ class Beneficiary(models.Model):
                 ]
             )
             try:
-                if approved.field_value != 'yes':
-                    rec.school_approved='no'
+                if approved.field_value != "yes":
+                    rec.school_approved = "no"
                 else:
-                    rec.school_approved='yes'
+                    rec.school_approved = "yes"
             except BaseException as e:
                 print(e)
-                rec.school_approved='no'
+                rec.school_approved = "no"
 
     _sql_constraints = [
         ("ref_id_uniq", "unique(ref)", "The Beneficiary reference must be unique."),
@@ -641,7 +648,6 @@ class Beneficiary(models.Model):
 
     @api.multi
     def _display_address(self):
-
         """
         The purpose of this function is to build and return an address formatted accordingly to the
         standards of the country where it belongs.
@@ -700,6 +706,7 @@ class Beneficiary(models.Model):
                         ("country_id", "=", country_id),
                     ]
                     state = States.search(state_domain, limit=1)
+
                     vals[
                         "state_id"
                     ] = state.id  # replace state or remove it if not found
@@ -917,7 +924,7 @@ class Beneficiary(models.Model):
 
     @api.model
     def matches(
-            self, query, mode=MATCH_MODE_NORMAL, stop_on_first=False, threshold=None
+        self, query, mode=MATCH_MODE_NORMAL, stop_on_first=False, threshold=None
     ):
         """
         Given an query find recordset that is strongly similar
