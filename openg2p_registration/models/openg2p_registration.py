@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo.addons.openg2p.services.matching_service import (
     MATCH_MODE_COMPREHENSIVE,
+    MATCH_MODE_NORMAL,
 )
 from odoo.addons.queue_job.job import job
 
