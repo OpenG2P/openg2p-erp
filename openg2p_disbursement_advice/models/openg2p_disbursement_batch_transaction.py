@@ -13,8 +13,8 @@ import boto3
 import pandas as pd
 from io import StringIO
 import os
-from dotenv import load_dotenv
 
+from . import secret_keys
 from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
@@ -115,7 +115,7 @@ class BatchTransaction(models.Model):
     def create_bulk_transfer(self):
         self._generate_uuid()
 
-        limit = 100
+        limit = 1000
         beneficiary_transactions = self.env["openg2p.disbursement.main"].search(
             [("batch_id", "=", self.id)], limit=limit
         )
@@ -124,16 +124,17 @@ class BatchTransaction(models.Model):
 
         # CSV filename as RequestID+Datetime
         csvname = (
-            self.request_id
-            + "-"
-            + str(datetime.now().strftime(r"%Y%m%d%H%M%S"))
-            + ".csv"
+                self.request_id
+                + "-"
+                + str(datetime.now().strftime(r"%Y%m%d%H%M%S"))
+                + ".csv"
         )
+        headers = ['id', 'request_id', 'payment_mode', 'acc_number', 'acc_holder_name', 'amount', 'currency', 'note']
 
         while len(beneficiary_transactions) > 0:
-
             with open(csvname, "w", newline="", encoding="utf-8") as csvfile:
                 csvwriter = csv.writer(csvfile)
+                csvwriter.writerow([r for r in headers])
                 for rec in beneficiary_transactions:
                     # id,request_id,payment_mode,acc_number,acc_holder_name,amount,currency,note
                     entry = [
@@ -208,13 +209,13 @@ class BatchTransaction(models.Model):
     def upload_to_aws(self, local_file, bucket):
 
         try:
-            load_dotenv("F:\odoo12\odoo\openg2p-erp\.env")
+
             hc = pd.read_csv(local_file)
 
             s3 = boto3.client(
                 "s3",
-                aws_access_key_id=os.getenv("ACCESS_KEY"),
-                aws_secret_access_key=os.getenv("SECRET_KEY"),
+                aws_access_key_id=os.getenv(secret_keys.ACCESS_KEY),
+                aws_secret_access_key=os.getenv(secret_keys.SECRET_KEY),
             )
             csv_buf = StringIO()
 

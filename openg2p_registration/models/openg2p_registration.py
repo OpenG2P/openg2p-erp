@@ -725,7 +725,7 @@ class Registration(models.Model):
         try:
             r = requests.post(url_endpoint, json=index_data)
             return r
-        except BaseException as e:
+        except requests.exceptions.RequestException as e:
             return e
 
     def search_beneficiary(self):
