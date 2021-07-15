@@ -89,8 +89,8 @@ class DisbursementMain(models.Model):
     def _compute_acc_holder_name(self):
         for rec in self:
             rec.acc_holder_name = (
-                    rec.bank_account_id.acc_holder_name
-                    or rec.bank_account_id.beneficiary_id.name
+                rec.bank_account_id.acc_holder_name
+                or rec.bank_account_id.beneficiary_id.name
             )
 
     @api.onchange("beneficiary_id")

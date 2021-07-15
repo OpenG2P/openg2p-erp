@@ -157,6 +157,12 @@ class BatchTransaction(models.Model):
                     ]
 
                     csvwriter.writerow(entry)
+                    # id,request_id,payment_mode,acc_number,acc_holder_name,amount,currency,note
+                    beneficiary_transaction_records = []
+                    beneficiary_transaction_records.append(entry)
+                    csvwriter.writerows(
+                        map(lambda x: [x], beneficiary_transaction_records)
+                    )
 
             offset += len(beneficiary_transactions)
 
@@ -218,7 +224,6 @@ class BatchTransaction(models.Model):
     def upload_to_aws(self, local_file, bucket):
 
         try:
-
             hc = pd.read_csv(local_file)
 
             s3 = boto3.client(

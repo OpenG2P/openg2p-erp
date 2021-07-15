@@ -302,26 +302,25 @@ class Beneficiary(models.Model):
         search="_search_att",
     )
 
+    # example for another filter
+    school_approved = fields.Selection(
+        string="Is School Approved",
+        required=False,
+        store=False,
+        selection=[
+            ("yes", "Yes"),
+            ("no", "No"),
+        ],
+        compute="_compute_approved",
+        search="_search_approved",
+    )
+
     # example for filtering on org custom fields
     def _search_att(self, operator, val2):
         res = []
         beneficiaries = self.env["openg2p.beneficiary"].search([])
         for rec in beneficiaries:
-            att = self.env["openg2p.beneficiary.orgmap"].search(
-                [
-                    "&",
-                    ("beneficiary_id", "=", rec.id),
-                    ("field_name", "=", "total_student_in_attendance_at_the_school"),
-                ]
-            )
-            if not att:
-                continue
-            try:
-                val = int(att.field_value)
-                print(val)
-            except BaseException as e:
-                print(e)
-                continue
+            val = rec.attendance
             if operator == ">":
                 if val > val2:
                     res.append(rec.id)
@@ -358,6 +357,46 @@ class Beneficiary(models.Model):
             except BaseException as e:
                 print(e)
                 rec.attendance = 0
+
+    # example for another filtering on org custom fields
+    def _search_approved(self, operator, val2):
+        res = []
+        beneficiaries = self.env["openg2p.beneficiary"].search([])
+        for rec in beneficiaries:
+            if isinstance(val2, bool):
+                continue
+            try:
+                val = rec.school_approved
+            except BaseException as e:
+                print(e)
+                continue
+            if operator == "=":
+                if val == val2:
+                    res.append(rec.id)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec.id)
+        return [("id", "in", res)]
+
+    # example for another filtering on org custom fields
+    @api.depends("org_custom_field")
+    def _compute_approved(self):
+        for rec in self:
+            approved = self.env["openg2p.beneficiary.orgmap"].search(
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "is_the_school_approved"),
+                ]
+            )
+            try:
+                if approved.field_value != "yes":
+                    rec.school_approved = "no"
+                else:
+                    rec.school_approved = "yes"
+            except BaseException as e:
+                print(e)
+                rec.school_approved = "no"
 
     _sql_constraints = [
         ("ref_id_uniq", "unique(ref)", "The Beneficiary reference must be unique."),
