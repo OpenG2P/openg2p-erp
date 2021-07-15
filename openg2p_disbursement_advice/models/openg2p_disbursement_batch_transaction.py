@@ -214,8 +214,8 @@ class BatchTransaction(models.Model):
 
             s3 = boto3.client(
                 "s3",
-                aws_access_key_id=os.getenv(secret_keys.ACCESS_KEY),
-                aws_secret_access_key=os.getenv(secret_keys.SECRET_KEY),
+                aws_access_key_id=secret_keys.ACCESS_KEY,
+                aws_secret_access_key=secret_keys.SECRET_KEY,
             )
             csv_buf = StringIO()
 

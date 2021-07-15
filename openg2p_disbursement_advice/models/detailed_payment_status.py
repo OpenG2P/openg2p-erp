@@ -7,6 +7,7 @@ import os
 from urllib.parse import urlparse
 from . import secret_keys
 
+
 class BeneficiaryTransactionWizard(models.TransientModel):
     _name = "openg2p.disbursement.batch.transaction.wizard"
 
@@ -34,17 +35,15 @@ class BeneficiaryTransactionWizard(models.TransientModel):
             print(response_data)
             self.file_url = response_data["file"]
 
-            print(self.file_url)
-
             url = self.file_url
             a = urlparse(url)
 
             file_name = os.path.basename(a.path)
-            print(file_name)
 
             import boto3
 
-            s3 = boto3.resource('s3', aws_access_key_id=secret_keys.ACCESS_KEY, aws_secret_access_key=secret_keys.SECRET_KEY)
+            s3 = boto3.resource('s3', aws_access_key_id=secret_keys.ACCESS_KEY,
+                                aws_secret_access_key=secret_keys.SECRET_KEY)
 
             s3.Bucket('openg2p-dev').download_file(file_name, file_name)
             # print("Download Successful!")
