@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--action of the batch menu-->
+    <record id="action_batch_transaction" model="ir.actions.act_window">
+        <field name="name">Batch Transaction</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.disbursement.batch.transaction</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your Batch !
+            </p>
+        </field>
+    </record>
+    <!--action of the main transaction menu-->
+    <record id="action_main_transaction" model="ir.actions.act_window">
+        <field name="name">Main Transaction</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.disbursement.main</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Mapping your Transaction !
+            </p>
+        </field>
+    </record>
+
+    <!--action of the single transaction menu-->
+    <record id="action_single_transaction" model="ir.actions.act_window">
+        <field name="name">Single Transaction</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.disbursement.single.transaction</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your Transaction !
+            </p>
+        </field>
+    </record>
+    <record id="action_file_transaction" model="ir.actions.act_window">
+        <field name="name">Create Batch from CSV</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.disbursement.file</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new batch from CSV !
+            </p>
+        </field>
+    </record>
+</odoo>

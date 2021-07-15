@@ -6,6 +6,9 @@ import odoo.addons.decimal_precision as dp
 
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
+import uuid
+import hashlib
+import requests
 
 
 class DisbursementAdviceLine(models.Model):

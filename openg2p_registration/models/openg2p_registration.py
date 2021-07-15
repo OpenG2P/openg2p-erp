@@ -13,6 +13,8 @@ import json
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
+BASE_URL = "http://localhost:8080"
+
 
 BASE_URL = "http://localhost:8080"
 

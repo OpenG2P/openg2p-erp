@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_openg2p_disbursement_main" model="ir.ui.view">
+            <field name="name">openg2p.disbursement.main.form</field>
+            <field name="model">openg2p.disbursement.main</field>
+            <field name="arch" type="xml">
+                <form string="Disbursement Form">
+                    <sheet>
+                        <group>
+                            <group>
+                            
+                                <field name="beneficiary_id"/>
+                                <field name="batch_id"/>
+                                <field name="program_id"/>
+                                <field name="bank_account_id"/>
+                                
+                            </group>
+                            <group>
+                                <field name="name"/>
+                                <field name="acc_holder_name"/>
+                                <field name="payment_mode"/>
+                            </group>
+                            <group>
+                                <!-- <field name="state" invisible="1"/> -->
+                                <field name="amount"/>
+                                <field name="currency_id"/>
+
+                            </group>
+                            <group name="secondary">
+                                <label for="date_start" string="Period"/>
+                                    <div name="date">
+                                        <field name="date_start" class="oe_inline"/>
+                                        <field name="date_end" class="oe_inline"/>
+                                    </div>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"
+                            widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+    </data>
+    <record id="view_openg2p_disbursement_main_tree" model="ir.ui.view">
+        <field name="name">openg2p.disbursement.main.tree</field>
+        <field name="model">openg2p.disbursement.main</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="beneficiary_id"/>
+                <field name="batch_id"/>
+                <field name="program_id"/>
+                <field name="amount"/>
+            </tree>
+        </field>
+    </record>
+    
+</odoo>

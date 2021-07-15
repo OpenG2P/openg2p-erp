@@ -8,7 +8,6 @@ import logging
 import random
 import string
 import requests
-
 from dateutil.relativedelta import relativedelta
 from odoo.addons.component.core import WorkContext
 from odoo.addons.openg2p.services.matching_service import MATCH_MODE_NORMAL
