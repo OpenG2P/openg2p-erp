@@ -42,20 +42,22 @@ class BeneficiaryTransactionWizard(models.TransientModel):
 
             import boto3
 
-            s3 = boto3.resource('s3', aws_access_key_id=secret_keys.ACCESS_KEY,
-                                aws_secret_access_key=secret_keys.SECRET_KEY)
+            s3 = boto3.resource(
+                "s3",
+                aws_access_key_id=secret_keys.ACCESS_KEY,
+                aws_secret_access_key=secret_keys.SECRET_KEY,
+            )
 
-            s3.Bucket('openg2p-dev').download_file(file_name, file_name)
+            s3.Bucket("openg2p-dev").download_file(file_name, file_name)
             # print("Download Successful!")
-            file_data = ''
+            file_data = ""
 
             with open(file_name) as f:
-                file_data += ''.join(f.readlines())
+                file_data += "".join(f.readlines())
 
             print(file_data)
 
             self.csv_data = file_data
-
 
         except BaseException as e:
             print(e)

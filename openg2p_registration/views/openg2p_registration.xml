@@ -155,7 +155,7 @@
                             <group string="Internal Info" name="internal_notes_right">
 
                             </group>
-                            <group string="Verification">
+                            <group string="Verification Error">
                                 <field name="error_verification"/>
                             </group>
                             <group string="Organization">
@@ -201,17 +201,17 @@
             </field>
         </record>
 
-        <act_window id="action_update_att"
-                name="Update Record"
+        <act_window id="action_update_regd"
+                name="Update Records"
                 src_model="openg2p.registration"
-                res_model="openg2p.registration.update_att"
+                res_model="openg2p.registration.update_regd"
                 view_type="tree" view_mode="form"
                 key2="client_action_multi" target="new"
                 groups="openg2p_registration.group_openg2p_registration_user"/>
 
         <record id="wizard_view" model="ir.ui.view">
-            <field name="name">Update Attendance</field>
-            <field name="model">openg2p.registration.update_att</field>
+            <field name="name">Bulk Update Registrations</field>
+            <field name="model">openg2p.registration.update_regd</field>
             <field name="target">inline</field>
             <field name="arch" type="xml">
                 <form>
@@ -223,6 +223,7 @@
                             <button string="Stage Change" name="update_stage" type="object" class="btn-primary"/>
                         </group>
                     </group>
+                    <footer></footer>
                 </form>
             </field>
         </record>
@@ -256,10 +257,6 @@
                 <search string="Search Registrations">
                     <field name="name" context="{'active_test': False}" string="Registration"
                            filter_domain="['|','|', '|', ('firstname','ilike',self), ('firstname','%',self), ('lastname','ilike',self), ('lastname','%',self)]"/>
-                    <filter string="Att=140" name="att_eq_140"
-                            domain="['&amp;',('org_custom_field.field_name','=','total_student_in_attendance_at_the_school'),('org_custom_field.field_value','=','140')]"/>
-                    <filter string="Att>100" name="att_gt_100"
-                            domain="['&amp;',('org_custom_field.field_name','=','total_student_in_attendance_at_the_school'),('org_custom_field.field_value','>',100)]"/>
                     <separator/>
                     <filter string="My Registrations" name="my_registrations" domain="[('user_id', '=', uid)]"/>
                     <filter string="Unassigned" name="unassigned" domain="[('user_id', '=', False)]"/>

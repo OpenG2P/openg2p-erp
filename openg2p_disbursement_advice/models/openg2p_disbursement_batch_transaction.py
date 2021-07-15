@@ -124,12 +124,21 @@ class BatchTransaction(models.Model):
 
         # CSV filename as RequestID+Datetime
         csvname = (
-                self.request_id
-                + "-"
-                + str(datetime.now().strftime(r"%Y%m%d%H%M%S"))
-                + ".csv"
+            self.request_id
+            + "-"
+            + str(datetime.now().strftime(r"%Y%m%d%H%M%S"))
+            + ".csv"
         )
-        headers = ['id', 'request_id', 'payment_mode', 'acc_number', 'acc_holder_name', 'amount', 'currency', 'note']
+        headers = [
+            "id",
+            "request_id",
+            "payment_mode",
+            "acc_number",
+            "acc_holder_name",
+            "amount",
+            "currency",
+            "note",
+        ]
 
         while len(beneficiary_transactions) > 0:
             with open(csvname, "w", newline="", encoding="utf-8") as csvfile:
