@@ -21,7 +21,7 @@ class BeneficiaryTransactionWizard(models.TransientModel):
             ("detailed", "true"),
         )
 
-        url = "http://15.207.23.72:5000/channel/bulk/transfer"
+        url = "http://892c546a-us-east.lb.appdomain.cloud/channel/bulk/transfer/"
 
         try:
             response = requests.get(url, params=params)
