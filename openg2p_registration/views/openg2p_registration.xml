@@ -13,11 +13,15 @@
                     <field name="date_last_stage_update" invisible="1"/>
                     <field name="name"/>
                     <field name="phone" class="o_force_ltr"/>
-                    <field name="email"/>
+                    <field name="email" invisible="1"/>
                     <field name="stage_id"/>
                     <field name="priority"/>
-                    <field name="location_id"/>
+                    <field name="location_id" invisible="1"/>
                     <field name="attendance" invisible="1"/>
+                    <field name="regression_and_progression" string="R&amp;P"/>
+                    <field name="total_quality" string="Quality"/>
+                    <field name="total_equity" string="Equity"/>
+                    <field name="grand_total" string="Grand Total"/>
                 </tree>
             </field>
         </record>

@@ -30,7 +30,7 @@ class DisbursementMain(models.Model):
     program_id = fields.Many2one(
         "openg2p.program",
         string="Program",
-        readonly=True,
+        # readonly=True,
         copy=False,
         store=True,
         related="batch_id.program_id",

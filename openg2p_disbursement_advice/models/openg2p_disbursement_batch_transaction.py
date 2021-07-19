@@ -2,14 +2,14 @@
 # Copyright 2020 OpenG2P (https://openg2p.org)
 # @author: Salton Massally <saltonmassally@gmail.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
+import os
 import csv
 import hashlib
 import logging
 import uuid
 from datetime import date, datetime
 from io import StringIO
-
+from dotenv import load_dotenv   #for python-dotenv method
 import boto3
 import pandas as pd
 import requests
@@ -20,6 +20,7 @@ from odoo import fields, models
 _logger = logging.getLogger(__name__)
 BATCH_SIZE = 500
 
+load_dotenv()                    #for python-dotenv method
 
 class BatchTransaction(models.Model):
     _name = "openg2p.disbursement.batch.transaction"
@@ -207,8 +208,8 @@ class BatchTransaction(models.Model):
 
             s3 = boto3.client(
                 "s3",
-                aws_access_key_id="AKIAX32JM37TYBIP5XMY",  # os.getenv("ACCESS_KEY"),
-                aws_secret_access_key="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",  # os.getenv("SECRET_KEY"),
+                aws_access_key_id=os.environ.get("access_key"),  # secret_keys.ACCESS_KEY,
+                aws_secret_access_key=os.environ.get("secret_access_key")  # secret_keys.SECRET_KEY,
             )
             csv_buf = StringIO()
 
