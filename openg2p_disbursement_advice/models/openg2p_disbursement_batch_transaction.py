@@ -24,7 +24,7 @@ from odoo.addons.queue_job.job import job, related_action
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
-BATCH_SIZE = 500
+
 
 
 class BatchTransaction(models.Model):
