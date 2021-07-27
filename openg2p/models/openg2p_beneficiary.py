@@ -376,7 +376,11 @@ class Beneficiary(models.Model):
                 rec.regression_and_progression = 0
 
             field = self.env["openg2p.beneficiary.orgmap"].search(
-                ["&", ("beneficiary_id", "=", rec.id), ("field_name", "=", "total_quality")]
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "total_quality"),
+                ]
             )
             try:
                 rec.total_quality = int(field.field_value) if field else 0
@@ -384,7 +388,11 @@ class Beneficiary(models.Model):
                 rec.total_quality = 0
 
             field = self.env["openg2p.beneficiary.orgmap"].search(
-                ["&", ("beneficiary_id", "=", rec.id), ("field_name", "=", "total_equity")]
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "total_equity"),
+                ]
             )
             try:
                 rec.total_equity = int(field.field_value) if field else 0
@@ -392,7 +400,11 @@ class Beneficiary(models.Model):
                 rec.total_equity = 0
 
             field = self.env["openg2p.beneficiary.orgmap"].search(
-                ["&", ("beneficiary_id", "=", rec.id), ("field_name", "=", "grand_total")]
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "grand_total"),
+                ]
             )
             try:
                 rec.grand_total = int(field.field_value) if field else 0

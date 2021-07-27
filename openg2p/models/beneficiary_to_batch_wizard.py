@@ -12,7 +12,9 @@ class BeneficiaryTransactionWizard(models.TransientModel):
     )
 
     def _get_bank_id(self, b):
-        bank_id = self.env["res.partner.bank"].search([("acc_number", "=", b.bank_account_number)])
+        bank_id = self.env["res.partner.bank"].search(
+            [("acc_number", "=", b.bank_account_number)]
+        )
         return bank_id
 
     @api.multi

@@ -1,12 +1,13 @@
 import os
 from urllib.parse import urlparse
-from dotenv import load_dotenv   #for python-dotenv method
+from dotenv import load_dotenv  # for python-dotenv method
 import boto3
 import requests
 
 from odoo import fields, models
 
-load_dotenv()                    #for python-dotenv method
+load_dotenv()  # for python-dotenv method
+
 
 class BeneficiaryTransactionWizard(models.TransientModel):
     _name = "openg2p.disbursement.batch.transaction.wizard"
@@ -44,8 +45,12 @@ class BeneficiaryTransactionWizard(models.TransientModel):
 
             s3 = boto3.resource(
                 "s3",
-                aws_access_key_id=os.environ.get("access_key"),  # secret_keys.ACCESS_KEY,
-                aws_secret_access_key=os.environ.get("secret_access_key")  # secret_keys.SECRET_KEY,
+                aws_access_key_id=os.environ.get(
+                    "access_key"
+                ),  # secret_keys.ACCESS_KEY,
+                aws_secret_access_key=os.environ.get(
+                    "secret_access_key"
+                ),  # secret_keys.SECRET_KEY,
             )
 
             s3.Bucket("openg2p-dev").download_file(file_name, file_name)
