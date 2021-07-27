@@ -298,7 +298,7 @@ class Beneficiary(models.Model):
         string="Attendance",
         store=False,
         required=False,
-        compute="_compute_att",
+        compute="_compute_org_fields",
         search="_search_att",
     )
 
@@ -311,9 +311,121 @@ class Beneficiary(models.Model):
             ("yes", "Yes"),
             ("no", "No"),
         ],
-        compute="_compute_approved",
+        compute="_compute_org_fields",
         search="_search_approved",
     )
+
+    regression_and_progression = fields.Integer(
+        string="Regression and Progression",
+        stored=False,
+        required=False,
+        compute="_compute_org_fields",
+        search="_search_r_and_p",
+    )
+
+    total_quality = fields.Integer(
+        string="Total Quality",
+        stored=False,
+        required=False,
+        compute="_compute_org_fields",
+        search="_search_tot_quality",
+    )
+
+    total_equity = fields.Integer(
+        string="Total Equity",
+        stored=False,
+        required=False,
+        compute="_compute_org_fields",
+        search="_search_tot_equity",
+    )
+
+    grand_total = fields.Integer(
+        string="Grand Total",
+        stored=False,
+        required=False,
+        compute="_compute_org_fields",
+        search="_search_grand_tot",
+    )
+
+    # example for filtering on org custom fields
+    @api.depends("org_custom_field")
+    def _compute_org_fields(self):
+        for rec in self:
+            field = self.env["openg2p.beneficiary.orgmap"].search(
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "total_student_in_attendance_at_the_school"),
+                ]
+            )
+            try:
+                rec.attendance = int(field.field_value) if field else 0
+            except BaseException as e:
+                rec.attendance = 0
+
+            field = self.env["openg2p.beneficiary.orgmap"].search(
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "regression_and_progression"),
+                ]
+            )
+            try:
+                rec.regression_and_progression = int(field.field_value) if field else 0
+            except BaseException as e:
+                rec.regression_and_progression = 0
+
+            field = self.env["openg2p.beneficiary.orgmap"].search(
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "total_quality"),
+                ]
+            )
+            try:
+                rec.total_quality = int(field.field_value) if field else 0
+            except BaseException as e:
+                rec.total_quality = 0
+
+            field = self.env["openg2p.beneficiary.orgmap"].search(
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "total_equity"),
+                ]
+            )
+            try:
+                rec.total_equity = int(field.field_value) if field else 0
+            except BaseException as e:
+                rec.total_equity = 0
+
+            field = self.env["openg2p.beneficiary.orgmap"].search(
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "grand_total"),
+                ]
+            )
+            try:
+                rec.grand_total = int(field.field_value) if field else 0
+            except BaseException as e:
+                rec.grand_total = 0
+
+            field = self.env["openg2p.beneficiary.orgmap"].search(
+                [
+                    "&",
+                    ("beneficiary_id", "=", rec.id),
+                    ("field_name", "=", "is_the_school_approved"),
+                ]
+            )
+            try:
+                if field.field_value != "yes":
+                    rec.school_approved = "no"
+                else:
+                    rec.school_approved = "yes"
+            except BaseException as e:
+                print(e)
+                rec.school_approved = "no"
 
     # example for filtering on org custom fields
     def _search_att(self, operator, val2):
@@ -342,21 +454,108 @@ class Beneficiary(models.Model):
         return [("id", "in", res)]
 
     # example for filtering on org custom fields
-    @api.depends("org_custom_field")
-    def _compute_att(self):
-        for rec in self:
-            att = self.env["openg2p.beneficiary.orgmap"].search(
-                [
-                    "&",
-                    ("beneficiary_id", "=", rec.id),
-                    ("field_name", "=", "total_student_in_attendance_at_the_school"),
-                ]
-            )
-            try:
-                rec.attendance = int(att.field_value) if att else 0
-            except BaseException as e:
-                print(e)
-                rec.attendance = 0
+    def _search_r_and_p(self, operator, val2):
+        res = []
+        beneficiaries = self.env["openg2p.beneficiary"].search([])
+        for rec in beneficiaries:
+            val = rec.regression_and_progression
+            if operator == ">":
+                if val > val2:
+                    res.append(rec.id)
+            elif operator == "<":
+                if val < val2:
+                    res.append(rec.id)
+            elif operator == "=":
+                if val == val2:
+                    res.append(rec.id)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec.id)
+            elif operator == ">=":
+                if val >= val2:
+                    res.append(rec.id)
+            elif operator == "<=":
+                if val <= val2:
+                    res.append(rec.id)
+        return [("id", "in", res)]
+
+    # example for filtering on org custom fields
+    def _search_tot_quality(self, operator, val2):
+        res = []
+        beneficiaries = self.env["openg2p.beneficiary"].search([])
+        for rec in beneficiaries:
+            val = rec.total_quality
+            if operator == ">":
+                if val > val2:
+                    res.append(rec.id)
+            elif operator == "<":
+                if val < val2:
+                    res.append(rec.id)
+            elif operator == "=":
+                if val == val2:
+                    res.append(rec.id)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec.id)
+            elif operator == ">=":
+                if val >= val2:
+                    res.append(rec.id)
+            elif operator == "<=":
+                if val <= val2:
+                    res.append(rec.id)
+        return [("id", "in", res)]
+
+    # example for filtering on org custom fields
+    def _search_tot_equity(self, operator, val2):
+        res = []
+        beneficiaries = self.env["openg2p.beneficiary"].search([])
+        for rec in beneficiaries:
+            val = rec.total_equity
+            if operator == ">":
+                if val > val2:
+                    res.append(rec.id)
+            elif operator == "<":
+                if val < val2:
+                    res.append(rec.id)
+            elif operator == "=":
+                if val == val2:
+                    res.append(rec.id)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec.id)
+            elif operator == ">=":
+                if val >= val2:
+                    res.append(rec.id)
+            elif operator == "<=":
+                if val <= val2:
+                    res.append(rec.id)
+        return [("id", "in", res)]
+
+    # example for filtering on org custom fields
+    def _search_grand_tot(self, operator, val2):
+        res = []
+        beneficiaries = self.env["openg2p.beneficiary"].search([])
+        for rec in beneficiaries:
+            val = rec.grand_total
+            if operator == ">":
+                if val > val2:
+                    res.append(rec.id)
+            elif operator == "<":
+                if val < val2:
+                    res.append(rec.id)
+            elif operator == "=":
+                if val == val2:
+                    res.append(rec.id)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec.id)
+            elif operator == ">=":
+                if val >= val2:
+                    res.append(rec.id)
+            elif operator == "<=":
+                if val <= val2:
+                    res.append(rec.id)
+        return [("id", "in", res)]
 
     # example for another filtering on org custom fields
     def _search_approved(self, operator, val2):
@@ -377,26 +576,6 @@ class Beneficiary(models.Model):
                 if val != val2:
                     res.append(rec.id)
         return [("id", "in", res)]
-
-    # example for another filtering on org custom fields
-    @api.depends("org_custom_field")
-    def _compute_approved(self):
-        for rec in self:
-            approved = self.env["openg2p.beneficiary.orgmap"].search(
-                [
-                    "&",
-                    ("beneficiary_id", "=", rec.id),
-                    ("field_name", "=", "is_the_school_approved"),
-                ]
-            )
-            try:
-                if approved.field_value != "yes":
-                    rec.school_approved = "no"
-                else:
-                    rec.school_approved = "yes"
-            except BaseException as e:
-                print(e)
-                rec.school_approved = "no"
 
     _sql_constraints = [
         ("ref_id_uniq", "unique(ref)", "The Beneficiary reference must be unique."),

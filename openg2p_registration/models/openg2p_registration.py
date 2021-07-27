@@ -13,9 +13,7 @@ from odoo.tools.translate import _
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
-BASE_URL = "http://localhost:8080"
-
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://3.139.225.16:9080"
 
 
 class Registration(models.Model):
@@ -140,7 +138,7 @@ class Registration(models.Model):
         string="Attendance",
         store=False,
         required=False,
-        compute="_compute_att",
+        compute="_compute_org_fields",
         search="_search_att",
     )
 
@@ -153,8 +151,40 @@ class Registration(models.Model):
             ("yes", "Yes"),
             ("no", "No"),
         ],
-        compute="_compute_approved",
+        compute="_compute_org_fields",
         search="_search_approved",
+    )
+
+    regression_and_progression = fields.Integer(
+        string="Regression and Progression",
+        stored=False,
+        required=False,
+        compute="_compute_org_fields",
+        search="_search_r_and_p",
+    )
+
+    total_quality = fields.Integer(
+        string="Total Quality",
+        stored=False,
+        required=False,
+        compute="_compute_org_fields",
+        search="_search_tot_quality",
+    )
+
+    total_equity = fields.Integer(
+        string="Total Equity",
+        stored=False,
+        required=False,
+        compute="_compute_org_fields",
+        search="_search_tot_equity",
+    )
+
+    grand_total = fields.Integer(
+        string="Grand Total",
+        stored=False,
+        required=False,
+        compute="_compute_org_fields",
+        search="_search_grand_tot",
     )
 
     error_verification = fields.Selection(
@@ -166,6 +196,74 @@ class Registration(models.Model):
         ],
         default="none",
     )
+
+    # example for filtering on org custom fields
+    @api.depends("org_custom_field")
+    def _compute_org_fields(self):
+        for rec in self:
+            field = self.env["openg2p.registration.orgmap"].search(
+                [
+                    "&",
+                    ("regd_id", "=", rec.id),
+                    ("field_name", "=", "total_student_in_attendance_at_the_school"),
+                ]
+            )
+            try:
+                rec.attendance = int(field.field_value) if field else 0
+            except BaseException as e:
+                rec.attendance = 0
+
+            field = self.env["openg2p.registration.orgmap"].search(
+                [
+                    "&",
+                    ("regd_id", "=", rec.id),
+                    ("field_name", "=", "regression_and_progression"),
+                ]
+            )
+            try:
+                rec.regression_and_progression = int(field.field_value) if field else 0
+            except BaseException as e:
+                rec.regression_and_progression = 0
+
+            field = self.env["openg2p.registration.orgmap"].search(
+                ["&", ("regd_id", "=", rec.id), ("field_name", "=", "total_quality")]
+            )
+            try:
+                rec.total_quality = int(field.field_value) if field else 0
+            except BaseException as e:
+                rec.total_quality = 0
+
+            field = self.env["openg2p.registration.orgmap"].search(
+                ["&", ("regd_id", "=", rec.id), ("field_name", "=", "total_equity")]
+            )
+            try:
+                rec.total_equity = int(field.field_value) if field else 0
+            except BaseException as e:
+                rec.total_equity = 0
+
+            field = self.env["openg2p.registration.orgmap"].search(
+                ["&", ("regd_id", "=", rec.id), ("field_name", "=", "grand_total")]
+            )
+            try:
+                rec.grand_total = int(field.field_value) if field else 0
+            except BaseException as e:
+                rec.grand_total = 0
+
+            field = self.env["openg2p.registration.orgmap"].search(
+                [
+                    "&",
+                    ("regd_id", "=", rec.id),
+                    ("field_name", "=", "is_the_school_approved"),
+                ]
+            )
+            try:
+                if field.field_value != "yes":
+                    rec.school_approved = "no"
+                else:
+                    rec.school_approved = "yes"
+            except BaseException as e:
+                print(e)
+                rec.school_approved = "no"
 
     # example for filtering on org custom fields
     def _search_att(self, operator, val2):
@@ -194,20 +292,108 @@ class Registration(models.Model):
         return [("id", "in", res)]
 
     # example for filtering on org custom fields
-    @api.depends("org_custom_field")
-    def _compute_att(self):
-        for rec in self:
-            att = self.env["openg2p.registration.orgmap"].search(
-                [
-                    "&",
-                    ("regd_id", "=", rec.id),
-                    ("field_name", "=", "total_student_in_attendance_at_the_school"),
-                ]
-            )
-            try:
-                rec.attendance = int(att.field_value) if att else 0
-            except BaseException as e:
-                rec.attendance = 0
+    def _search_r_and_p(self, operator, val2):
+        res = []
+        regds = self.env["openg2p.registration"].search([])
+        for rec in regds:
+            val = rec.regression_and_progression
+            if operator == ">":
+                if val > val2:
+                    res.append(rec.id)
+            elif operator == "<":
+                if val < val2:
+                    res.append(rec.id)
+            elif operator == "=":
+                if val == val2:
+                    res.append(rec.id)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec.id)
+            elif operator == ">=":
+                if val >= val2:
+                    res.append(rec.id)
+            elif operator == "<=":
+                if val <= val2:
+                    res.append(rec.id)
+        return [("id", "in", res)]
+
+    # example for filtering on org custom fields
+    def _search_tot_quality(self, operator, val2):
+        res = []
+        regds = self.env["openg2p.registration"].search([])
+        for rec in regds:
+            val = rec.total_quality
+            if operator == ">":
+                if val > val2:
+                    res.append(rec.id)
+            elif operator == "<":
+                if val < val2:
+                    res.append(rec.id)
+            elif operator == "=":
+                if val == val2:
+                    res.append(rec.id)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec.id)
+            elif operator == ">=":
+                if val >= val2:
+                    res.append(rec.id)
+            elif operator == "<=":
+                if val <= val2:
+                    res.append(rec.id)
+        return [("id", "in", res)]
+
+    # example for filtering on org custom fields
+    def _search_tot_equity(self, operator, val2):
+        res = []
+        regds = self.env["openg2p.registration"].search([])
+        for rec in regds:
+            val = rec.total_equity
+            if operator == ">":
+                if val > val2:
+                    res.append(rec.id)
+            elif operator == "<":
+                if val < val2:
+                    res.append(rec.id)
+            elif operator == "=":
+                if val == val2:
+                    res.append(rec.id)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec.id)
+            elif operator == ">=":
+                if val >= val2:
+                    res.append(rec.id)
+            elif operator == "<=":
+                if val <= val2:
+                    res.append(rec.id)
+        return [("id", "in", res)]
+
+    # example for filtering on org custom fields
+    def _search_grand_tot(self, operator, val2):
+        res = []
+        regds = self.env["openg2p.registration"].search([])
+        for rec in regds:
+            val = rec.grand_total
+            if operator == ">":
+                if val > val2:
+                    res.append(rec.id)
+            elif operator == "<":
+                if val < val2:
+                    res.append(rec.id)
+            elif operator == "=":
+                if val == val2:
+                    res.append(rec.id)
+            elif operator == "!=":
+                if val != val2:
+                    res.append(rec.id)
+            elif operator == ">=":
+                if val >= val2:
+                    res.append(rec.id)
+            elif operator == "<=":
+                if val <= val2:
+                    res.append(rec.id)
+        return [("id", "in", res)]
 
     # example for another filtering on org custom fields
     def _search_approved(self, operator, val2):
@@ -229,32 +415,13 @@ class Registration(models.Model):
                     res.append(rec.id)
         return [("id", "in", res)]
 
-    # example for another filtering on org custom fields
-    @api.depends("org_custom_field")
-    def _compute_approved(self):
-        for rec in self:
-            approved = self.env["openg2p.registration.orgmap"].search(
-                [
-                    "&",
-                    ("regd_id", "=", rec.id),
-                    ("field_name", "=", "is_the_school_approved"),
-                ]
-            )
-            try:
-                if approved.field_value != "yes":
-                    rec.school_approved = "no"
-                else:
-                    rec.school_approved = "yes"
-            except BaseException as e:
-                print(e)
-                rec.school_approved = "no"
-
     def _get_default_odk_map(self):
         from .openg2p_submission_registration_map import odk_map_data
 
         return odk_map_data
 
     def create_registration_from_odk(self, odk_data):
+        print(odk_data)
         odk_map = (
             odk_data["odk_map"]
             if "odk_map" in odk_data.keys()
@@ -266,6 +433,8 @@ class Registration(models.Model):
                 for k2, v2 in v.items():
                     if k2 in odk_map.keys():
                         k2 = odk_map[k2]
+                    else:
+                        k2 = str(k2).replace("-", "_").lower()
                     temp[k2] = v2
         regd = self.create(
             {
@@ -278,7 +447,6 @@ class Registration(models.Model):
                 "gender": "male",
             }
         )
-        print(regd)
         id = regd.id
         from datetime import datetime
 
@@ -288,6 +456,14 @@ class Registration(models.Model):
         format = "%Y-%m-%dT%H:%M:%SZ"
         for k, v in odk_data.items():
             try:
+                if k in [
+                    "regression_and_progression",
+                    "total_quality",
+                    "total_equity",
+                    "grand_total",
+                ]:
+                    org_data[k] = v
+                    continue
                 if k in [
                     "Status",
                     "AttachmentsExpected",
@@ -302,17 +478,34 @@ class Registration(models.Model):
                 ]:
                     continue
                 if k == "bank_account_number":
-                    if len(v or "") != 0:
-                        data["bank_account_number"] = odk_data["bank_account_number"]
+                    if len(str(v) or "") != 0:
+                        data["bank_account_number"] = str(v)
                         res = self.env["res.partner.bank"].search(
-                            [("acc_number", "=", str(odk_data["bank_account_number"]))]
+                            [("acc_number", "=", str(v))]
                         )
                         if res:
                             raise Exception("Duplicate Bank Account Number!")
                         if not res:
+                            bank_id = self.env["res.bank"].search(
+                                [("name", "=", odk_data["bank_name"])], limit=1
+                            )
+                            if len(bank_id) == 0:
+                                bank_id = self.env["res.bank"].create(
+                                    {
+                                        "execute_method": "manual",
+                                        "name": odk_data["bank_name"],
+                                        "type": "normal",
+                                    }
+                                )
+                            else:
+                                bank_id = bank_id[0]
                             res = self.env["res.partner.bank"].create(
                                 {
-                                    "acc_number": odk_data["bank_account_number"],
+                                    "bank_id": bank_id.id,
+                                    "acc_number": str(v),
+                                    "payment_mode": "AFM",
+                                    "bank_name": odk_data["bank_name"],
+                                    "acc_holder_name": odk_data["name"],
                                     "partner_id": self.env.ref("base.main_partner").id,
                                 }
                             )
@@ -381,7 +574,6 @@ class Registration(models.Model):
                                 data["lastname"] = " ".join(name_parts[1:])
                         else:
                             data.update({k: v})
-
                 else:
                     org_data.update({k: v})
             except Exception as e:
@@ -390,7 +582,7 @@ class Registration(models.Model):
             self.env["openg2p.registration.orgmap"].create(
                 {
                     "field_name": k,
-                    "field_value": v or "",
+                    "field_value": str(v) if v else "",
                     "regd_id": id,
                 }
             )

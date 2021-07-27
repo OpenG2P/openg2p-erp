@@ -144,7 +144,11 @@ class SingleTransaction(models.Model):
         }
         json_data = json.dumps(data)
 
-        url = "http://15.207.23.72:5000/channel/" + str(self.payment_mode) + "/transfer"
+        url = (
+            "http://892c546a-us-east.lb.appdomain.cloud/channel/"
+            + str(self.payment_mode)
+            + "/transfer"
+        )
 
         try:
             response = requests.post(url, headers=headers, data=json_data)
@@ -156,7 +160,11 @@ class SingleTransaction(models.Model):
 
     def single_transfer_status(self):
         params = (("request_id", str(self.request_id)),)
-        url = "http://15.207.23.72:5000/channel/" + str(self.payment_mode) + "/transfer"
+        url = (
+            "http://892c546a-us-east.lb.appdomain.cloud/channel/"
+            + str(self.payment_mode)
+            + "/transfer"
+        )
 
         try:
             response = requests.get(url, params=params)

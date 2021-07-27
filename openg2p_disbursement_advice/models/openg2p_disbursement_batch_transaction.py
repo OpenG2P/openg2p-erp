@@ -2,29 +2,25 @@
 # Copyright 2020 OpenG2P (https://openg2p.org)
 # @author: Salton Massally <saltonmassally@gmail.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
-import json
-import requests
-import logging
-import hashlib
-import uuid
+import os
 import csv
+import hashlib
+import logging
+import uuid
+from datetime import date, datetime
+from io import StringIO
+from dotenv import load_dotenv  # for python-dotenv method
 import boto3
 import pandas as pd
-from io import StringIO
-import os
-from dotenv import load_dotenv
-
-from datetime import date, datetime
-
+import requests
 from dateutil.relativedelta import relativedelta
 
-from odoo import api, fields, models, _
-from odoo.addons.queue_job.job import job, related_action
-from odoo.exceptions import UserError, ValidationError
+from odoo import fields, models
 
 _logger = logging.getLogger(__name__)
 BATCH_SIZE = 500
+
+load_dotenv()  # for python-dotenv method
 
 
 class BatchTransaction(models.Model):
@@ -161,7 +157,7 @@ class BatchTransaction(models.Model):
             )
 
         # Uploading to AWS bucket
-        uploaded = self.upload_to_aws(csvname, "openg2p-dev")
+        uploaded = self.upload_to_aws(csvname, "paymenthub-ee-dev")
 
         headers = {
             # "Content-Type": "multipart/form-data",
@@ -173,16 +169,16 @@ class BatchTransaction(models.Model):
             "request_id": (None, str(self.request_id)),
         }
 
-        url = "http://15.207.23.72:5000/channel/bulk/transfer"
+        url_mock = "http://15.207.23.72:5000/channel/bulk/transfer"
+        url_real = "http://892c546a-us-east.lb.appdomain.cloud/channel/bulk/transfer/"
 
         try:
-            response = requests.post(url, headers=headers, files=files)
+            response_mock = requests.post(url_mock, headers=headers, files=files)
+            response_mock_data = response_mock.json()
+            self.transaction_status = response_mock_data["status"]
+            self.transaction_batch_id = response_mock_data["batch_id"]
 
-            response_data = response.json()
-
-            self.transaction_status = response_data["status"]
-
-            self.transaction_batch_id = response_data["batch_id"]
+            response_real = requests.post(url_real, headers=headers, files=files)
         except BaseException as e:
             return e
 
@@ -192,33 +188,33 @@ class BatchTransaction(models.Model):
             ("detailed", "true"),
         )
 
-        url = "http://15.207.23.72:5000/channel/bulk/transfer"
+        url_mock = "http://15.207.23.72:5000/channel/bulk/transfer"
+        url_real = "http://892c546a-us-east.lb.appdomain.cloud/channel/bulk/transfer/"
 
         try:
-            response = requests.get(url, params=params)
-            response_data = response.json()
-
-            self.transaction_status = response_data["status"]
-
-            self.total = response_data["total"]
-
-            self.successful = response_data["successful"]
-
-            self.failed = response_data["failed"]
-
+            response_mock = requests.get(url_mock, params=params)
+            response_mock_data = response_mock.json()
+            self.transaction_status = response_mock_data["status"]
+            self.total = response_mock_data["total"]
+            self.successful = response_mock_data["successful"]
+            self.failed = response_mock_data["failed"]
+            # response_real = requests.get(url_real, params=params)
         except BaseException as e:
             return e
 
     def upload_to_aws(self, local_file, bucket):
 
         try:
-            load_dotenv("F:\odoo12\odoo\openg2p-erp\.env")
             hc = pd.read_csv(local_file)
 
             s3 = boto3.client(
                 "s3",
-                aws_access_key_id=os.getenv("ACCESS_KEY"),
-                aws_secret_access_key=os.getenv("SECRET_KEY"),
+                aws_access_key_id=os.environ.get(
+                    "access_key"
+                ),  # secret_keys.ACCESS_KEY,
+                aws_secret_access_key=os.environ.get(
+                    "secret_access_key"
+                ),  # secret_keys.SECRET_KEY,
             )
             csv_buf = StringIO()
 
