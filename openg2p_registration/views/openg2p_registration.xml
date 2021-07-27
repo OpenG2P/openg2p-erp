@@ -179,6 +179,8 @@
                                     <field name="id" />
                                     <field name="firstname"/>
                                     <field name="lastname"/>
+                                    <field name="display_address"/>
+                                    <field name="gender"/>
                                 </tree>
                             </field>
                             <group name="internal_notes_right">
