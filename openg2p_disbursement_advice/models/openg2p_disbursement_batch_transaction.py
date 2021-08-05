@@ -194,7 +194,7 @@ class BatchTransaction(models.Model):
             print(e)
 
         # Uploading to AWS bucket
-        uploaded = self.upload_to_aws(csvname, "paymenthub-ee-dev")
+        # uploaded = self.upload_to_aws(csvname, "paymenthub-ee-dev")
 
         headers = {"Platform-TenantId": "ibank-usa"}
 

@@ -347,6 +347,14 @@ class Beneficiary(models.Model):
         search="_search_grand_tot",
     )
 
+    # For checking if a beneficiary already sent under a batch
+    batch_status = fields.Boolean(
+        string="Transaction Made",
+        default=False,
+        readonly=True,
+        track_visibility="onchange",
+    )
+
     # example for filtering on org custom fields
     @api.depends("org_custom_field")
     def _compute_org_fields(self):

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="ir_cron_openg2p_cron_batch_transaction" model="ir.cron">
+            <field name="name">Creating batch transactions</field>
+            <field name="model_id" ref="model_openg2p_cron_batch_transaction"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_create_batch_transaction()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 07:00:00')"/>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+        </record>
+
+    </data>
+
+</odoo>
