@@ -12,6 +12,17 @@
             <field name="numbercall">-1</field>
             <field name="doall" eval="False"/>
         </record>
+        <record id="ir_cron_openg2p_batch_creation" model="ir.cron">
+            <field name="name">Creating batches and mapping beneficiaries</field>
+            <field name="model_id" ref="model_openg2p_beneficiary_cron_batch_creation"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_create_batch()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 04:00:00')"/>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+        </record>
 
     </data>
 

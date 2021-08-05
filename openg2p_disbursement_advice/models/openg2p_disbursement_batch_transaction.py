@@ -157,7 +157,7 @@ class BatchTransaction(models.Model):
             )
 
         # Uploading to AWS bucket
-        uploaded = self.upload_to_aws(csvname, "paymenthub-ee-dev")
+        # uploaded = self.upload_to_aws(csvname, "paymenthub-ee-dev")
 
         headers = {
             # "Content-Type": "multipart/form-data",
@@ -194,6 +194,7 @@ class BatchTransaction(models.Model):
         try:
             response_mock = requests.get(url_mock, params=params)
             response_mock_data = response_mock.json()
+            
             self.transaction_status = response_mock_data["status"]
             self.total = response_mock_data["total"]
             self.successful = response_mock_data["successful"]

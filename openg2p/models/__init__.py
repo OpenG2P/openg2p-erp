@@ -16,3 +16,4 @@ from . import res_country_state
 from . import res_users
 from . import beneficiary_to_batch_wizard
 from . import openg2p_beneficiary_org_map
+from . import cron_batch_creation
