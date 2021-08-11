@@ -3,6 +3,6 @@ odk_map_data = {
     "District": "state_id",
     "Town_Village": "city",
     "Account_Number": "bank_account_number",
-    "Name_of_Respondant": "name",
+    "School_Name": "name",
     "Mobile_Number_of_Respondant": "phone",
 }
