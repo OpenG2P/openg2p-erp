@@ -231,8 +231,6 @@ class BatchTransaction(models.Model):
             response = requests.get(url, params=params, headers=headers)
             response_data = response.json()
 
-            print(response_data)
-
             if response.status_code == 200:
                 self.transaction_status = "completed"
 
@@ -260,7 +258,6 @@ class BatchTransaction(models.Model):
 
             s3.put_object(Bucket=bucket, Body=csv_buf.getvalue(), Key=local_file)
 
-            print("Bye")
         except FileNotFoundError:
             print("File not found")
 

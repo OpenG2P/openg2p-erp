@@ -30,16 +30,12 @@ class BeneficiaryTransactionWizard(models.TransientModel):
             "Connection": "keep-alive",
         }
 
-        print("Hello")
-
         url = "http://ops-bk.ibank.financial/api/v1/batch"
 
         try:
             response = requests.get(url, params=params, headers=headers)
 
             response_data = response.json()
-
-            print(response_data)
 
             self.file_name = response_data["requestFile"]
 
