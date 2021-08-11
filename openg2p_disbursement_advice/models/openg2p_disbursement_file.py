@@ -96,6 +96,7 @@ class DisbursementFile(models.Model):
                         "state_id": state_id,
                         "country_id": country_id,
                         "bank_account_id": bank_id.id,
+                        "grand_total": b["amount"],
                     }
                 )
 
@@ -179,7 +180,7 @@ class DisbursementFile(models.Model):
                             "state": "draft",
                             "name": str(b.id),
                             "beneficiary_id": b.id,
-                            "amount": 100.0,
+                            "amount": b.grand_total,
                             "program_id": b.program_ids.ids[0],
                             "date_start": datetime.now(),
                             "date_end": datetime.now(),

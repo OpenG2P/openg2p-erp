@@ -31,7 +31,6 @@
                     view_type="tree" view_mode="form"
                     key2="client_action_multi" target="new"
                     groups="openg2p_registration.group_openg2p_registration_user"/>
-
         <record id="wizard_batch" model="ir.ui.view">
             <field name="name">Create Transaction</field>
             <field name="model">openg2p.beneficiary.transaction.wizard</field>

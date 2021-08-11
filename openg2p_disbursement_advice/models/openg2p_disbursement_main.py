@@ -30,7 +30,7 @@ class DisbursementMain(models.Model):
     program_id = fields.Many2one(
         "openg2p.program",
         string="Program",
-        # readonly=True,
+        readonly=True,
         copy=False,
         store=True,
         related="batch_id.program_id",
@@ -77,6 +77,12 @@ class DisbursementMain(models.Model):
     )
     beneficiary_request_id = fields.Char(
         string="Request ID", compute="generate_uuid", store=True
+    )
+
+    note = fields.Text(
+        string="Note for Benficiary",
+        required=False,
+        default="",
     )
 
     def generate_uuid(self):
