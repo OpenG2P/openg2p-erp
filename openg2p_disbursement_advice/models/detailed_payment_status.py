@@ -45,7 +45,9 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                 aws_secret_access_key=os.environ.get("secret_access_key"),
             )
 
-            s3.Bucket("paymenthub-ee-dev").download_file(self.result_file, self.result_file)
+            s3.Bucket("paymenthub-ee-dev").download_file(
+                self.result_file, self.result_file
+            )
 
         except BaseException as e:
             print(e)
