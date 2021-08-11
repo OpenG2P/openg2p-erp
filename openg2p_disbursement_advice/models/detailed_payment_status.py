@@ -12,7 +12,7 @@ load_dotenv()  # for python-dotenv method
 class BeneficiaryTransactionWizard(models.TransientModel):
     _name = "openg2p.disbursement.batch.transaction.wizard"
 
-    file_name = fields.Char(string="CSV File", readonly=True)
+    result_file = fields.Char(string="CSV File", readonly=True)
 
     def bulk_transfer_detailed_status(self):
         batch = self.env["openg2p.disbursement.batch.transaction"].browse(
@@ -37,7 +37,7 @@ class BeneficiaryTransactionWizard(models.TransientModel):
 
             response_data = response.json()
 
-            self.file_name = response_data["requestFile"]
+            self.result_file = response_data["requestFile"]
 
             s3 = boto3.resource(
                 "s3",
@@ -45,7 +45,7 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                 aws_secret_access_key=os.environ.get("secret_access_key"),
             )
 
-            s3.Bucket("paymenthub-ee-dev").download_file(self.file_name, self.file_name)
+            s3.Bucket("paymenthub-ee-dev").download_file(self.result_file, self.result_file)
 
         except BaseException as e:
             print(e)

@@ -79,7 +79,7 @@
             <field name="arch" type="xml">
                 <form>
                     <group>
-                        <field name="file_name" widget="text" readonly="1" text="Click to download CSV File" attrs="{'invisible': [('file_name', '=', False)]}"/>
+                        <field name="result_file" widget="text" readonly="1" text="Click to download CSV File" attrs="{'invisible': [('result_file', '=', False)]}"/>
                         <button string="Get CSV URL" name="bulk_transfer_detailed_status" type="object" class="btn-primary"/>
                     </group>
 
