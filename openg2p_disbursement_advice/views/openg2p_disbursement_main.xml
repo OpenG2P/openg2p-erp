@@ -12,7 +12,7 @@
                             
                                 <field name="beneficiary_id"/>
                                 <field name="batch_id"/>
-                                <field name="program_id"/>
+                                <field name="program_id" editable="1"/>
                                 <field name="bank_account_id"/>
                                 
                             </group>

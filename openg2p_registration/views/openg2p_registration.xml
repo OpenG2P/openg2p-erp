@@ -13,30 +13,33 @@
                     <field name="date_last_stage_update" invisible="1"/>
                     <field name="name"/>
                     <field name="phone" class="o_force_ltr"/>
-                    <field name="email"/>
+                    <field name="email" invisible="1"/>
                     <field name="stage_id"/>
                     <field name="priority"/>
-                    <field name="location_id"/>
+                    <field name="location_id" invisible="1"/>
                     <field name="attendance" invisible="1"/>
+                    <field name="regression_and_progression" string="R&amp;P"/>
+                    <field name="total_quality" string="Quality"/>
+                    <field name="total_equity" string="Equity"/>
+                    <field name="grand_total" string="Grand Total"/>
                 </tree>
             </field>
         </record>
 
-
-        <record id="openg2p_registration_view_tree_activity" model="ir.ui.view">
-            <field name="name">openg2p.registration.view.tree.activity</field>
-            <field name="model">openg2p.registration</field>
-            <field name="arch" type="xml">
-                <tree string="Next Activities" decoration-danger="activity_date_deadline &lt; current_date"
-                      default_order="activity_date_deadline" multi_edit="1">
-                    <field name="name"/>
-                    <field name="activity_date_deadline"/>
-                    <field name="activity_type_id"/>
-                    <field name="activity_summary"/>
-                    <field name="stage_id"/>
-                </tree>
-            </field>
-        </record>
+<!--       <record id="openg2p_registration_view_tree_activity" model="ir.ui.view">-->
+<!--           <field name="name">openg2p.registration.view.tree.activity</field>-->
+<!--           <field name="model">openg2p.registration</field>-->
+<!--           <field name="arch" type="xml">-->
+<!--               <tree string="Next Activities" decoration-danger="activity_date_deadline &lt; current_date"-->
+<!--                     default_order="activity_date_deadline" multi_edit="1">-->
+<!--                   <field name="name"/>-->
+<!--                   <field name="activity_date_deadline"/>-->
+<!--                   <field name="activity_type_id"/>-->
+<!--                   <field name="activity_summary"/>-->
+<!--                   <field name="stage_id"/>-->
+<!--               </tree>-->
+<!--           </field>-->
+<!--        </record>-->
 
         <record model="ir.ui.view" id="crm_case_form_view_beneficiary">
             <field name="name">Beneficiaries - Registration Form</field>
@@ -53,7 +56,7 @@
                                 attrs="{'invisible': ['|', '|', ('stage_id', '!=', 2),('duplicate_beneficiaries_ids', '!=', []),('active', '=', False)]}"/>
                         <button string="Merge" name="merge_beneficiaries" type="object"
                                 class="oe_highlight"
-                                attrs="{'invisible': [ '|','|', ('stage_id', '!=', 6),('active', '=', False),('duplicate_beneficiaries_ids', '!=', [])]}"/>
+                                attrs="{'invisible': [ '|','|', ('stage_id', '!=', 2),('active', '=', False),('duplicate_beneficiaries_ids', '=', [])]}"/>
                         <button string="Refuse" name="archive_registration" type="object"
                                 attrs="{'invisible': [('active', '=', False)]}"/>
                         <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"
@@ -142,8 +145,6 @@
                                 <field name="emergency_phone"/>
                                 <field name="birthday"/>
                             </group>
-                            
-
 
                             <group string="Identifications">
                                 <field name="identities" nolabel="1">
@@ -164,6 +165,10 @@
                                         <field name="field_value"/>
                                     </tree>
                                 </field>
+                                <field name="regression_and_progression" string="Regression And Progression"/>
+                                <field name="total_quality" string="Total Quality"/>
+                                <field name="total_equity" string="Total Equity"/>
+                                <field name="grand_total" string="Grand Total"/>
                             </group>
         
                         </group>
@@ -174,6 +179,8 @@
                                     <field name="id" />
                                     <field name="firstname"/>
                                     <field name="lastname"/>
+                                    <field name="display_address"/>
+                                    <field name="gender"/>
                                 </tree>
                             </field>
                             <group name="internal_notes_right">
@@ -386,6 +393,10 @@
                                         <field name="identity_passport"/>
                                         <br/>
                                     </t>
+                                    A = <field name="regression_and_progression"/><br />
+                                    B = <field name="total_quality"/><br />
+                                    C = <field name="total_equity"/><br />
+                                    Grand Total = <field name="grand_total"/><br />
                                     <div class="o_kanban_record_bottom mt4">
                                         <div class="oe_kanban_bottom_left">
                                             <div class="float-left mr4" groups="base.group_user">
@@ -419,7 +430,6 @@
                                                  t-att-title="record.user_id.value" t-att-alt="record.user_id.value"
                                                  width="30" height="30" class="oe_kanban_avatar"/>
                                         </div>
-
                                     </div>
                                 </div>
                                 <div class="oe_clear"></div>
