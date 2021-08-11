@@ -463,7 +463,7 @@ class Registration(models.Model):
                     "regression_and_progression",
                     "total_quality",
                     "total_equity",
-                    "grand_total_le",
+                    "grand_total",
                 ]:
                     org_data[k] = v
                     continue
