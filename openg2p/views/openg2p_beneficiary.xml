@@ -140,18 +140,6 @@
                                 <field name="category_id" widget="many2many_tags"
                                        options="{'color_field': 'color', 'no_create_edit': True}"
                                        placeholder="Tags..."/>
-                                <group string="Organization">
-                                    <field name="org_custom_field">
-                                        <tree editable="bottom">
-                                            <field name="field_name"/>
-                                            <field name="field_value"/>
-                                        </tree>
-                                    </field>
-                                    <field name="regression_and_progression" string="Regression And Progression"/>
-                                    <field name="total_quality" string="Total Quality"/>
-                                    <field name="total_equity" string="Total Equity"/>
-                                    <field name="grand_total" string="Grand Total"/>
-                                </group>
                             </group>
                         </group>
                         <notebook colspan="4">
@@ -213,6 +201,18 @@
                             </group>
                         </group>
 
+                        <group string="Organization">
+                            <field name="org_custom_field">
+                                <tree editable="bottom">
+                                    <field name="field_name"/>
+                                    <field name="field_value"/>
+                                </tree>
+                            </field>
+                            <field name="regression_and_progression" string="Regression And Progression"/>
+                            <field name="total_quality" string="Total Quality"/>
+                            <field name="total_equity" string="Total Equity"/>
+                            <field name="grand_total" string="Grand Total (LE)"/>
+                        </group>
                     </sheet>
                     <div class="o_attachment_preview"/>
                     <div class="oe_chatter">
