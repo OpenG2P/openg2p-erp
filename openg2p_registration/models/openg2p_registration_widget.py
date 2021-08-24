@@ -7,8 +7,8 @@ class UpdateWizard(models.TransientModel):
     def _default_stage_id(self):
         ids = (
             self.env["openg2p.registration.stage"]
-            .search([("fold", "=", False)], order="sequence asc", limit=1)
-            .ids
+                .search([("fold", "=", False)], order="sequence asc", limit=1)
+                .ids
         )
         if ids:
             return ids[0]
@@ -30,6 +30,14 @@ class UpdateWizard(models.TransientModel):
         regd_obj = self.env["openg2p.registration"]
         regds = regd_obj.browse(self.env.context.get("active_ids"))
         for regd in regds:
-            print("REGD:", regd.id)
             regd.stage_id = self.stage_id
         return {"type": "ir.actions.act_window_close"}
+
+    @api.multi
+    def registration_to_beneficiary(self):
+        regd_obj = self.env["openg2p.registration"]
+        regds = regd_obj.browse(self.env.context.get("active_ids"))
+        for regd in regds:
+            # if regd.stage_id.id != 6:     # to allow only registrations in 'Registering' stage to become beneficiaries
+            #     continue
+            regd.create_beneficiary_from_registration()

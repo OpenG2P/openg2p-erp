@@ -252,7 +252,7 @@ class Beneficiary(models.Model):
         index=True,
         track_visibility="onchange",
         ondelete="restrict",
-        required=True,
+        required=False,
     )
     category_id = fields.Many2many(
         "openg2p.beneficiary.category",
