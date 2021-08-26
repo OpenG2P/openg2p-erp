@@ -187,7 +187,6 @@ class BatchTransaction(models.Model):
         )
 
         response_token_data = response_token.json()
-        print(response_token_data)
         self.token_response = response_token_data["access_token"]
 
         # Uploading to AWS bucket

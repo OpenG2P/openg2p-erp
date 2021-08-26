@@ -38,6 +38,4 @@ class UpdateWizard(models.TransientModel):
         regd_obj = self.env["openg2p.registration"]
         regds = regd_obj.browse(self.env.context.get("active_ids"))
         for regd in regds:
-            # if regd.stage_id.id != 6:     # to allow only registrations in 'Registering' stage to become beneficiaries
-            #     continue
             regd.create_beneficiary_from_registration()

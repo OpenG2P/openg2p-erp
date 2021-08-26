@@ -113,8 +113,8 @@
 
                         <group>
                             <group>
-                                <field name="location_id" placeholder="Location" domain="[('child_ids','=', False)]"
-                                       options="{'no_create_edit': True}" invisible="1"/>
+<!--                                <field name="location_id" placeholder="Location" domain="[('child_ids','=', False)]"-->
+<!--                                       options="{'no_create_edit': True}" invisible="1"/>-->
                                 <label for="street" string="Address"/>
                                 <div class="o_address_format">
                                     <div class="oe_edit_only">
