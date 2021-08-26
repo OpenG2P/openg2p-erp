@@ -106,8 +106,8 @@
                         </div>
                         <group>
                             <group>
-                                <field name="location_id" placeholder="Location"
-                                       options="{'no_create_edit': True}"/>
+<!--                                <field name="location_id" placeholder="Location"-->
+<!--                                       options="{'no_create_edit': True}" invisible="1"/>-->
                                 <label for="street" string="Address"/>
                                 <div class="o_address_format">
                                     <div class="oe_edit_only">
@@ -124,12 +124,18 @@
                                            options='{"no_open": True, "no_create": True}'/>
                                 </div>
                             </group>
+                            <group string="Disbursement Details">
+                                <field name="regression_and_progression" string="Regression And Progression (A)"/>
+                                <field name="total_quality" string="Total Quality (B)"/>
+                                <field name="total_equity" string="Total Equity (C)"/>
+                                <field name="grand_total" string="Grand Total (LE)"/>
+                            </group>
                             <group>
-                                <field name="othernames"/>
+<!--                                <field name="othernames"/>-->
                                 <field name="phone" widget="phone"/>
                                 <field name="mobile" widget="phone"/>
                                 <field name="email" widget="email" context="{'gravatar_image': True}"/>
-                                <field name="title" options='{"no_open": True}'/>
+<!--                                <field name="title" options='{"no_open": True}'/>-->
                                 <field name="lang"/>
                             </group>
                             <group>
@@ -138,13 +144,13 @@
                                 <field name="create_date"/>
                                 <field name="registered_date"/>
                             </group>
-                            <group string="Personal">
-                                <field name="gender"/>
-                                <field name="marital"/>
-                                <field name="emergency_contact"/>
-                                <field name="emergency_phone"/>
-                                <field name="birthday"/>
-                            </group>
+<!--                            <group string="Personal">-->
+<!--                                <field name="gender"/>-->
+<!--                                <field name="marital"/>-->
+<!--                                <field name="emergency_contact"/>-->
+<!--                                <field name="emergency_phone"/>-->
+<!--                                <field name="birthday"/>-->
+<!--                            </group>-->
 
                             <group string="Identifications">
                                 <field name="identities" nolabel="1">
@@ -157,20 +163,15 @@
                             <group string="Internal Info" name="internal_notes_right">
 
                             </group>
-
-                            <group string="Organization">
-                                <field name="org_custom_field">
-                                    <tree editable="bottom">
-                                        <field name="field_name"/>
-                                        <field name="field_value"/>
-                                    </tree>
-                                </field>
-                                <field name="regression_and_progression" string="Regression And Progression"/>
-                                <field name="total_quality" string="Total Quality"/>
-                                <field name="total_equity" string="Total Equity"/>
-                                <field name="grand_total" string="Grand Total"/>
-                            </group>
         
+                        </group>
+                        <group string="Organization">
+                            <field name="org_custom_field" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="field_name"/>
+                                    <field name="field_value"/>
+                                </tree>
+                            </field>
                         </group>
                             <!-- Duplicate Beneficiaries -->
                         <group string="Potential Duplicates">
@@ -227,6 +228,10 @@
                         <group>
                             <button string="Stage Change" name="update_stage" type="object" class="btn-primary"/>
                         </group>
+                    </group>
+                    <hr />
+                    <group>
+                        <button string="Create Beneficiaries" name="registration_to_beneficiary" type="object" class="btn-primary"/>
                     </group>
                     <footer></footer>
                 </form>

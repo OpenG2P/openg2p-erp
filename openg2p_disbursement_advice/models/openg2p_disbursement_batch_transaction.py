@@ -2,18 +2,19 @@
 # Copyright 2020 OpenG2P (https://openg2p.org)
 # @author: Salton Massally <saltonmassally@gmail.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-import os
 import csv
 import hashlib
 import logging
+import os
 import uuid
 from datetime import date, datetime
 from io import StringIO
-from dotenv import load_dotenv  # for python-dotenv method
+
 import boto3
 import pandas as pd
 import requests
 from dateutil.relativedelta import relativedelta
+from dotenv import load_dotenv  # for python-dotenv method
 
 from odoo import fields, models
 
@@ -149,9 +150,9 @@ class BatchTransaction(models.Model):
                     entry = [
                         rec.id,
                         rec.beneficiary_request_id,
-                        rec.payment_mode or "gsma",
+                        "gsma",  # rec.payment_mode or "gsma",
                         rec.amount,
-                        rec.currency_id.name,
+                        "LE",  # rec.currency_id.name,
                         rec.note,
                     ]
 
@@ -186,7 +187,6 @@ class BatchTransaction(models.Model):
         )
 
         response_token_data = response_token.json()
-
         self.token_response = response_token_data["access_token"]
 
         # Uploading to AWS bucket

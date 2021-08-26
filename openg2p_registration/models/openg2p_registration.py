@@ -421,7 +421,6 @@ class Registration(models.Model):
         return odk_map_data
 
     def create_registration_from_odk(self, odk_data):
-        print(odk_data)
         odk_map = (
             odk_data["odk_map"]
             if "odk_map" in odk_data.keys()
@@ -436,17 +435,24 @@ class Registration(models.Model):
                     else:
                         k2 = str(k2).replace("-", "_").lower()
                     temp[k2] = v2
+            else:
+                temp[str(k).replace("-", "_").lower()] = v
         regd = self.create(
             {
                 "firstname": "_",
                 "lastname": "_",
-                "street": "_",
-                "location_id": 1,
-                "city": (temp["city"] or "Freetown")
+                "street": (temp["chiefdom"] if "chiefdom" in temp.keys() else "-"),
+                "street2": (temp["district"] if "district" in temp.keys() else "-")
+                + ", "
+                + (temp["region"] if "region" in temp.keys() else "-"),
+                "city": (
+                    (temp["city"] if "city" in temp.keys() else "Freetown")
+                    or "Freetown"
+                )
                 if "city" in temp.keys()
                 else "Freetown",
                 "country_id": 202,
-                "state_id": 701,
+                "state_id": 710,
                 "gender": "male",
             }
         )
@@ -467,18 +473,25 @@ class Registration(models.Model):
                 ]:
                     org_data[k] = v
                     continue
-                if k in [
-                    "Status",
-                    "AttachmentsExpected",
-                    "AttachmentsPresent",
-                    "SubmitterName",
-                    "SubmitterID",
-                    "KEY",
-                    "meta-instanceID",
-                    "__version__",
-                    "bank_name",
-                    "city",
-                ]:
+                if (
+                    k
+                    in [
+                        "Status",
+                        "AttachmentsExpected",
+                        "AttachmentsPresent",
+                        "SubmitterName",
+                        "SubmitterID",
+                        "KEY",
+                        "meta-instanceID",
+                        "__version__",
+                        "bank_name",
+                        "city",
+                        "district",
+                        "chiefdom",
+                        "region",
+                    ]
+                    or k.startswith("_")
+                ):
                     continue
                 if k == "bank_account_number":
                     if len(str(v) or "") != 0:
