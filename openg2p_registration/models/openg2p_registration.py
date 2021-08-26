@@ -197,6 +197,60 @@ class Registration(models.Model):
         default="none",
     )
 
+    # will be return registration details on api call
+    def api_json(self):
+        data = {
+            "id": self.id,
+            "firstname": self.firstname,
+            "lastname": self.lastname,
+            "email": self.email or "",
+            "phone": self.phone or "",
+            "mobile": self.mobile or "",
+            "stage_id": {
+                "id": self.stage_id.id,
+                "name": self.stage_id.name,
+            },
+            "bank_account_id": {
+                "id": self.bank_account_id.id or "",
+                "acc_holder_name": self.bank_account_id.acc_holder_name or "",
+                "acc_number": self.bank_account_id.acc_number or "",
+                "acc_type": self.bank_account_id.acc_type or "",
+                "bank_id": self.bank_account_id.bank_id.id or "",
+                "bank_name": self.bank_account_id.bank_name or "",
+                "company_id": self.bank_account_id.company_id.id or "",
+                "display_name": self.bank_account_id.display_name or "",
+                "name": self.bank_account_id.name or "",
+                "partner_id": self.bank_account_id.partner_id.id or "",
+                "sequence": self.bank_account_id.sequence or "",
+            },
+            "address": {
+                "city": self.city or "",
+                "country_id": {
+                    "id": self.country_id.id or "",
+                    "name": self.country_id.name or "",
+                },
+                "state_id": {
+                    "id": self.state_id.id or "",
+                    "name": self.state_id.name or "",
+                },
+                "street": self.street or "",
+                "street2": self.street2 or "",
+                "zip": self.zip or "",
+            },
+            "kyc": {
+                "passport_id": self.passport_id or "",
+                "identity_passport": self.identity_passport or "",
+                "national_id": self.national_id or "",
+                "identity_national": self.identity_national or "",
+                "ssn": self.ssn or "",
+            },
+            "identities": {i.type: i.name for i in self.identities},
+            "org_custom_field": {
+                i.field_name: i.field_value for i in self.org_custom_field
+            },
+        }
+        return data
+
     # example for filtering on org custom fields
     @api.depends("org_custom_field")
     def _compute_org_fields(self):
@@ -421,7 +475,6 @@ class Registration(models.Model):
         return odk_map_data
 
     def create_registration_from_odk(self, odk_data):
-        print(odk_data)
         odk_map = (
             odk_data["odk_map"]
             if "odk_map" in odk_data.keys()
@@ -435,18 +488,27 @@ class Registration(models.Model):
                         k2 = odk_map[k2]
                     else:
                         k2 = str(k2).replace("-", "_").lower()
-                    temp[k2] = v2
+                    if not str(k2).startswith("_"):
+                        temp[k2] = v2
+            else:
+                if not str(k).startswith("_"):
+                    temp[str(k).replace("-", "_").lower()] = v
         regd = self.create(
             {
                 "firstname": "_",
                 "lastname": "_",
-                "street": "_",
-                "location_id": 1,
-                "city": (temp["city"] or "Freetown")
+                "street": (temp["chiefdom"] if "chiefdom" in temp.keys() else "-"),
+                "street2": (temp["district"] if "district" in temp.keys() else "-")
+                + ", "
+                + (temp["region"] if "region" in temp.keys() else "-"),
+                "city": (
+                    (temp["city"] if "city" in temp.keys() else "Freetown")
+                    or "Freetown"
+                )
                 if "city" in temp.keys()
                 else "Freetown",
                 "country_id": 202,
-                "state_id": 701,
+                "state_id": 710,
                 "gender": "male",
             }
         )
@@ -467,18 +529,25 @@ class Registration(models.Model):
                 ]:
                     org_data[k] = v
                     continue
-                if k in [
-                    "Status",
-                    "AttachmentsExpected",
-                    "AttachmentsPresent",
-                    "SubmitterName",
-                    "SubmitterID",
-                    "KEY",
-                    "meta-instanceID",
-                    "__version__",
-                    "bank_name",
-                    "city",
-                ]:
+                if (
+                    k
+                    in [
+                        "Status",
+                        "AttachmentsExpected",
+                        "AttachmentsPresent",
+                        "SubmitterName",
+                        "SubmitterID",
+                        "KEY",
+                        "meta-instanceID",
+                        "__version__",
+                        "bank_name",
+                        "city",
+                        "district",
+                        "chiefdom",
+                        "region",
+                    ]
+                    or k.startswith("_")
+                ):
                     continue
                 if k == "bank_account_number":
                     if len(str(v) or "") != 0:

@@ -30,6 +30,12 @@ class UpdateWizard(models.TransientModel):
         regd_obj = self.env["openg2p.registration"]
         regds = regd_obj.browse(self.env.context.get("active_ids"))
         for regd in regds:
-            print("REGD:", regd.id)
             regd.stage_id = self.stage_id
         return {"type": "ir.actions.act_window_close"}
+
+    @api.multi
+    def registration_to_beneficiary(self):
+        regd_obj = self.env["openg2p.registration"]
+        regds = regd_obj.browse(self.env.context.get("active_ids"))
+        for regd in regds:
+            regd.create_beneficiary_from_registration()

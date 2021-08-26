@@ -2,18 +2,19 @@
 # Copyright 2020 OpenG2P (https://openg2p.org)
 # @author: Salton Massally <saltonmassally@gmail.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-import os
 import csv
 import hashlib
 import logging
+import os
 import uuid
 from datetime import date, datetime
 from io import StringIO
-from dotenv import load_dotenv  # for python-dotenv method
+
 import boto3
 import pandas as pd
 import requests
 from dateutil.relativedelta import relativedelta
+from dotenv import load_dotenv  # for python-dotenv method
 
 from odoo import fields, models
 
@@ -72,7 +73,7 @@ class BatchTransaction(models.Model):
     company_id = fields.Many2one(
         "res.company",
         "Company",
-        required=True,
+        required=False,
         readonly=True,
         ondelete="restrict",
         default=lambda self: self.env.user.company_id,
@@ -96,6 +97,30 @@ class BatchTransaction(models.Model):
     successful = fields.Char(string="Successful", readonly=True)
 
     failed = fields.Char(string="Failed", readonly=True)
+
+    def api_json(self):
+        beneficiaries = self.env["openg2p.disbursement.main"].search(
+            [("batch_id", "=", self.id)]
+        )
+        beneficiary_ids = [b.id for b in beneficiaries]
+        return {
+            "id": self.id,
+            "name": self.name or "",
+            "program": {
+                "id": self.program_id.id,
+                "name": self.program_id.name,
+            },
+            "state": self.state or "",
+            "date_start": self.date_start or "",
+            "date_end": self.date_end or "",
+            "transaction_status": self.transaction_status or None,
+            "transactions": {
+                "total": self.total or None,
+                "successful": self.successful or None,
+                "failed": self.failed or None,
+            },
+            "beneficiary_ids": beneficiary_ids,
+        }
 
     def action_confirm(self):
         for rec in self:
@@ -149,9 +174,9 @@ class BatchTransaction(models.Model):
                     entry = [
                         rec.id,
                         rec.beneficiary_request_id,
-                        rec.payment_mode or "gsma",
+                        "gsma",  # rec.payment_mode or "gsma",
                         rec.amount,
-                        rec.currency_id.name,
+                        "LE",  # rec.currency_id.name,
                         rec.note,
                     ]
 
@@ -166,8 +191,6 @@ class BatchTransaction(models.Model):
                 [("batch_id", "=", self.id)], limit=limit, offset=offset
             )
 
-        # return
-
         url_token = "http://identity.ibank.financial/oauth/token"
 
         headers_token = {
@@ -181,13 +204,16 @@ class BatchTransaction(models.Model):
             "grant_type": os.environ.get("grant_type"),
         }
 
-        response_token = requests.request(
-            "POST", url_token, headers=headers_token, params=params_token
-        )
+        try:
+            response_token = requests.request(
+                "POST", url_token, headers=headers_token, params=params_token
+            )
 
-        response_token_data = response_token.json()
+            response_token_data = response_token.json()
+            self.token_response = response_token_data["access_token"]
 
-        self.token_response = response_token_data["access_token"]
+        except BaseException as e:
+            print(e)
 
         # Uploading to AWS bucket
         uploaded = self.upload_to_aws(csvname, "paymenthub-ee-dev")

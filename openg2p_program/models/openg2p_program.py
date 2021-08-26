@@ -98,3 +98,19 @@ class Program(models.Model):
             ("program_id", "in", self.ids), ("state", "in", ("open", "draft"))
         ).toggle_active()
         self.write({"state": "done"})
+
+    def api_json(self):
+        return {
+            "id": self.id,
+            "code": self.code,
+            "state": self.state,
+            "type": self.type,
+            "note": self.note,
+            "date_start": self.date_start,
+            "date_end": self.date_end,
+            "active": self.active,
+            "company_id": self.company_id.id,
+            "currency_id": self.currency_id.id,
+            "category_ids": self.category_ids.ids,
+            "category_count": self.category_count,
+        }
