@@ -252,7 +252,7 @@ class Beneficiary(models.Model):
         index=True,
         track_visibility="onchange",
         ondelete="restrict",
-        required=True,
+        required=False,
     )
     category_id = fields.Many2many(
         "openg2p.beneficiary.category",
@@ -340,7 +340,7 @@ class Beneficiary(models.Model):
     )
 
     grand_total = fields.Integer(
-        string="Grand Total",
+        string="Grand Total (LE)",
         stored=False,
         required=False,
         compute="_compute_org_fields",
@@ -411,7 +411,7 @@ class Beneficiary(models.Model):
                 [
                     "&",
                     ("beneficiary_id", "=", rec.id),
-                    ("field_name", "=", "grand_total"),
+                    ("field_name", "=", "grand_total_le"),
                 ]
             )
             try:

@@ -8,27 +8,27 @@
             <field name="code">Freetown</field>
         </record>
 
-        <record id="state_sl_2" model="res.country.state">
-            <field name="country_id" ref="base.sl"/>
-            <field name="name">Bo</field>
-            <field name="code">Bo</field>
-        </record>
+<!--        <record id="state_sl_2" model="res.country.state">-->
+<!--            <field name="country_id" ref="base.sl"/>-->
+<!--            <field name="name">Bo</field>-->
+<!--            <field name="code">Bo</field>-->
+<!--        </record>-->
 
         <!--
         Resource: openg2p.beneficiary.category
         -->
-        <record id="location_0" model="openg2p.location">
-            <field name="name">Makeni Govt Hospital</field>
-            <field name="color" eval="2"/>
-        </record>
-        <record id="location_2" model="openg2p.location">
-            <field name="name">Emergency Hospital</field>
-            <field name="color" eval="3"/>
-        </record>
-        <record id="location_3" model="openg2p.location">
-            <field name="name">Marampa Health Center</field>
-            <field name="color" eval="4"/>
-        </record>
+<!--        <record id="location_0" model="openg2p.location">-->
+<!--            <field name="name">Makeni Govt Hospital</field>-->
+<!--            <field name="color" eval="2"/>-->
+<!--        </record>-->
+<!--        <record id="location_2" model="openg2p.location">-->
+<!--            <field name="name">Emergency Hospital</field>-->
+<!--            <field name="color" eval="3"/>-->
+<!--        </record>-->
+<!--        <record id="location_3" model="openg2p.location">-->
+<!--            <field name="name">Marampa Health Center</field>-->
+<!--            <field name="color" eval="4"/>-->
+<!--        </record>-->
 
         <record id="openg2p_beneficiary_category_0" model="openg2p.beneficiary.category">
             <field name="name">Volunteers</field>
@@ -51,174 +51,174 @@
          Resource: openg2p.beneficiary
          -->
 
-        <record id="openg2p_beneficiary_1" model="openg2p.beneficiary">
-            <field name="firstname">Salton</field>
-            <field name="othernames">Arthur</field>
-            <field name="lastname">Massally</field>
-            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_0'), ref('openg2p_beneficiary_category_2')])]"
-                   name="category_id"/>
-            <field name="street">5 Foday Drive</field>
-            <field name="street2">Hill Station</field>
-            <field name="city">Freetown</field>
-            <field name="zip">85340</field>
-            <field name="state_id" ref="state_sl"/>
-            <field name="country_id" ref="base.sl"/>
-            <field name="email">smassally@@example.com</field>
-            <field name="phone">(623)-853-7197</field>
-            <field name="marital">married</field>
-            <field name="gender">male</field>
-            <field name="birth_city">Freetown</field>
-            <field name="birth_country_id" ref="base.sl"/>
-            <field name="birthday">1990-01-01</field>
-            <field name="national_id">756589484</field>
-            <field name="passport_id">98553</field>
-            <field name="emergency_contact">Steven Jackson</field>
-            <field name="emergency_phone">+23265765875</field>
-            <field name="location_id" ref="location_0"/>
-            <field name="image" type="base64" file="openg2p/static/img/employee_han-image.jpg"/>
-        </record>
-        <record id="openg2p_beneficiary_2" model="openg2p.beneficiary">
-            <field name="firstname">Jacob</field>
-            <field name="lastname">Status</field>
-            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_0')])]" name="category_id"/>
-            <field name="street">325 Elsie Drive</field>
-            <field name="city">Franklin</field>
-            <field name="state_id" ref="state_sl"/>
-            <field name="zip">26807</field>
-            <field name="country_id" ref="base.us"/>
-            <field name="email">deco.addict82@example.com</field>
-            <field name="phone">(603)-996-3829</field>
-            <field name="marital">married</field>
-            <field name="gender">male</field>
-            <field name="birth_city">Freetown</field>
-            <field name="birth_country_id" ref="base.sl"/>
-            <field name="birthday">1990-01-01</field>
-            <field name="national_id">4756589484</field>
-            <field name="passport_id">985553</field>
-            <field name="emergency_contact">Steven Jackson</field>
-            <field name="emergency_phone">+23265765875</field>
-            <field name="location_id" ref="location_2"/>
-            <field name="image" type="base64" file="openg2p/static/img/employee_hne-image.jpg"/>
-        </record>
-        <record id="openg2p_beneficiary_3" model="openg2p.beneficiary">
-            <field name="firstname">Gianna</field>
-            <field name="lastname">Bryant</field>
-            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_8'), ref('openg2p_beneficiary_category_0')])]"
-                   name="category_id"/>
-            <field name="street">1128 Lunetta Street</field>
-            <field name="city">Tampa</field>
-            <field name="state_id" ref="state_sl"/>
-            <field name="zip">33634</field>
-            <field name="country_id" ref="base.us"/>
-            <field name="email">gemini.furniture39@example.com</field>
-            <field name="phone">(941)-284-4875</field>
-            <field name="marital">married</field>
-            <field name="gender">male</field>
-            <field name="birth_city">Freetown</field>
-            <field name="birth_country_id" ref="base.sl"/>
-            <field name="birthday">1990-01-01</field>
-            <field name="national_id">75658948f4</field>
-            <field name="passport_id">985536</field>
-            <field name="emergency_contact">Steven Jackson</field>
-            <field name="emergency_phone">+23265765875</field>
-            <field name="location_id" ref="location_3"/>
-            <field name="image" type="base64" file="openg2p/static/img/employee_jep-image.jpg"/>
-        </record>
+<!--        <record id="openg2p_beneficiary_1" model="openg2p.beneficiary">-->
+<!--            <field name="firstname">Salton</field>-->
+<!--            <field name="othernames">Arthur</field>-->
+<!--            <field name="lastname">Massally</field>-->
+<!--            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_0'), ref('openg2p_beneficiary_category_2')])]"-->
+<!--                   name="category_id"/>-->
+<!--            <field name="street">5 Foday Drive</field>-->
+<!--            <field name="street2">Hill Station</field>-->
+<!--            <field name="city">Freetown</field>-->
+<!--            <field name="zip">85340</field>-->
+<!--            <field name="state_id" ref="state_sl"/>-->
+<!--            <field name="country_id" ref="base.sl"/>-->
+<!--            <field name="email">smassally@@example.com</field>-->
+<!--            <field name="phone">(623)-853-7197</field>-->
+<!--            <field name="marital">married</field>-->
+<!--            <field name="gender">male</field>-->
+<!--            <field name="birth_city">Freetown</field>-->
+<!--            <field name="birth_country_id" ref="base.sl"/>-->
+<!--            <field name="birthday">1990-01-01</field>-->
+<!--            <field name="national_id">756589484</field>-->
+<!--            <field name="passport_id">98553</field>-->
+<!--            <field name="emergency_contact">Steven Jackson</field>-->
+<!--            <field name="emergency_phone">+23265765875</field>-->
+<!--            <field name="location_id" ref="location_0"/>-->
+<!--            <field name="image" type="base64" file="openg2p/static/img/employee_han-image.jpg"/>-->
+<!--        </record>-->
+<!--        <record id="openg2p_beneficiary_2" model="openg2p.beneficiary">-->
+<!--            <field name="firstname">Jacob</field>-->
+<!--            <field name="lastname">Status</field>-->
+<!--            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_0')])]" name="category_id"/>-->
+<!--            <field name="street">325 Elsie Drive</field>-->
+<!--            <field name="city">Franklin</field>-->
+<!--            <field name="state_id" ref="state_sl"/>-->
+<!--            <field name="zip">26807</field>-->
+<!--            <field name="country_id" ref="base.us"/>-->
+<!--            <field name="email">deco.addict82@example.com</field>-->
+<!--            <field name="phone">(603)-996-3829</field>-->
+<!--            <field name="marital">married</field>-->
+<!--            <field name="gender">male</field>-->
+<!--            <field name="birth_city">Freetown</field>-->
+<!--            <field name="birth_country_id" ref="base.sl"/>-->
+<!--            <field name="birthday">1990-01-01</field>-->
+<!--            <field name="national_id">4756589484</field>-->
+<!--            <field name="passport_id">985553</field>-->
+<!--            <field name="emergency_contact">Steven Jackson</field>-->
+<!--            <field name="emergency_phone">+23265765875</field>-->
+<!--            <field name="location_id" ref="location_2"/>-->
+<!--            <field name="image" type="base64" file="openg2p/static/img/employee_hne-image.jpg"/>-->
+<!--        </record>-->
+<!--        <record id="openg2p_beneficiary_3" model="openg2p.beneficiary">-->
+<!--            <field name="firstname">Gianna</field>-->
+<!--            <field name="lastname">Bryant</field>-->
+<!--            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_8'), ref('openg2p_beneficiary_category_0')])]"-->
+<!--                   name="category_id"/>-->
+<!--            <field name="street">1128 Lunetta Street</field>-->
+<!--            <field name="city">Tampa</field>-->
+<!--            <field name="state_id" ref="state_sl"/>-->
+<!--            <field name="zip">33634</field>-->
+<!--            <field name="country_id" ref="base.us"/>-->
+<!--            <field name="email">gemini.furniture39@example.com</field>-->
+<!--            <field name="phone">(941)-284-4875</field>-->
+<!--            <field name="marital">married</field>-->
+<!--            <field name="gender">male</field>-->
+<!--            <field name="birth_city">Freetown</field>-->
+<!--            <field name="birth_country_id" ref="base.sl"/>-->
+<!--            <field name="birthday">1990-01-01</field>-->
+<!--            <field name="national_id">75658948f4</field>-->
+<!--            <field name="passport_id">985536</field>-->
+<!--            <field name="emergency_contact">Steven Jackson</field>-->
+<!--            <field name="emergency_phone">+23265765875</field>-->
+<!--            <field name="location_id" ref="location_3"/>-->
+<!--            <field name="image" type="base64" file="openg2p/static/img/employee_jep-image.jpg"/>-->
+<!--        </record>-->
 
-        <record id="openg2p_beneficiary_4" model="openg2p.beneficiary">
-            <field name="firstname">Steph</field>
-            <field name="lastname">Curry</field>
-            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_0'), ref('openg2p_beneficiary_category_2')])]"
-                   name="category_id"/>
-            <field name="street">92 Emily Drive</field>
-            <field name="city">Columbia</field>
-            <field name="state_id" ref="state_sl"/>
-            <field name="zip">29201</field>
-            <field name="country_id" ref="base.us"/>
-            <field name="email">ready.mat28@example.com</field>
-            <field name="phone">(803)-873-6126</field>
-            <field name="marital">married</field>
-            <field name="gender">male</field>
-            <field name="birth_city">Freetown</field>
-            <field name="birth_country_id" ref="base.sl"/>
-            <field name="birthday">1990-01-01</field>
-            <field name="national_id">7564589484</field>
-            <field name="passport_id">9845453</field>
-            <field name="emergency_contact">Steven Jackson</field>
-            <field name="emergency_phone">+23265765875</field>
-            <field name="location_id" ref="location_0"/>
-            <field name="image" type="base64" file="openg2p/static/img/employee_jgo-image.jpg"/>
-        </record>
+<!--        <record id="openg2p_beneficiary_4" model="openg2p.beneficiary">-->
+<!--            <field name="firstname">Steph</field>-->
+<!--            <field name="lastname">Curry</field>-->
+<!--            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_0'), ref('openg2p_beneficiary_category_2')])]"-->
+<!--                   name="category_id"/>-->
+<!--            <field name="street">92 Emily Drive</field>-->
+<!--            <field name="city">Columbia</field>-->
+<!--            <field name="state_id" ref="state_sl"/>-->
+<!--            <field name="zip">29201</field>-->
+<!--            <field name="country_id" ref="base.us"/>-->
+<!--            <field name="email">ready.mat28@example.com</field>-->
+<!--            <field name="phone">(803)-873-6126</field>-->
+<!--            <field name="marital">married</field>-->
+<!--            <field name="gender">male</field>-->
+<!--            <field name="birth_city">Freetown</field>-->
+<!--            <field name="birth_country_id" ref="base.sl"/>-->
+<!--            <field name="birthday">1990-01-01</field>-->
+<!--            <field name="national_id">7564589484</field>-->
+<!--            <field name="passport_id">9845453</field>-->
+<!--            <field name="emergency_contact">Steven Jackson</field>-->
+<!--            <field name="emergency_phone">+23265765875</field>-->
+<!--            <field name="location_id" ref="location_0"/>-->
+<!--            <field name="image" type="base64" file="openg2p/static/img/employee_jgo-image.jpg"/>-->
+<!--        </record>-->
 
-        <record id="openg2p_beneficiary_10" model="openg2p.beneficiary">
-            <field name="firstname">Evan</field>
-            <field name="lastname">Tucker</field>
-            <field name="street">823 Turkey Pen Lane</field>
-            <field name="city">Auburn</field>
-            <field name="state_id" ref="state_sl"/>
-            <field name="zip">36830</field>
-            <field name="country_id" ref="base.us"/>
-            <field name="email">jackson.group82@example.com</field>
-            <field name="phone">(334)-502-1024</field>
-            <field name="marital">married</field>
-            <field name="gender">male</field>
-            <field name="birth_city">Freetown</field>
-            <field name="birth_country_id" ref="base.sl"/>
-            <field name="birthday">1990-01-01</field>
-            <field name="national_id">75ad46589484</field>
-            <field name="passport_id">985d353</field>
-            <field name="emergency_contact">Steven Jackson</field>
-            <field name="emergency_phone">+23265765875</field>
-            <field name="location_id" ref="location_2"/>
-            <field name="image" type="base64" file="openg2p/static/img/employee_jod-image.jpg"/>
-        </record>
+<!--        <record id="openg2p_beneficiary_10" model="openg2p.beneficiary">-->
+<!--            <field name="firstname">Evan</field>-->
+<!--            <field name="lastname">Tucker</field>-->
+<!--            <field name="street">823 Turkey Pen Lane</field>-->
+<!--            <field name="city">Auburn</field>-->
+<!--            <field name="state_id" ref="state_sl"/>-->
+<!--            <field name="zip">36830</field>-->
+<!--            <field name="country_id" ref="base.us"/>-->
+<!--            <field name="email">jackson.group82@example.com</field>-->
+<!--            <field name="phone">(334)-502-1024</field>-->
+<!--            <field name="marital">married</field>-->
+<!--            <field name="gender">male</field>-->
+<!--            <field name="birth_city">Freetown</field>-->
+<!--            <field name="birth_country_id" ref="base.sl"/>-->
+<!--            <field name="birthday">1990-01-01</field>-->
+<!--            <field name="national_id">75ad46589484</field>-->
+<!--            <field name="passport_id">985d353</field>-->
+<!--            <field name="emergency_contact">Steven Jackson</field>-->
+<!--            <field name="emergency_phone">+23265765875</field>-->
+<!--            <field name="location_id" ref="location_2"/>-->
+<!--            <field name="image" type="base64" file="openg2p/static/img/employee_jod-image.jpg"/>-->
+<!--        </record>-->
 
-        <record id="openg2p_beneficiary_11" model="openg2p.beneficiary">
-            <field name="firstname">Kit</field>
-            <field name="lastname">Franklin</field>
-            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_2')])]" name="category_id"/>
-            <field name="street">3404 Edgewood Road</field>
-            <field name="city">Jonesboro</field>
-            <field name="state_id" ref="state_sl"/>
-            <field name="zip">72401</field>
-            <field name="phone">(870)-931-0505</field>
-            <field name="country_id" ref="base.us"/>
-            <field name="email">azure.Interior24@example.com</field>
-            <field name="marital">married</field>
-            <field name="gender">male</field>
-            <field name="birth_city">Freetown</field>
-            <field name="birth_country_id" ref="base.sl"/>
-            <field name="birthday">1990-01-01</field>
-            <field name="national_id">75652989484</field>
-            <field name="passport_id">9285253</field>
-            <field name="emergency_contact">Steven Jackson</field>
-            <field name="emergency_phone">+23265765875</field>
-            <field name="location_id" ref="location_3"/>
-            <field name="image" type="base64" file="openg2p/static/img/employee_jog-image.jpg"/>
-        </record>
+<!--        <record id="openg2p_beneficiary_11" model="openg2p.beneficiary">-->
+<!--            <field name="firstname">Kit</field>-->
+<!--            <field name="lastname">Franklin</field>-->
+<!--            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_2')])]" name="category_id"/>-->
+<!--            <field name="street">3404 Edgewood Road</field>-->
+<!--            <field name="city">Jonesboro</field>-->
+<!--            <field name="state_id" ref="state_sl"/>-->
+<!--            <field name="zip">72401</field>-->
+<!--            <field name="phone">(870)-931-0505</field>-->
+<!--            <field name="country_id" ref="base.us"/>-->
+<!--            <field name="email">azure.Interior24@example.com</field>-->
+<!--            <field name="marital">married</field>-->
+<!--            <field name="gender">male</field>-->
+<!--            <field name="birth_city">Freetown</field>-->
+<!--            <field name="birth_country_id" ref="base.sl"/>-->
+<!--            <field name="birthday">1990-01-01</field>-->
+<!--            <field name="national_id">75652989484</field>-->
+<!--            <field name="passport_id">9285253</field>-->
+<!--            <field name="emergency_contact">Steven Jackson</field>-->
+<!--            <field name="emergency_phone">+23265765875</field>-->
+<!--            <field name="location_id" ref="location_3"/>-->
+<!--            <field name="image" type="base64" file="openg2p/static/img/employee_jog-image.jpg"/>-->
+<!--        </record>-->
 
-        <record id="openg2p_beneficiary_18" model="openg2p.beneficiary">
-            <field name="firstname">James</field>
-            <field name="lastname">Jones</field>
-            <field name="street">3202 Hannah Street</field>
-            <field name="city">Asheville</field>
-            <field name="state_id" ref="state_sl"/>
-            <field name="zip">28801</field>
-            <field name="email">lumber-inv92@example.com</field>
-            <field name="phone">(828)-316-0593</field>
-            <field name="country_id" ref="base.us"/>
-            <field name="marital">married</field>
-            <field name="gender">male</field>
-            <field name="birth_city">Freetown</field>
-            <field name="birth_country_id" ref="base.sl"/>
-            <field name="birthday">1990-01-01</field>
-            <field name="national_id">75658992484</field>
-            <field name="passport_id">92348553</field>
-            <field name="emergency_contact">Steven Jackson</field>
-            <field name="emergency_phone">+23265765875</field>
-            <field name="location_id" ref="location_0"/>
-            <field name="image" type="base64" file="openg2p/static/img/employee_jth-image.jpg"/>
-        </record>
+<!--        <record id="openg2p_beneficiary_18" model="openg2p.beneficiary">-->
+<!--            <field name="firstname">James</field>-->
+<!--            <field name="lastname">Jones</field>-->
+<!--            <field name="street">3202 Hannah Street</field>-->
+<!--            <field name="city">Asheville</field>-->
+<!--            <field name="state_id" ref="state_sl"/>-->
+<!--            <field name="zip">28801</field>-->
+<!--            <field name="email">lumber-inv92@example.com</field>-->
+<!--            <field name="phone">(828)-316-0593</field>-->
+<!--            <field name="country_id" ref="base.us"/>-->
+<!--            <field name="marital">married</field>-->
+<!--            <field name="gender">male</field>-->
+<!--            <field name="birth_city">Freetown</field>-->
+<!--            <field name="birth_country_id" ref="base.sl"/>-->
+<!--            <field name="birthday">1990-01-01</field>-->
+<!--            <field name="national_id">75658992484</field>-->
+<!--            <field name="passport_id">92348553</field>-->
+<!--            <field name="emergency_contact">Steven Jackson</field>-->
+<!--            <field name="emergency_phone">+23265765875</field>-->
+<!--            <field name="location_id" ref="location_0"/>-->
+<!--            <field name="image" type="base64" file="openg2p/static/img/employee_jth-image.jpg"/>-->
+<!--        </record>-->
 
     </data>
 </odoo>

@@ -30,13 +30,13 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                 single = self.env["openg2p.disbursement.single.transaction"].create(
                     {
                         "bank_account_id": bank_id[0].id,
-                        "name": str(b.id),
+                        "name": str(b.name),
                         "program_id": program_id,
                         "state": "draft",
                         "date_start": datetime.now(),
                         "date_end": datetime.now(),
                         "beneficiary_id": b.id,
-                        "amount": 100.0,
+                        "amount": b.grand_total,
                         "currency_id": 1,
                         "payment_mode": bank_id[0].payment_mode,
                     }
@@ -89,9 +89,9 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                             "bank_account_id": bank_id[0].id,
                             "batch_id": batch.id,
                             "state": "draft",
-                            "name": str(b.id),
+                            "name": str(b.name),
                             "beneficiary_id": b.id,
-                            "amount": 100.0,
+                            "amount": b.grand_total,
                             "program_id": b.program_ids.ids[0],
                             "date_start": datetime.now(),
                             "date_end": datetime.now(),
