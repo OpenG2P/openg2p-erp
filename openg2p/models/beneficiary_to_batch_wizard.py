@@ -12,7 +12,6 @@ class BeneficiaryTransactionWizard(models.TransientModel):
     )
 
     def _get_bank_id(self, b):
-        print(b.bank_account_number)
         bank_id = self.env["res.partner.bank"].search(
             [("acc_number", "=", b.bank_account_number)]
         )
