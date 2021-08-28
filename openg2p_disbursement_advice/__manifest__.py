@@ -36,6 +36,5 @@
     ],
     "demo": [
         "data/demo.xml",
-        "data/ir_cron.xml",
     ],
 }
