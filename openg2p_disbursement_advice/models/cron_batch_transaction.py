@@ -4,15 +4,18 @@ from datetime import date, datetime
 import csv
 import requests
 import uuid
-import boto3 
+import boto3
 import pandas as pd
 
+
 class CronBatchTransaction(models.Model):
-    _name="openg2p.cron.batch.transaction"
+    _name = "openg2p.cron.batch.transaction"
 
     def cron_create_batch_transaction(self):
-        
-        batches_list=self.env["openg2p.disbursement.batch.transaction"].search([("state","=","draft")])
+
+        batches_list = self.env["openg2p.disbursement.batch.transaction"].search(
+            [("state", "=", "draft")]
+        )
 
         if not batches_list:
             return
@@ -20,8 +23,8 @@ class CronBatchTransaction(models.Model):
         for batch in batches_list:
             self.create_bulk_transfer_cron(batch)
 
-    def create_bulk_transfer_cron(self,batch):
-    
+    def create_bulk_transfer_cron(self, batch):
+
         batch._generate_uuid()
 
         limit = 100
@@ -94,4 +97,3 @@ class CronBatchTransaction(models.Model):
             response_real = requests.post(url_real, headers=headers, files=files)
         except BaseException as e:
             print(e)
-        

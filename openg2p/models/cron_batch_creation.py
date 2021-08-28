@@ -14,13 +14,15 @@ class CronBatchCreation(models.Model):
 
     @api.multi
     def cron_create_batch(self):
-        #Fetching all beneficiaries those are not under any batch
-        all_beneficiaries = self.env['openg2p.beneficiary'].search([("batch_status","=",False)])
+        # Fetching all beneficiaries those are not under any batch
+        all_beneficiaries = self.env["openg2p.beneficiary"].search(
+            [("batch_status", "=", False)]
+        )
 
         if not all_beneficiaries:
             print("No beneficiaries for Batch Creation")
             return
-        
+
         program_wise = {}
         for b in all_beneficiaries:
             for program_id in b.program_ids.ids:
@@ -71,7 +73,7 @@ class CronBatchCreation(models.Model):
                     )
                     m.generate_uuid()
                 count += 1000
-        
-        #Changing batch status of records true
+
+        # Changing batch status of records true
         for record in all_beneficiaries:
-            record.batch_status=True
+            record.batch_status = True
