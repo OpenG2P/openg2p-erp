@@ -27,7 +27,7 @@ class Openg2pBeneficiaryApi(Controller):
             new_regd = (
                 request.env["openg2p.registration"]
                 .sudo()
-                .create_registration_from_odk(rec)
+                .create_registration_from_odk(kwargs)
             )
             response["Success"] = True
             response["message"] = "Success"
