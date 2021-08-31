@@ -35,7 +35,7 @@ class Openg2pBeneficiaryApi(Controller):
         return response
 
     @route("/get-registration", type="json", auth="user")
-    def create_registration(self, **kwargs):
+    def get_registration(self, **kwargs):
         if "id" not in kwargs:
             return {"status": 200, "message": "Error! Required parameter id missing!"}
         id = kwargs["id"]
