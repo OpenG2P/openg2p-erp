@@ -51,13 +51,13 @@ class BeneficiaryTransactionWizard(models.TransientModel):
         )
         program_wise = {}
         for b in beneficiaries_selected:
+            if not b.bank_account_number:
+                continue
             for program_id in b.program_ids.ids:
                 if program_id in program_wise.keys():
                     program_wise[program_id].append(b)
                 else:
                     program_wise[program_id] = [b]
-
-        print(program_wise)
 
         for program, beneficiaries in program_wise.items():
             request_id = uuid.uuid4().hex
@@ -86,6 +86,7 @@ class BeneficiaryTransactionWizard(models.TransientModel):
 
                 for b in beneficiaries_list:
                     bank_id = self._get_bank_id(b)
+
                     m = self.env["openg2p.disbursement.main"].create(
                         {
                             "bank_account_id": bank_id[0].id,
