@@ -197,6 +197,36 @@ class Registration(models.Model):
         default="none",
     )
 
+    # will be return registration details on api call
+    def api_json(self):
+        data = {
+            "id": self.id,
+            "firstname": self.firstname,
+            "lastname": self.lastname,
+            "email": self.email,
+            "phone": self.phone,
+            "mobile": self.mobile,
+            "stage": self.stage_id.name,
+            "bank": {
+                "account_number": self.bank_account_id.acc_number or "",
+                "account_type": self.bank_account_id.acc_type or "",
+                "bank_name": self.bank_account_id.bank_name or "",
+                "account_holder_name": self.bank_account_id.acc_holder_name or "",
+            },
+            "address": {
+                "city": self.city,
+                "country": self.country_id.name,
+                "state": self.state_id.name,
+                "street": self.street,
+                "street2": self.street2,
+                "zip": self.zip,
+            },
+            "org_custom_field": {
+                i.field_name: i.field_value for i in self.org_custom_field
+            },
+        }
+        return data
+
     # example for filtering on org custom fields
     @api.depends("org_custom_field")
     def _compute_org_fields(self):
@@ -434,9 +464,11 @@ class Registration(models.Model):
                         k2 = odk_map[k2]
                     else:
                         k2 = str(k2).replace("-", "_").lower()
-                    temp[k2] = v2
+                    if not str(k2).startswith("_"):
+                        temp[k2] = v2
             else:
-                temp[str(k).replace("-", "_").lower()] = v
+                if not str(k).startswith("_"):
+                    temp[str(k).replace("-", "_").lower()] = v
         regd = self.create(
             {
                 "firstname": "_",
