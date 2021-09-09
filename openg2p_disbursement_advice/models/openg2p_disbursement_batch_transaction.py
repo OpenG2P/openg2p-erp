@@ -182,12 +182,16 @@ class BatchTransaction(models.Model):
             "grant_type": os.environ.get("grant_type"),
         }
 
-        response_token = requests.request(
-            "POST", url_token, headers=headers_token, params=params_token
-        )
+        try:
+            response_token = requests.request(
+                "POST", url_token, headers=headers_token, params=params_token
+            )
 
-        response_token_data = response_token.json()
-        self.token_response = response_token_data["access_token"]
+            response_token_data = response_token.json()
+            self.token_response = response_token_data["access_token"]
+
+        except BaseException as e:
+            print(e)
 
         # Uploading to AWS bucket
         uploaded = self.upload_to_aws(csvname, "paymenthub-ee-dev")

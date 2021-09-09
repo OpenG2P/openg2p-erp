@@ -113,8 +113,8 @@
 
                         <group>
                             <group>
-<!--                                <field name="location_id" placeholder="Location" domain="[('child_ids','=', False)]"-->
-<!--                                       options="{'no_create_edit': True}" invisible="1"/>-->
+                               <field name="location_id" placeholder="Location" domain="[('child_ids','=', False)]"
+                                      options="{'no_create_edit': True}" invisible="1"/>
                                 <label for="street" string="Address"/>
                                 <div class="o_address_format">
                                     <div class="oe_edit_only">
@@ -280,11 +280,11 @@
                     <field name="category_id"/>
                     <field name="image_small"/>
                     <field name="image_medium"/>
-                    <field name="location_id"/>
+                    <field name="location_id" invisible="1"/>
                     <field name="ref"/>
                     <templates>
                         <searchpanel>
-                            <field name="location_id" icon="fa-building"/>
+                            <field name="location_id" icon="fa-building" invisible="1"/>
                             <field name="category_id" select="multi" icon="fa-tags"/>
                         </searchpanel>
                         <t t-name="kanban-box">
@@ -323,7 +323,7 @@
                                     Grand Total = <field name="grand_total"/><br />
                                     <ul>
                                         <li t-if="record.location_id.raw_value">
-                                            <field name="location_id"/>
+                                            <field name="location_id" invisible="1"/>
                                         </li>
                                     </ul>
                                     <ul>
