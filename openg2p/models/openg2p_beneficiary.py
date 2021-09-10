@@ -7,7 +7,7 @@ import copy
 import logging
 import random
 import string
-import requests
+
 from dateutil.relativedelta import relativedelta
 from odoo.addons.component.core import WorkContext
 from odoo.addons.openg2p.services.matching_service import MATCH_MODE_NORMAL
@@ -346,6 +346,66 @@ class Beneficiary(models.Model):
         compute="_compute_org_fields",
         search="_search_grand_tot",
     )
+
+    def api_json(self):
+        return {
+            "id": self.id,
+            "firstname": self.firstname,
+            "lastname": self.lastname,
+            "email": self.email or "",
+            "phone": self.phone or "",
+            "mobile": self.mobile or "",
+            "active": self.active,
+            "activity_ids": [
+                {
+                    "id": act.id,
+                    "create_date": act.create_date,
+                    "date_deadline": act.date_deadline,
+                    "display_name": act.diplay_name,
+                    "note": act.note,
+                    "state": act.state,
+                }
+                for act in self.activity_ids
+            ],
+            "activity_state": self.activity_state or "",
+            "activity_summary": self.activity_summary or "",
+            "bank_account_id": {
+                "id": self.bank_account_id.id or "",
+                "acc_holder_name": self.bank_account_id.acc_holder_name or "",
+                "acc_number": self.bank_account_id.acc_number or "",
+                "acc_type": self.bank_account_id.acc_type or "",
+                "bank_id": self.bank_account_id.bank_id.id or "",
+                "bank_name": self.bank_account_id.bank_name or "",
+                "company_id": self.bank_account_id.company_id.id or "",
+                "display_name": self.bank_account_id.display_name or "",
+                "name": self.bank_account_id.name or "",
+                "partner_id": self.bank_account_id.partner_id.id or "",
+                "sequence": self.bank_account_id.sequence or "",
+            },
+            "address": {
+                "city": self.city or "",
+                "country_id": {
+                    "id": self.country_id.id or "",
+                    "name": self.country_id.name or "",
+                },
+                "state_id": {
+                    "id": self.state_id.id or "",
+                    "name": self.state_id.name or "",
+                },
+                "street": self.street or "",
+                "street2": self.street2 or "",
+                "zip": self.zip or "",
+            },
+            "kyc": {
+                "passport_id": self.passport_id or "",
+                "national_id": self.national_id or "",
+                "ssn": self.ssn or "",
+            },
+            "identities": {i.category_id.name: i.name for i in self.identities},
+            "org_custom_field": {
+                i.field_name: i.field_value for i in self.org_custom_field
+            },
+        }
 
     # example for filtering on org custom fields
     @api.depends("org_custom_field")
