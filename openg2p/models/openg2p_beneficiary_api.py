@@ -144,7 +144,7 @@ class Openg2pBeneficiaryApi(Controller):
         except BaseException as e:
             return {"status": 200, "error": str(e)}
 
-    @route("/beneficiary/<int:id>/kyc", type="json", auth="user", methods=["POST"])
+    @route("/beneficiary/<int:id>/kyc", type="json", auth="user", methods=["PUT"])
     def update_kyc(self, id, **kwargs):
         keys = ["passport_id", "national_id", "ssn"]
         for key in keys:
@@ -175,7 +175,7 @@ class Openg2pBeneficiaryApi(Controller):
         except BaseException as e:
             return {"status": 200, "error": str(e)}
 
-    @route("/beneficiary/<int:id>/bank", type="json", auth="user", methods=["POST"])
+    @route("/beneficiary/<int:id>/bank", type="json", auth="user", methods=["PUT"])
     def update_bank(self, id, **kwargs):
         keys = ["acc_number", "bank_name", "acc_holder_name"]
         for key in keys:

@@ -78,7 +78,7 @@ class Openg2pRegistrationApi(Controller):
         except BaseException as e:
             return {"status": 200, "error": str(e)}
 
-    @route("/convert-beneficiaries", type="json", auth="user", methods=["POST"])
+    @route("/beneficiaries", type="json", auth="user", methods=["POST"])
     def convert_to_beneficiaries(self, **kwargs):
         if "check_stage" not in kwargs:
             return {
@@ -114,7 +114,7 @@ class Openg2pRegistrationApi(Controller):
         except BaseException as e:
             return {"status": 200, "error": str(e)}
 
-    @route("/registration/<int:id>/kyc", type="json", auth="user", methods=["POST"])
+    @route("/registration/<int:id>/kyc", type="json", auth="user", methods=["PUT"])
     def update_kyc(self, id, **kwargs):
         keys = ["passport_id", "national_id", "ssn"]
         for key in keys:
@@ -126,9 +126,9 @@ class Openg2pRegistrationApi(Controller):
         try:
             regd = request.env["openg2p.registration"].search([("id", "=", id)])
             data_kyc = {
-                "passport_id": str(kwargs["passport_id"]),
+                # "passport_id": str(kwargs["passport_id"]),
                 "identity_passport": str(kwargs["passport_id"]),
-                "national_id": str(kwargs["national_id"]),
+                # "national_id": str(kwargs["national_id"]),
                 "identity_national": str(kwargs["national_id"]),
                 "ssn": str(kwargs["ssn"]),
             }
@@ -147,7 +147,7 @@ class Openg2pRegistrationApi(Controller):
         except BaseException as e:
             return {"status": 200, "error": str(e)}
 
-    @route("/registration/<int:id>/bank", type="json", auth="user", methods=["POST"])
+    @route("/registration/<int:id>/bank", type="json", auth="user", methods=["PUT"])
     def update_bank(self, id, **kwargs):
         keys = ["acc_number", "bank_name", "acc_holder_name"]
         for key in keys:
