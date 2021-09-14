@@ -110,13 +110,11 @@ class DisbursementMain(models.Model):
 
     def api_json(self):
         return {
-            "name":self.acc_holder_name,
-            "bank account no.":self.name,
-            "amount":self.amount,
-            "paymentmode":self.payment_mode,
-            "currency":self.currency_id.name,
-            "startdate":self.date_start,
-            "enddate":self.date_end
+            "name": self.acc_holder_name,
+            "bank account no.": self.name,
+            "amount": self.amount,
+            "paymentmode": self.payment_mode,
+            "currency": self.currency_id.name,
+            "startdate": self.date_start,
+            "enddate": self.date_end,
         }
-    
-    

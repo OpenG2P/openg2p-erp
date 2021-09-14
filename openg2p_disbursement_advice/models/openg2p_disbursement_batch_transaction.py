@@ -99,22 +99,27 @@ class BatchTransaction(models.Model):
     failed = fields.Char(string="Failed", readonly=True)
 
     def api_json(self):
-
+        beneficiaries = self.env["openg2p.disbursement.main"].search(
+            [("batch_id", "=", self.id)]
+        )
+        beneficiary_ids = [b.id for b in beneficiaries]
         return {
-            "id":self.id,
-            "batchname":self.name or "",
-            "program":self.program_id.name or "",
-            "state":self.state or "",
-            "period":{
-                "startdate":self.date_start or "",
-                "startdate":self.date_end or "",
+            "id": self.id,
+            "name": self.name or "",
+            "program": {
+                "id": self.program_id.id,
+                "name": self.program_id.name,
             },
-            "transactionstatus":self.transaction_status or None,
-            "numberoftransactions":{
-                "total":self.total or None,
-                "successful":self.successful or None,
-                "failed":self.failed or None
-            }
+            "state": self.state or "",
+            "date_start": self.date_start or "",
+            "date_end": self.date_end or "",
+            "transaction_status": self.transaction_status or None,
+            "transactions": {
+                "total": self.total or None,
+                "successful": self.successful or None,
+                "failed": self.failed or None,
+            },
+            "beneficiary_ids": beneficiary_ids,
         }
 
     def action_confirm(self):
