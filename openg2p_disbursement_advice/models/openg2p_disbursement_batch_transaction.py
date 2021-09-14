@@ -99,7 +99,9 @@ class BatchTransaction(models.Model):
     failed = fields.Char(string="Failed", readonly=True)
 
     def api_json(self):
-        beneficiaries = self.env["openg2p.disbursement.main"].search([("batch_id", "=", self.id)])
+        beneficiaries = self.env["openg2p.disbursement.main"].search(
+            [("batch_id", "=", self.id)]
+        )
         beneficiary_ids = [b.id for b in beneficiaries]
         return {
             "id": self.id,
@@ -115,7 +117,7 @@ class BatchTransaction(models.Model):
             "transactions": {
                 "total": self.total or None,
                 "successful": self.successful or None,
-                "failed": self.failed or None
+                "failed": self.failed or None,
             },
             "beneficiary_ids": beneficiary_ids,
         }
@@ -149,10 +151,10 @@ class BatchTransaction(models.Model):
 
         # CSV filename as RequestID+Datetime
         csvname = (
-                self.request_id
-                + "-"
-                + str(datetime.now().strftime(r"%Y%m%d%H%M%S"))
-                + ".csv"
+            self.request_id
+            + "-"
+            + str(datetime.now().strftime(r"%Y%m%d%H%M%S"))
+            + ".csv"
         )
 
         while len(beneficiary_transactions) > 0:
