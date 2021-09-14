@@ -73,7 +73,7 @@ class BatchTransaction(models.Model):
     company_id = fields.Many2one(
         "res.company",
         "Company",
-        required=True,
+        required=False,
         readonly=True,
         ondelete="restrict",
         default=lambda self: self.env.user.company_id,
@@ -97,6 +97,25 @@ class BatchTransaction(models.Model):
     successful = fields.Char(string="Successful", readonly=True)
 
     failed = fields.Char(string="Failed", readonly=True)
+
+    def api_json(self):
+
+        return {
+            "id":self.id,
+            "batchname":self.name or "",
+            "program":self.program_id.name or "",
+            "state":self.state or "",
+            "period":{
+                "startdate":self.date_start or "",
+                "startdate":self.date_end or "",
+            },
+            "transactionstatus":self.transaction_status or None,
+            "numberoftransactions":{
+                "total":self.total or None,
+                "successful":self.successful or None,
+                "failed":self.failed or None
+            }
+        }
 
     def action_confirm(self):
         for rec in self:
@@ -166,8 +185,6 @@ class BatchTransaction(models.Model):
             beneficiary_transactions = self.env["openg2p.disbursement.main"].search(
                 [("batch_id", "=", self.id)], limit=limit, offset=offset
             )
-
-        # return
 
         url_token = "http://identity.ibank.financial/oauth/token"
 
