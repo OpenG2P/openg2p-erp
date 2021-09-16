@@ -33,7 +33,11 @@ class Openg2pRegistrationApi(Controller):
                     "message": "Success",
                 }
             else:
-                return {"status": 404, "id": id, "message": "Failure! Invalid registration id!"}
+                return {
+                    "status": 404,
+                    "id": id,
+                    "message": "Failure! Invalid registration id!",
+                }
         except BaseException as e:
             return {"status": 200, "id": id, "error": str(e)}
 
