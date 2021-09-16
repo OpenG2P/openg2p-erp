@@ -43,7 +43,7 @@ class Openg2pBeneficiaryApi(Controller):
                     "error": f"Error! No program with id {id} exists!",
                 }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 200, "id": id, "error": str(e)}
 
     @route("/program-category", type="json", auth="user", methods=["POST"])
     def create_category(self, **kwargs):
@@ -93,7 +93,7 @@ class Openg2pBeneficiaryApi(Controller):
                     "error": f"Error! No program with id {id} exists!",
                 }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 200, "id": id, "error": str(e)}
 
     @route("/program", type="json", auth="user", methods=["POST"])
     def create_program(self, **kwargs):
@@ -132,6 +132,7 @@ class Openg2pBeneficiaryApi(Controller):
             if len(beneficiary) > 0:
                 return {
                     "status": 200,
+                    "id": id,
                     "message": "Success",
                     "beneficiary": beneficiary[0].api_json(),
                 }
@@ -142,7 +143,7 @@ class Openg2pBeneficiaryApi(Controller):
                     "error": f"Error! No beneficiary with id {id} exists!",
                 }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 200, "id": id, "error": str(e)}
 
     @route("/beneficiary/<int:id>/kyc", type="json", auth="user", methods=["PUT"])
     def update_kyc(self, id, **kwargs):
@@ -151,6 +152,7 @@ class Openg2pBeneficiaryApi(Controller):
             if key not in kwargs:
                 return {
                     "status": 200,
+                    "id": id,
                     "message": f"Error! Required parameter '{key}' missing!",
                 }
         try:
@@ -173,7 +175,7 @@ class Openg2pBeneficiaryApi(Controller):
                 data["error"] = f"Error! No registration found with id {id}!"
             return data
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 200, "id": id, "error": str(e)}
 
     @route("/beneficiary/<int:id>/bank", type="json", auth="user", methods=["PUT"])
     def update_bank(self, id, **kwargs):
@@ -182,6 +184,7 @@ class Openg2pBeneficiaryApi(Controller):
             if key not in kwargs:
                 return {
                     "status": 200,
+                    "id": id,
                     "message": f"Error! Required parameter '{key}' missing!",
                 }
         try:
@@ -198,7 +201,7 @@ class Openg2pBeneficiaryApi(Controller):
                 )
                 if res:
                     raise Exception("Duplicate Bank Account Number!")
-                if not res:
+                else:
                     bank_id = request.env["res.bank"].search(
                         [("name", "=", data["bank_name"])], limit=1
                     )
@@ -229,7 +232,7 @@ class Openg2pBeneficiaryApi(Controller):
                 data["error"] = f"Error! No registration found with id {id}!"
             return data
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 200, "id": id, "error": str(e)}
 
     @route("/enroll-into-program", type="json", auth="user", methods=["POST"])
     def enroll_into_programs(self, **kwargs):

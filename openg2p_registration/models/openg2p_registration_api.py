@@ -28,13 +28,14 @@ class Openg2pRegistrationApi(Controller):
             if len(regd_objs) > 0:
                 return {
                     "status": 200,
+                    "id": id,
                     "response": regd_objs[0].api_json(),
                     "message": "Success",
                 }
             else:
-                return {"status": 404, "message": "Failure! Invalid registration id!"}
+                return {"status": 404, "id": id, "message": "Failure! Invalid registration id!"}
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 200, "id": id, "error": str(e)}
 
     @route("/registration", type="json", auth="user", methods=["POST"])
     def create_registration(self, **kwargs):
@@ -76,7 +77,7 @@ class Openg2pRegistrationApi(Controller):
                 data["error"] = f"Error! No registration found with id {id}!"
             return data
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 200, "id": id, "error": str(e)}
 
     @route("/beneficiaries", type="json", auth="user", methods=["POST"])
     def convert_to_beneficiaries(self, **kwargs):
@@ -121,14 +122,13 @@ class Openg2pRegistrationApi(Controller):
             if key not in kwargs:
                 return {
                     "status": 200,
+                    "id": id,
                     "message": f"Error! Required parameter '{key}' missing!",
                 }
         try:
             regd = request.env["openg2p.registration"].search([("id", "=", id)])
             data_kyc = {
-                # "passport_id": str(kwargs["passport_id"]),
                 "identity_passport": str(kwargs["passport_id"]),
-                # "national_id": str(kwargs["national_id"]),
                 "identity_national": str(kwargs["national_id"]),
                 "ssn": str(kwargs["ssn"]),
             }
@@ -145,7 +145,7 @@ class Openg2pRegistrationApi(Controller):
                 data["error"] = f"Error! No registration found with id {id}!"
             return data
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 200, "id": id, "error": str(e)}
 
     @route("/registration/<int:id>/bank", type="json", auth="user", methods=["PUT"])
     def update_bank(self, id, **kwargs):
@@ -154,6 +154,7 @@ class Openg2pRegistrationApi(Controller):
             if key not in kwargs:
                 return {
                     "status": 200,
+                    "id": id,
                     "message": f"Error! Required parameter '{key}' missing!",
                 }
         try:
@@ -201,4 +202,4 @@ class Openg2pRegistrationApi(Controller):
                 data["error"] = f"Error! No registration found with id {id}!"
             return data
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 200, "id": id, "error": str(e)}
