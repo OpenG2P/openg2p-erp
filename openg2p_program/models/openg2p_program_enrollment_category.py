@@ -25,3 +25,13 @@ class ProgramEnrollmentCategory(models.Model):
         "res.company", default=lambda self: self.env.user.company_id
     )
     color = fields.Integer(string="Color Index", default=lambda self: randint(1, 6))
+
+    def api_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "program_id": self.program_id.id,
+            "sequence": self.sequence,
+            "company_id": self.company_id.id,
+            "color": self.color,
+        }
