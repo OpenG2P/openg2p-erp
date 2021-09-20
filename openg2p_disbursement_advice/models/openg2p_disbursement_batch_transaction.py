@@ -16,7 +16,7 @@ import requests
 from dateutil.relativedelta import relativedelta
 from dotenv import load_dotenv  # for python-dotenv method
 
-from odoo import api,fields, models
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 BATCH_SIZE = 500
@@ -91,12 +91,12 @@ class BatchTransaction(models.Model):
         required=False,
         default=None,
     )
-    all_beneficiaries=fields.One2many(
+    all_beneficiaries = fields.One2many(
         "openg2p.disbursement.main",
         string="Beneficiaries",
         compute="_all_beneficiaries",
     )
-    total_disbursement_amount=fields.Float(
+    total_disbursement_amount = fields.Float(
         string="Total Disbursement Amount",
         compute="_all_beneficiaries",
         default=0.0,
@@ -131,13 +131,15 @@ class BatchTransaction(models.Model):
             },
             "beneficiary_ids": beneficiary_ids,
         }
-        
+
     @api.multi
     def _all_beneficiaries(self):
-        self.all_beneficiaries=self.env["openg2p.disbursement.main"].search([("batch_id", "=", self.id)])
+        self.all_beneficiaries = self.env["openg2p.disbursement.main"].search(
+            [("batch_id", "=", self.id)]
+        )
 
         for b in self.all_beneficiaries:
-            self.total_disbursement_amount+=b.amount
+            self.total_disbursement_amount += b.amount
 
     def action_confirm(self):
         for rec in self:
