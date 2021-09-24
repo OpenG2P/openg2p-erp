@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_openg2p_task_home"
+              name="OpenG2P Task"
+              action="action_openg2p_task"
+              sequence="1"/>
+
+    <menuitem id="menu_openg2p_task_history"
+              name="OpenG2P Task History"
+              action="action_openg2p_task_history"
+              parent="menu_openg2p_task_home"
+              sequence="2"/>
+
+</odoo>
