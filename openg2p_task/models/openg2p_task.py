@@ -11,10 +11,13 @@ class Openg2pTask(models.Model):
             ("approve_payment_list", "Approve Payment List"),
             ("send_payment_list", "Send Payment List"),
             ("review_settlement_report", "Review Settlement Report"),
-            ("beneficiary_from_registrations", "Create Beneficiary List from Processed Registrations"),
+            (
+                "beneficiary_from_registrations",
+                "Create Beneficiary List from Processed Registrations",
+            ),
             ("odk_to_registrations", "Pull Registrations from Data Collection Source"),
             ("complete_reconciliation", "Complete Reconciliation"),
-        )
+        ),
     )
 
     assignee_id = fields.Many2one(
@@ -52,15 +55,16 @@ class Openg2pTask(models.Model):
     @api.multi
     def _create_history(self):
         print("creating history")
-        self.env["openg2p.task.history"].create({
-            "task_id": self.id,
-            "task_status": self.status,
-            "task_assignee_id": self.assignee_id,
-            "task_name": self.name,
-            "task_modifiedby_id": self.lastmodifiedby_id,
-        })
+        res = self.env["openg2p.task.history"].create(
+            {
+                "task_id": self.id,
+                "task_status": self.status,
+                "task_name": self.name,
+                "task_assignee_id": self.assignee_id.id,
+                "task_modifiedby_id": self.lastmodifiedby_id.id,
+            }
+        )
 
-    @api.multi
     @api.model
     def create(self, vals):
         res = super(Openg2pTask, self).create(vals)
