@@ -3,13 +3,16 @@ from odoo import models, fields
 
 class Openg2pTaskHistory(models.Model):
     _name = "openg2p.task.history"
-    _description = "Task History"
+    _description = "Task History for OpenG2P"
 
-    task_id = fields.One2many(
-        comodel_name='openg2p.task',
+    task_id = fields.Many2one(
+        comodel_name="openg2p.task",
         string="Task ID",
-        inverse_name="id"
     )
+
+    task_type_id = fields.Many2one("openg2p.task.type", string="Task Type")
+
+    task_subtype_id = fields.Many2one("openg2p.task.subtype", string="Task Subtype")
 
     task_status = fields.Selection(
         selection=(
@@ -19,22 +22,24 @@ class Openg2pTaskHistory(models.Model):
         string="Task Status",
     )
 
+    # for building url
+    task_entity_type_id = fields.Integer(
+        string="Entity Type",
+    )
+
+    # for building url
+    task_entity_id = fields.Integer(
+        string="Entity ID",
+    )
+
+    program_id = fields.Integer(
+        string="Program",
+    )
+
     task_assignee_id = fields.Many2one(
         "res.users",
         string="Task Assignee ID",
         default=lambda self: self.env.uid,
-    )
-
-    task_name = fields.Selection(
-        string="Task Name",
-        selection=(
-            ("approve_payment_list", "Approve Payment List"),
-            ("send_payment_list", "Send Payment List"),
-            ("review_settlement_report", "Review Settlement Report"),
-            ("beneficiary_from_registrations", "Create Beneficiary List from Processed Registrations"),
-            ("odk_to_registrations", "Pull Registrations from Data Collection Source"),
-            ("complete_reconciliation", "Complete Reconciliation"),
-        )
     )
 
     task_modifiedby_id = fields.Many2one(
@@ -42,5 +47,11 @@ class Openg2pTaskHistory(models.Model):
         string="Last modified by",
         default=lambda self: self.env.uid,
     )
+
+    def name_get(self):
+        return [
+            (rec.id, f"{rec.task_type_id.name}/{rec.task_subtype_id.name} (H{rec.id})")
+            for rec in self
+        ]
 
     # create_date of this entity = modifiedby_date of task

@@ -11,13 +11,19 @@
                     <group>
                         <group>
                             <field name="task_id" string="Task ID"/>
-                            <field name="task_name" string="Task Name"/>
+                            <field name="task_type_id" string="Task Type"/>
+                            <field name="task_subtype_id" string="Task Subtype"/>
                             <field name="task_assignee_id" string="Task Assignee"/>
                             <field name="task_modifiedby_id" string="Task Modified by"/>
                         </group>
                         <group>
                             <field name="task_status" string="Task Status"/>
                             <field name="write_date" string="Modified Date"/>
+                        </group>
+                        <group string="Technical Details">
+                            <field name="task_entity_type_id" string="Task Entity Type"/>
+                            <field name="task_entity_id" string="Task Entity ID"/>
+                            <field name="program_id" string="Program"/>
                         </group>
                     </group>
                 </form>
@@ -45,7 +51,7 @@
             <field name="arch" type="xml">
                 <kanban class="o_kanban_registration" create="0" import="0" group_create="0"
                         quick_create="false">
-                    <field name="task_name"/>
+                    <field name="task_type_id"/>
                     <field name="task_assignee_id"/>
                     <field name="task_status"/>
                     <field name="create_date"/>
@@ -56,7 +62,7 @@
                                     <div class="o_kanban_record_top">
                                         <div class="o_kanban_record_headings">
                                             <strong class="o_kanban_record_title">
-                                                <field name="task_name"/>
+                                                <field name="task_type_id"/>
                                             </strong>
                                         </div>
                                     </div>
