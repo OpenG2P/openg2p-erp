@@ -45,11 +45,20 @@
                                                                                       class="oe_inline"/>
                             </div>
                         </group>
+
                         <group>
+                            <group>
                             <field name="transaction_status" attrs="{'invisible':[('state','!=','pending'),('state','!=','paymentstatus')]}"/>
-                            <field name="total" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
-                            <field name="successful" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                            <field name="total_transactions" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                            <field name="ongoing" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
                             <field name="failed" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                            </group>
+                            <group>
+                                <field name="total_amount" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                                <field name="completed_amount" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                                <field name="ongoing_amount" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                                <field name="failed_amount" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                            </group>
                         </group>
                         <group>
                             <field name="transaction_batch_id" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
