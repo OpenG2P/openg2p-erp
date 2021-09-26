@@ -18,7 +18,7 @@
             <field name="arch" type="xml">
                 <form string="Batch Form">
                     <header>
-                        <button name="action_confirm" type="object"  states="draft" string="Confirm" class="oe_highlight"/>
+                        <button name="action_confirm" type="object"  states="draft" string="Approve" class="oe_highlight"/>
                         <button name="action_pending" type="object"  states="confirm" string="Pending" class="oe_highlight"/>
                         <button name="action_transaction" type="object"  states="pending" string="Complete" class="oe_highlight"/>
                         <button name="create_bulk_transfer" type="object"  states="confirm" string="Make Transfer" class="oe_highlight"/>
@@ -54,6 +54,17 @@
                         <group>
                             <field name="transaction_batch_id" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
                             <field name="request_id" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                        </group>
+                        <group string="Beneficiaries">
+                            <field name="all_beneficiaries" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="acc_holder_name"/>
+                                    <field name="amount"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="total_disbursement_amount" string="Total Disbursement Amount"/>    
                         </group>
                     </sheet>
                     <div class="oe_chatter">

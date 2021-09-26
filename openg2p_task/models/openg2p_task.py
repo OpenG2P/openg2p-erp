@@ -97,7 +97,6 @@ class Openg2pTask(models.Model):
     def write(self, vals):
         res = super(Openg2pTask, self).write(vals)
         if res:
-            print(vals, res)
             self._create_history()
         return res
 
