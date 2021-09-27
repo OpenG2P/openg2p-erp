@@ -19,7 +19,7 @@ class Openg2pRegistrationApi(Controller):
                 "message": "Success",
             }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     @route("/registration/<int:id>", type="json", auth="user", methods=["GET"])
     def get_registration_by_id(self, id):
@@ -39,7 +39,7 @@ class Openg2pRegistrationApi(Controller):
                     "message": "Failure! Invalid registration id!",
                 }
         except BaseException as e:
-            return {"status": 200, "id": id, "error": str(e)}
+            return {"status": 400, "id": id, "error": str(e)}
 
     @route("/registration", type="json", auth="user", methods=["POST"])
     def create_registration(self, **kwargs):
@@ -59,7 +59,7 @@ class Openg2pRegistrationApi(Controller):
             response["id"] = new_regd.id
             return response
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     @route("/duplicates/<int:id>", type="json", auth="user", methods=["GET"])
     def find_duplicates(self, id):
@@ -81,7 +81,7 @@ class Openg2pRegistrationApi(Controller):
                 data["error"] = f"Error! No registration found with id {id}!"
             return data
         except BaseException as e:
-            return {"status": 200, "id": id, "error": str(e)}
+            return {"status": 400, "id": id, "error": str(e)}
 
     @route("/beneficiaries", type="json", auth="user", methods=["POST"])
     def convert_to_beneficiaries(self, **kwargs):
@@ -117,7 +117,7 @@ class Openg2pRegistrationApi(Controller):
             data["beneficiary_ids"] = res_ids
             return data
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     @route("/registration/<int:id>/kyc", type="json", auth="user", methods=["PUT"])
     def update_kyc(self, id, **kwargs):
@@ -149,7 +149,7 @@ class Openg2pRegistrationApi(Controller):
                 data["error"] = f"Error! No registration found with id {id}!"
             return data
         except BaseException as e:
-            return {"status": 200, "id": id, "error": str(e)}
+            return {"status": 400, "id": id, "error": str(e)}
 
     @route("/registration/<int:id>/bank", type="json", auth="user", methods=["PUT"])
     def update_bank(self, id, **kwargs):
@@ -206,4 +206,4 @@ class Openg2pRegistrationApi(Controller):
                 data["error"] = f"Error! No registration found with id {id}!"
             return data
         except BaseException as e:
-            return {"status": 200, "id": id, "error": str(e)}
+            return {"status": 400, "id": id, "error": str(e)}

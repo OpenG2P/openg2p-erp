@@ -20,7 +20,7 @@ class Openg2pBeneficiaryApi(Controller):
                 "categories": res,
             }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     @route("/program-category/<int:id>", type="json", auth="user", methods=["GET"])
     def get_category_by_id(self, id):
@@ -43,7 +43,7 @@ class Openg2pBeneficiaryApi(Controller):
                     "error": f"Error! No program with id {id} exists!",
                 }
         except BaseException as e:
-            return {"status": 200, "id": id, "error": str(e)}
+            return {"status": 400, "id": id, "error": str(e)}
 
     @route("/program-category", type="json", auth="user", methods=["POST"])
     def create_category(self, **kwargs):
@@ -55,7 +55,7 @@ class Openg2pBeneficiaryApi(Controller):
                 "id": category.id,
             }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     # programs
     @route("/programs", type="json", auth="user", methods=["GET"])
@@ -72,7 +72,7 @@ class Openg2pBeneficiaryApi(Controller):
                 "programs": res,
             }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     @route("/program/<int:id>", type="json", auth="user", methods=["GET"])
     def get_program_by_id(self, id):
@@ -93,7 +93,7 @@ class Openg2pBeneficiaryApi(Controller):
                     "error": f"Error! No program with id {id} exists!",
                 }
         except BaseException as e:
-            return {"status": 200, "id": id, "error": str(e)}
+            return {"status": 400, "id": id, "error": str(e)}
 
     @route("/program", type="json", auth="user", methods=["POST"])
     def create_program(self, **kwargs):
@@ -106,7 +106,7 @@ class Openg2pBeneficiaryApi(Controller):
                 "id": program.id,
             }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     # beneficiaries
     @route("/beneficiaries", type="json", auth="user", methods=["GET"])
@@ -123,7 +123,7 @@ class Openg2pBeneficiaryApi(Controller):
                 "beneficiaries": res,
             }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     @route("/beneficiary/<int:id>", type="json", auth="user", methods=["GET"])
     def get_beneficiary(self, id):
@@ -143,7 +143,7 @@ class Openg2pBeneficiaryApi(Controller):
                     "error": f"Error! No beneficiary with id {id} exists!",
                 }
         except BaseException as e:
-            return {"status": 200, "id": id, "error": str(e)}
+            return {"status": 400, "id": id, "error": str(e)}
 
     @route("/beneficiary/<int:id>/kyc", type="json", auth="user", methods=["PUT"])
     def update_kyc(self, id, **kwargs):
@@ -175,7 +175,7 @@ class Openg2pBeneficiaryApi(Controller):
                 data["error"] = f"Error! No registration found with id {id}!"
             return data
         except BaseException as e:
-            return {"status": 200, "id": id, "error": str(e)}
+            return {"status": 400, "id": id, "error": str(e)}
 
     @route("/beneficiary/<int:id>/bank", type="json", auth="user", methods=["PUT"])
     def update_bank(self, id, **kwargs):
@@ -232,7 +232,7 @@ class Openg2pBeneficiaryApi(Controller):
                 data["error"] = f"Error! No registration found with id {id}!"
             return data
         except BaseException as e:
-            return {"status": 200, "id": id, "error": str(e)}
+            return {"status": 400, "id": id, "error": str(e)}
 
     @route("/enroll-into-program", type="json", auth="user", methods=["POST"])
     def enroll_into_programs(self, **kwargs):
@@ -262,4 +262,4 @@ class Openg2pBeneficiaryApi(Controller):
                 "message": "Success",
             }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}

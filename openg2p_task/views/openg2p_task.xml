@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Form View -->
+        <record model="ir.ui.view" id="openg2p_task_form_view">
+            <field name="name">openg2p.task.form</field>
+            <field name="model">openg2p.task</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <group>
+                            <field name="type_id"/>
+                            <field name="subtype_id" string="Task Subtype"/>
+                            <field name="description" string="Description"/>
+                            <field name="context" string="Context"/>
+                            <field name="workflow_pid" string="Workflow Pid"/>
+                            <field name="target_url" string="Target URL"/>
+                            <field name="assignee_id" string="Assignee"/>
+                            <field name="lastmodifiedby_id" string="Last modified by"/>
+                        </group>
+                        <group>
+                            <field name="status"/>
+                            <field name="eta"/>
+                            <field name="create_date" string="Create Date"/>
+                            <field name="write_date" string="Last Modified Date"/>
+                        </group>
+                        <group string="Technical Details">
+                            <field name="entity_type_id" string="Entity Type"/>
+                            <field name="entity_id" string="Entity ID"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View -->
+        <record model="ir.ui.view" id="openg2p_task_tree_view">
+            <field name="name">openg2p.task.tree</field>
+            <field name="model">openg2p.task</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="assignee_id"/>
+                    <field name="status"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Kanban View -->
+        <record model="ir.ui.view" id="openg2p_task_kanban_view">
+            <field name="name">openg2p.task.kanban</field>
+            <field name="model">openg2p.task</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="status" class="o_kanban_registration" create="0" import="0" group_create="0"
+                        quick_create="false">
+                    <field name="target_url"/>
+                    <field name="assignee_id"/>
+                    <field name="status" options='{"group_by_tooltip": {"requirements": "Requirements"}}'/>
+                    <field name="create_date"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <div class="oe_kanban_details">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="type_id"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <field name="target_url" widget="url" text="Redirect there"/>
+                                    </div>
+                                    <div>
+                                        Assigned to:
+                                        <b>
+                                            <field name="assignee_id"/>
+                                        </b>
+                                    </div>
+                                    <div>
+                                        <field name="create_date"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+    </data>
+</odoo>

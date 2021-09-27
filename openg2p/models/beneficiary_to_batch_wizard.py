@@ -75,7 +75,7 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                     {
                         "name": self.batch_name
                         + "-"
-                        + str(datetime.now().strftime("d-%m-%Y-%H:%M")),
+                        + str(datetime.now().strftime("%d-%m-%Y-%H:%M")),
                         "program_id": program,
                         "state": "draft",
                         "date_start": datetime.now(),

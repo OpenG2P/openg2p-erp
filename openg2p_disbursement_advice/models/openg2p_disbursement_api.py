@@ -18,7 +18,7 @@ class Openg2pDisbursementApi(Controller):
                 "batches": res,
             }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     @route("/batch/<int:id>", type="json", auth="user", method=["GET"])
     def get_batch_by_id(self, id):
@@ -41,7 +41,7 @@ class Openg2pDisbursementApi(Controller):
                     "message": f"Error! Batch with id {id} not found!",
                 }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     @route("/batches", type="json", auth="user", method=["POST"])
     def create_batch(self, **kwargs):
@@ -49,7 +49,7 @@ class Openg2pDisbursementApi(Controller):
             batch = request.env["openg2p.disbursement.batch.transaction"].create(kwargs)
             return {"status": 200, "message": "Success", "id": batch.id or None}
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     @route("/map-beneficiaries", type="json", auth="user", method=["POST"])
     def map_beneficiaries(self, **kwargs):
@@ -65,7 +65,7 @@ class Openg2pDisbursementApi(Controller):
                 "id": ids or None,
             }
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     @route("/transaction/<int:id>", type="json", auth="user", method=["POST"])
     def create_transaction(self, id):
@@ -82,7 +82,7 @@ class Openg2pDisbursementApi(Controller):
             }
 
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     @route("/transaction/<int:id>", type="json", auth="user", method=["GET"])
     def get_transaction(self, id):
@@ -102,4 +102,4 @@ class Openg2pDisbursementApi(Controller):
             }
 
         except BaseException as e:
-            return {"status": 200, "error": str(e)}
+            return {"status": 400, "error": str(e)}
