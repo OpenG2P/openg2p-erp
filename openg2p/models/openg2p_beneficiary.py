@@ -645,7 +645,6 @@ class Beneficiary(models.Model):
         res = []
         bs = self.env["openg2p.beneficiary"].search([])
         for b in bs:
-            print(b.age, operator, val)
             if operator == "=":
                 if b.age == val:
                     res.append(b)
