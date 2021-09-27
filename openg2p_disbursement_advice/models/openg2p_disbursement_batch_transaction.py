@@ -102,11 +102,19 @@ class BatchTransaction(models.Model):
         default=0.0,
     )
 
-    total = fields.Char(string="Total", readonly=True)
+    total_transactions = fields.Char(string="Total Transactions", readonly=True)
 
-    successful = fields.Char(string="Successful", readonly=True)
+    ongoing = fields.Char(string="Ongoing", readonly=True)
 
     failed = fields.Char(string="Failed", readonly=True)
+
+    total_amount = fields.Char(string="Total Amount Transacted", readonly=True)
+
+    completed_amount = fields.Char(string="Completed Amount", readonly=True)
+
+    ongoing_amount = fields.Char(string="Ongoing Amount", readonly=True)
+
+    failed_amount = fields.Char(string="Failed Amount", readonly=True)
 
     def api_json(self):
         beneficiaries = self.env["openg2p.disbursement.main"].search(
@@ -125,8 +133,8 @@ class BatchTransaction(models.Model):
             "date_end": self.date_end or "",
             "transaction_status": self.transaction_status or None,
             "transactions": {
-                "total": self.total or None,
-                "successful": self.successful or None,
+                "total_transactions": self.total or None,
+                "ongoing": self.successful or None,
                 "failed": self.failed or None,
             },
             "beneficiary_ids": beneficiary_ids,
@@ -262,12 +270,8 @@ class BatchTransaction(models.Model):
         params = (("batchId", str(self.transaction_batch_id)),)
 
         headers = {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:90.0) Gecko/20100101 Firefox/90.0",
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Language": "en-US,en;q=0.5",
             "Platform-TenantId": "ibank-usa",
             "Authorization": "Bearer " + str(self.token_response),
-            "Connection": "keep-alive",
         }
 
         url = "http://ops-bk.ibank.financial/api/v1/batch"
@@ -279,9 +283,13 @@ class BatchTransaction(models.Model):
             if response.status_code == 200:
                 self.transaction_status = "completed"
 
-                self.total = response_data["totalTransactions"]
-                self.successful = response_data["ongoing"]
+                self.total_transactions = response_data["totalTransactions"]
+                self.ongoing = response_data["ongoing"]
                 self.failed = response_data["failed"]
+                self.total_amount = response_data["total_amount"]
+                self.completed_amount = response_data["completed_amount"]
+                self.ongoing_amount = response_data["ongoing_amount"]
+                self.failed_amount = response_data["failed_amount"]
 
         except BaseException as e:
             print(e)
