@@ -4,7 +4,8 @@
     <menuitem id="menu_openg2p_task_home"
               name="OpenG2P Task"
               action="action_openg2p_task"
-              sequence="1"/>
+              sequence="1"
+              web_icon="openg2p_task,static/description/icon.png" />
 
 
     <menuitem id="menu_openg2p_task_history"
@@ -36,5 +37,30 @@
               action="action_openg2p_task_subtype"
               parent="menu_openg2p_task_others"
               sequence="6"/>
+
+    <menuitem id="menu_openg2p_custom_tasks"
+              name="Custom tasks"
+              parent="menu_openg2p_task_home"
+              sequence="11"/>
+
+    <menuitem id="menu_openg2p_task_regdchangestage"
+              name="Change stage of Registrations"
+              parent="menu_openg2p_custom_tasks"
+              action="action_openg2p_task_regdchangestage"
+              sequence="11"/>
+
+    <menuitem id="menu_openg2p_task_regd2bene"
+              name="Convert Registrations to Beneficiaries"
+              parent="menu_openg2p_custom_tasks"
+              action="action_openg2p_task_regd2bene"
+              sequence="11"/>
+
+    <menuitem id="menu_openg2p_task_enrollbene"
+              name="Enroll Beneficiaries into program"
+              parent="menu_openg2p_custom_tasks"
+              action="action_openg2p_task_enrollbene"
+              sequence="11"/>
+
+
 
 </odoo>

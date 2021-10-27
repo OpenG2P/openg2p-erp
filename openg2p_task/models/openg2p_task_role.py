@@ -13,3 +13,7 @@ class Openg2pTaskRole(models.Model):
         required=True,
         string="Assignee",
     )
+
+    def name_get(self):
+        for rec in self:
+            yield rec.id, rec.name
