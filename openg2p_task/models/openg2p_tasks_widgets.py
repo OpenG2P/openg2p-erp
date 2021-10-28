@@ -239,8 +239,6 @@ class ChangeStateRegistrationWidget(models.TransientModel):
         for r in self._records():
             asyncio.run(enroll_bene(r))
 
-        print(temp)
-
     def btn_regd_list(self):
         view_id = self.env.ref("openg2p_registration.crm_case_tree_view_beneficiary").id
         context = self._context.copy()
