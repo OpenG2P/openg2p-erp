@@ -18,7 +18,7 @@
             <field name="arch" type="xml">
                 <form string="Batch Form">
                     <header>
-                        <button name="action_confirm" type="object"  states="draft" string="Confirm" class="oe_highlight"/>
+                        <button name="action_confirm" type="object"  states="draft" string="Approve" class="oe_highlight"/>
                         <button name="action_pending" type="object"  states="confirm" string="Pending" class="oe_highlight"/>
                         <button name="action_transaction" type="object"  states="pending" string="Complete" class="oe_highlight"/>
                         <button name="create_bulk_transfer" type="object"  states="confirm" string="Make Transfer" class="oe_highlight"/>
@@ -45,15 +45,35 @@
                                                                                       class="oe_inline"/>
                             </div>
                         </group>
+
                         <group>
+                            <group>
                             <field name="transaction_status" attrs="{'invisible':[('state','!=','pending'),('state','!=','paymentstatus')]}"/>
-                            <field name="total" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
-                            <field name="successful" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                            <field name="total_transactions" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                            <field name="ongoing" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
                             <field name="failed" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                            </group>
+                            <group>
+                                <field name="total_amount" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                                <field name="completed_amount" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                                <field name="ongoing_amount" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                                <field name="failed_amount" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                            </group>
                         </group>
                         <group>
                             <field name="transaction_batch_id" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
                             <field name="request_id" attrs="{'invisible':[('state','!=','paymentstatus')]}"/>
+                        </group>
+                        <group string="Beneficiaries">
+                            <field name="all_beneficiaries" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="acc_holder_name"/>
+                                    <field name="amount"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="total_disbursement_amount" string="Total Disbursement Amount"/>    
                         </group>
                     </sheet>
                     <div class="oe_chatter">
@@ -79,7 +99,7 @@
             <field name="arch" type="xml">
                 <form>
                     <group>
-                        <field name="file_url" widget="url" readonly="1" text="Click to see CSV File" attrs="{'invisible': [('file_url', '=', False)]}"/>
+                        <field name="result_file" widget="text" readonly="1" text="Click to download CSV File" attrs="{'invisible': [('result_file', '=', False)]}"/>
                         <button string="Get CSV URL" name="bulk_transfer_detailed_status" type="object" class="btn-primary"/>
                     </group>
 

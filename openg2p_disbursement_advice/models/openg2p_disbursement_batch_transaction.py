@@ -2,20 +2,21 @@
 # Copyright 2020 OpenG2P (https://openg2p.org)
 # @author: Salton Massally <saltonmassally@gmail.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-import os
 import csv
 import hashlib
 import logging
+import os
 import uuid
 from datetime import date, datetime
 from io import StringIO
-from dotenv import load_dotenv  # for python-dotenv method
+
 import boto3
 import pandas as pd
 import requests
 from dateutil.relativedelta import relativedelta
+from dotenv import load_dotenv  # for python-dotenv method
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 BATCH_SIZE = 500
@@ -72,7 +73,7 @@ class BatchTransaction(models.Model):
     company_id = fields.Many2one(
         "res.company",
         "Company",
-        required=True,
+        required=False,
         readonly=True,
         ondelete="restrict",
         default=lambda self: self.env.user.company_id,
@@ -85,11 +86,68 @@ class BatchTransaction(models.Model):
         readonly=True,
     )
 
-    total = fields.Char(string="Total", readonly=True)
+    token_response = fields.Text(
+        string="Token for transaction",
+        required=False,
+        default=None,
+    )
+    all_beneficiaries = fields.One2many(
+        "openg2p.disbursement.main",
+        string="Beneficiaries",
+        compute="_all_beneficiaries",
+    )
+    total_disbursement_amount = fields.Float(
+        string="Total Disbursement Amount",
+        compute="_all_beneficiaries",
+        default=0.0,
+    )
 
-    successful = fields.Char(string="Successful", readonly=True)
+    total_transactions = fields.Char(string="Total Transactions", readonly=True)
+
+    ongoing = fields.Char(string="Ongoing", readonly=True)
 
     failed = fields.Char(string="Failed", readonly=True)
+
+    total_amount = fields.Char(string="Total Amount Transacted", readonly=True)
+
+    completed_amount = fields.Char(string="Completed Amount", readonly=True)
+
+    ongoing_amount = fields.Char(string="Ongoing Amount", readonly=True)
+
+    failed_amount = fields.Char(string="Failed Amount", readonly=True)
+
+    def api_json(self):
+        beneficiaries = self.env["openg2p.disbursement.main"].search(
+            [("batch_id", "=", self.id)]
+        )
+        beneficiary_ids = [b.id for b in beneficiaries]
+        return {
+            "id": self.id,
+            "name": self.name or "",
+            "program": {
+                "id": self.program_id.id,
+                "name": self.program_id.name,
+            },
+            "state": self.state or "",
+            "date_start": self.date_start or "",
+            "date_end": self.date_end or "",
+            "transaction_status": self.transaction_status or None,
+            "transactions": {
+                "total_transactions": self.total or None,
+                "ongoing": self.successful or None,
+                "failed": self.failed or None,
+            },
+            "beneficiary_ids": beneficiary_ids,
+        }
+
+    @api.multi
+    def _all_beneficiaries(self):
+        self.all_beneficiaries = self.env["openg2p.disbursement.main"].search(
+            [("batch_id", "=", self.id)]
+        )
+
+        for b in self.all_beneficiaries:
+            self.total_disbursement_amount += b.amount
 
     def action_confirm(self):
         for rec in self:
@@ -122,7 +180,7 @@ class BatchTransaction(models.Model):
         csvname = (
             self.request_id
             + "-"
-            + str(datetime.now().strftime(r"%Y%m%d%H%M%S"))
+            + str(datetime.now().strftime(r"%d-%m-%Y-%H:%M"))
             + ".csv"
         )
 
@@ -130,23 +188,27 @@ class BatchTransaction(models.Model):
 
             with open(csvname, "a") as csvfile:
                 csvwriter = csv.writer(csvfile)
+                entry = [
+                    "id",
+                    "request_id",
+                    "payment_mode",
+                    "amount",
+                    "currency",
+                    "note",
+                ]
+                csvwriter.writerow(entry)
                 for rec in beneficiary_transactions:
                     entry = [
                         rec.id,
                         rec.beneficiary_request_id,
-                        rec.payment_mode,
-                        rec.name,
-                        rec.acc_holder_name,
+                        "gsma",  # rec.payment_mode or "gsma",
                         rec.amount,
-                        rec.currency_id.name,
+                        "LE",  # rec.currency_id.name,
+                        rec.note,
                     ]
 
                     # id,request_id,payment_mode,acc_number,acc_holder_name,amount,currency,note
-                    beneficiary_transaction_records = []
-                    beneficiary_transaction_records.append(entry)
-                    csvwriter.writerows(
-                        map(lambda x: [x], beneficiary_transaction_records)
-                    )
+                    csvwriter.writerow(entry)
 
             offset += len(beneficiary_transactions)
 
@@ -156,51 +218,82 @@ class BatchTransaction(models.Model):
                 [("batch_id", "=", self.id)], limit=limit, offset=offset
             )
 
+        url_token = "http://identity.ibank.financial/oauth/token"
+
+        headers_token = {
+            "Platform-TenantId": "ibank-usa",
+            "Authorization": "Basic Y2xpZW50Og==",
+            "Content-Type": "text/plain",
+        }
+        params_token = {
+            "username": os.environ.get("username"),
+            "password": os.environ.get("password"),
+            "grant_type": os.environ.get("grant_type"),
+        }
+
+        try:
+            response_token = requests.request(
+                "POST", url_token, headers=headers_token, params=params_token
+            )
+
+            response_token_data = response_token.json()
+            self.token_response = response_token_data["access_token"]
+
+        except BaseException as e:
+            print(e)
+
         # Uploading to AWS bucket
         uploaded = self.upload_to_aws(csvname, "paymenthub-ee-dev")
 
-        headers = {
-            # "Content-Type": "multipart/form-data",
-        }
+        headers = {"Platform-TenantId": "ibank-usa"}
+
         files = {
-            "data": (csvname, open(csvname, "rb")),
+            "data": (csvname, open(csvname, "rb"), "text/csv"),
+            "requestId": (None, str(self.request_id)),
             "note": (None, "Bulk transfers"),
-            "checksum": (None, str(self.generate_hash(csvname))),
-            "request_id": (None, str(self.request_id)),
+            # "checksum": (None, str(self.generate_hash(csvname))),
         }
 
-        url_mock = "http://15.207.23.72:5000/channel/bulk/transfer"
-        url_real = "http://892c546a-us-east.lb.appdomain.cloud/channel/bulk/transfer/"
+        url = "http://channel.ibank.financial/channel/bulk/transfer"
 
         try:
-            response_mock = requests.post(url_mock, headers=headers, files=files)
-            response_mock_data = response_mock.json()
-            self.transaction_status = response_mock_data["status"]
-            self.transaction_batch_id = response_mock_data["batch_id"]
+            response = requests.post(url, headers=headers, files=files)
+            response_data = response.json()
 
-            response_real = requests.post(url_real, headers=headers, files=files)
+            self.transaction_status = response_data["status"]
+            self.transaction_batch_id = response_data["batch_id"]
+
         except BaseException as e:
-            return e
+            print(e)
 
+    # detailed
     def bulk_transfer_status(self):
-        params = (
-            ("batch_id", str(self.transaction_batch_id)),
-            ("detailed", "true"),
-        )
+        params = (("batchId", str(self.transaction_batch_id)),)
 
-        url_mock = "http://15.207.23.72:5000/channel/bulk/transfer"
-        url_real = "http://892c546a-us-east.lb.appdomain.cloud/channel/bulk/transfer/"
+        headers = {
+            "Platform-TenantId": "ibank-usa",
+            "Authorization": "Bearer " + str(self.token_response),
+        }
+
+        url = "http://ops-bk.ibank.financial/api/v1/batch"
 
         try:
-            response_mock = requests.get(url_mock, params=params)
-            response_mock_data = response_mock.json()
-            self.transaction_status = response_mock_data["status"]
-            self.total = response_mock_data["total"]
-            self.successful = response_mock_data["successful"]
-            self.failed = response_mock_data["failed"]
-            # response_real = requests.get(url_real, params=params)
+            response = requests.get(url, params=params, headers=headers)
+            response_data = response.json()
+
+            if response.status_code == 200:
+                self.transaction_status = "completed"
+
+                self.total_transactions = response_data["totalTransactions"]
+                self.ongoing = response_data["ongoing"]
+                self.failed = response_data["failed"]
+                self.total_amount = response_data["total_amount"]
+                self.completed_amount = response_data["completed_amount"]
+                self.ongoing_amount = response_data["ongoing_amount"]
+                self.failed_amount = response_data["failed_amount"]
+
         except BaseException as e:
-            return e
+            print(e)
 
     def upload_to_aws(self, local_file, bucket):
 
@@ -209,12 +302,8 @@ class BatchTransaction(models.Model):
 
             s3 = boto3.client(
                 "s3",
-                aws_access_key_id=os.environ.get(
-                    "access_key"
-                ),  # secret_keys.ACCESS_KEY,
-                aws_secret_access_key=os.environ.get(
-                    "secret_access_key"
-                ),  # secret_keys.SECRET_KEY,
+                aws_access_key_id=os.environ.get("access_key"),
+                aws_secret_access_key=os.environ.get("secret_access_key"),
             )
             csv_buf = StringIO()
 
@@ -224,14 +313,7 @@ class BatchTransaction(models.Model):
             s3.put_object(Bucket=bucket, Body=csv_buf.getvalue(), Key=local_file)
 
         except FileNotFoundError:
-            return False
-
-    def all_transactions_status(self):
-        try:
-            response = requests.get("https://15.207.23.72:5000/channel/transfer")
-            return response
-        except BaseException as e:
-            return e
+            print("File not found")
 
     def generate_hash(self, csvname):
         sha256 = hashlib.sha256()

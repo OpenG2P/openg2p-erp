@@ -30,13 +30,13 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                 single = self.env["openg2p.disbursement.single.transaction"].create(
                     {
                         "bank_account_id": bank_id[0].id,
-                        "name": str(b.id),
+                        "name": str(b.name),
                         "program_id": program_id,
                         "state": "draft",
                         "date_start": datetime.now(),
                         "date_end": datetime.now(),
                         "beneficiary_id": b.id,
-                        "amount": 100.0,
+                        "amount": b.grand_total,
                         "currency_id": 1,
                         "payment_mode": bank_id[0].payment_mode,
                     }
@@ -46,18 +46,21 @@ class BeneficiaryTransactionWizard(models.TransientModel):
 
     @api.multi
     def create_batch(self):
-        beneficiaries_selected = self.env["openg2p.beneficiary"].browse(
-            self.env.context.get("active_ids")
-        )
+        self.task_create_batch(self.env.context.get("active_ids"))
+        return {"type": "ir.actions.act_window_close"}
+
+    def task_create_batch(self, bene_ids):
+        batch_ids = []
+        beneficiaries_selected = self.env["openg2p.beneficiary"].browse(bene_ids)
         program_wise = {}
         for b in beneficiaries_selected:
+            if not b.bank_account_number:
+                continue
             for program_id in b.program_ids.ids:
                 if program_id in program_wise.keys():
                     program_wise[program_id].append(b)
                 else:
                     program_wise[program_id] = [b]
-
-        print(program_wise)
 
         for program, beneficiaries in program_wise.items():
             request_id = uuid.uuid4().hex
@@ -75,7 +78,7 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                     {
                         "name": self.batch_name
                         + "-"
-                        + str(datetime.now().strftime("%d%m%y-%I:%M")),
+                        + str(datetime.now().strftime("%d-%m-%Y-%H:%M")),
                         "program_id": program,
                         "state": "draft",
                         "date_start": datetime.now(),
@@ -83,17 +86,19 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                         "request_id": request_id,
                     }
                 )
+                batch_ids.append(batch.id)
 
                 for b in beneficiaries_list:
                     bank_id = self._get_bank_id(b)
+
                     m = self.env["openg2p.disbursement.main"].create(
                         {
                             "bank_account_id": bank_id[0].id,
                             "batch_id": batch.id,
                             "state": "draft",
-                            "name": str(b.id),
+                            "name": str(b.name),
                             "beneficiary_id": b.id,
-                            "amount": 100.0,
+                            "amount": b.grand_total,
                             "program_id": b.program_ids.ids[0],
                             "date_start": datetime.now(),
                             "date_end": datetime.now(),
@@ -103,4 +108,3 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                     )
                     m.generate_uuid()
                 count += 1000
-        return {"type": "ir.actions.act_window_close"}

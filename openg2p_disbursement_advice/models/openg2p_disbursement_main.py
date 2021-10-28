@@ -30,7 +30,7 @@ class DisbursementMain(models.Model):
     program_id = fields.Many2one(
         "openg2p.program",
         string="Program",
-        # readonly=True,
+        readonly=True,
         copy=False,
         store=True,
         related="batch_id.program_id",
@@ -79,6 +79,12 @@ class DisbursementMain(models.Model):
         string="Request ID", compute="generate_uuid", store=True
     )
 
+    note = fields.Text(
+        string="Note for Benficiary",
+        required=False,
+        default="",
+    )
+
     def generate_uuid(self):
         for rec in self:
             if not rec.beneficiary_request_id:
@@ -101,3 +107,14 @@ class DisbursementMain(models.Model):
                 }
             }
         self.generate_uuid()
+
+    def api_json(self):
+        return {
+            "name": self.acc_holder_name,
+            "bank account no.": self.name,
+            "amount": self.amount,
+            "paymentmode": self.payment_mode,
+            "currency": self.currency_id.name,
+            "startdate": self.date_start,
+            "enddate": self.date_end,
+        }

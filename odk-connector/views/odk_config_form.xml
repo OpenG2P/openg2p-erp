@@ -7,15 +7,24 @@
         <field name="model">odk.config</field>
         <field name="arch" type="xml">
             <form string="Configuration">
-                <group>
-                    <field name="form_name"/>
-                    <field name="odk_endpoint"/>
-                    <field name="odk_project_id"/>
-                    <field name="odk_form_id"/>
-                    <field name="odk_email"/>
-                    <field name="odk_password"/>
-                    <field name="is_active"/>
-                </group>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="form_name"/>
+                            <field name="odk_endpoint"/>
+                            <field name="odk_project_id"/>
+                            <field name="odk_form_id"/>
+                            <field name="odk_email"/>
+                            <field name="odk_password"/>
+                            <field name="is_active"/>
+                        </group>
+                        <group>
+                            <field name="program_ids"/>
+                            <field name="program_count"/>
+                            <field name="program_enroll_date"/>
+                        </group>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
@@ -33,6 +42,7 @@
                 <field name="odk_email" readonly="1"/>
                 <field name="odk_submissions_count"/>
                 <field name="odk_last_sync_date" readonly="1"/>
+                <field name="program_count"/>
                 <field name="is_active"/>
                 <button name="odk_button_update_form_submissions"
                     type="object"

@@ -1,0 +1,7 @@
+id,name,task_type_id:id,assignee_role_id
+task_role_openg2p_officer,OpenG2P Officer,task_type_general,1
+task_role_odk_officer,ODK Officer,task_type_odk,1
+task_role_odk_pull_officer,ODK Pull Officer,task_type_odk,1
+task_role_regd_officer,Registration Officer,task_type_regd,1
+task_role_beneficiary_officer,Beneficiary Officer,task_type_beneficiary,1
+task_role_disbursement_officer,Disbursement Officer,task_type_disbursement,1

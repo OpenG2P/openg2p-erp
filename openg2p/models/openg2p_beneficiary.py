@@ -7,7 +7,8 @@ import copy
 import logging
 import random
 import string
-import requests
+import uuid
+
 from dateutil.relativedelta import relativedelta
 from odoo.addons.component.core import WorkContext
 from odoo.addons.openg2p.services.matching_service import MATCH_MODE_NORMAL
@@ -144,7 +145,7 @@ class Beneficiary(models.Model):
     gender = fields.Selection(
         [("male", "Male"), ("female", "Female"), ("other", "Other")],
         track_visibility="onchange",
-        required=True,
+        required=False,
     )
     birth_city = fields.Char(track_visibility="onchange")
     birth_state_id = fields.Many2one(
@@ -252,7 +253,7 @@ class Beneficiary(models.Model):
         index=True,
         track_visibility="onchange",
         ondelete="restrict",
-        required=True,
+        required=False,
     )
     category_id = fields.Many2many(
         "openg2p.beneficiary.category",
@@ -340,12 +341,74 @@ class Beneficiary(models.Model):
     )
 
     grand_total = fields.Integer(
-        string="Grand Total",
+        string="Grand Total (LE)",
         stored=False,
         required=False,
         compute="_compute_org_fields",
         search="_search_grand_tot",
     )
+
+    odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
+
+    def api_json(self):
+        return {
+            "id": self.id,
+            "firstname": self.firstname,
+            "lastname": self.lastname,
+            "email": self.email or "",
+            "phone": self.phone or "",
+            "mobile": self.mobile or "",
+            "active": self.active,
+            "activity_ids": [
+                {
+                    "id": act.id,
+                    "create_date": act.create_date,
+                    "date_deadline": act.date_deadline,
+                    "display_name": act.diplay_name,
+                    "note": act.note,
+                    "state": act.state,
+                }
+                for act in self.activity_ids
+            ],
+            "activity_state": self.activity_state or "",
+            "activity_summary": self.activity_summary or "",
+            "bank_account_id": {
+                "id": self.bank_account_id.id or "",
+                "acc_holder_name": self.bank_account_id.acc_holder_name or "",
+                "acc_number": self.bank_account_id.acc_number or "",
+                "acc_type": self.bank_account_id.acc_type or "",
+                "bank_id": self.bank_account_id.bank_id.id or "",
+                "bank_name": self.bank_account_id.bank_name or "",
+                "company_id": self.bank_account_id.company_id.id or "",
+                "display_name": self.bank_account_id.display_name or "",
+                "name": self.bank_account_id.name or "",
+                "partner_id": self.bank_account_id.partner_id.id or "",
+                "sequence": self.bank_account_id.sequence or "",
+            },
+            "address": {
+                "city": self.city or "",
+                "country_id": {
+                    "id": self.country_id.id or "",
+                    "name": self.country_id.name or "",
+                },
+                "state_id": {
+                    "id": self.state_id.id or "",
+                    "name": self.state_id.name or "",
+                },
+                "street": self.street or "",
+                "street2": self.street2 or "",
+                "zip": self.zip or "",
+            },
+            "kyc": {
+                "passport_id": self.passport_id or "",
+                "national_id": self.national_id or "",
+                "ssn": self.ssn or "",
+            },
+            "identities": {i.category_id.name: i.name for i in self.identities},
+            "org_custom_field": {
+                i.field_name: i.field_value for i in self.org_custom_field
+            },
+        }
 
     # example for filtering on org custom fields
     @api.depends("org_custom_field")
@@ -403,7 +466,7 @@ class Beneficiary(models.Model):
                 [
                     "&",
                     ("beneficiary_id", "=", rec.id),
-                    ("field_name", "=", "grand_total"),
+                    ("field_name", "=", "grand_total_le"),
                 ]
             )
             try:
@@ -642,7 +705,8 @@ class Beneficiary(models.Model):
         if not vals.get("phone") and vals.get("mobile"):
             vals["phone"] = vals.get("mobile")
         self._partner_create(vals)
-        return super(Beneficiary, self).create(vals)
+        res = super(Beneficiary, self).create(vals)
+        return res
 
     @api.multi
     def write(self, vals):
