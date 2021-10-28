@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_openg2p_task_user" model="res.groups">
+        <field name="name">Task User</field>
+    </record>
+</odoo>
