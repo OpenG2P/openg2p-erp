@@ -108,7 +108,9 @@ class Openg2pProcess(models.Model):
             for idx, stage in enumerate(self.process_type.stages):
                 if stage.task_subtype_id.id == latest_event_id:
                     self.curr_process_stage_index = idx + 1
-                    self.curr_process_stage = self.process_type.stages[process_stage].id
+                    self.curr_process_stage = self.process_type.stages[
+                        self.curr_process_stage_index
+                    ].id
         else:
             ext_ids = list(
                 map(
