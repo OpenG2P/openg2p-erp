@@ -2,14 +2,14 @@
 <odoo>
 
     <menuitem id="menu_openg2p_task_home"
-              name="OpenG2P Task"
+              name="Task"
               action="action_openg2p_task"
               sequence="1"
               web_icon="openg2p_task,static/description/icon.png" />
 
 
     <menuitem id="menu_openg2p_task_history"
-              name="OpenG2P Task History"
+              name="Task History"
               action="action_openg2p_task_history"
               parent="menu_openg2p_task_home"
               sequence="2"/>
@@ -21,19 +21,19 @@
               sequence="3"/>
 
     <menuitem id="menu_openg2p_task_type"
-              name="OpenG2P Task Type"
+              name="Task Type"
               action="action_openg2p_task_type"
               parent="menu_openg2p_task_others"
               sequence="4"/>
 
     <menuitem id="menu_openg2p_task_role"
-              name="OpenG2P Task Role"
+              name="Task Role"
               action="action_openg2p_task_role"
               parent="menu_openg2p_task_others"
               sequence="5"/>
 
     <menuitem id="menu_openg2p_task_subtype"
-              name="OpenG2P Task Subtype"
+              name="Task Subtype"
               action="action_openg2p_task_subtype"
               parent="menu_openg2p_task_others"
               sequence="6"/>

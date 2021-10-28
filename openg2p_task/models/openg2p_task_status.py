@@ -3,7 +3,7 @@ from odoo import models, fields
 
 class Openg2pTaskStatus(models.Model):
     _name = "openg2p.task.status"
-    _description = "Task status for OpenG2P Tasks"
+    _description = "Task status for Tasks"
 
     name = fields.Char(string="Name")
 

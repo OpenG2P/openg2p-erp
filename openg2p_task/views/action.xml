@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="action_openg2p_task" model="ir.actions.act_window">
-        <field name="name">OpenG2P Tasks</field>
+        <field name="name">Tasks</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">openg2p.task</field>
         <field name="view_type">form</field>
@@ -15,7 +15,7 @@
     </record>
 
     <record id="action_openg2p_task_history" model="ir.actions.act_window">
-        <field name="name">OpenG2P Task History</field>
+        <field name="name">Task History</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">openg2p.task.history</field>
         <field name="view_type">form</field>
@@ -29,7 +29,7 @@
 
 
     <record id="action_openg2p_task_role" model="ir.actions.act_window">
-        <field name="name">OpenG2P Task Role</field>
+        <field name="name">Task Role</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">openg2p.task.role</field>
         <field name="view_type">form</field>
@@ -42,7 +42,7 @@
     </record>
 
     <record id="action_openg2p_task_type" model="ir.actions.act_window">
-        <field name="name">OpenG2P Task Type</field>
+        <field name="name">Task Type</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">openg2p.task.type</field>
         <field name="view_type">form</field>
@@ -55,7 +55,7 @@
     </record>
 
     <record id="action_openg2p_task_subtype" model="ir.actions.act_window">
-        <field name="name">OpenG2P Task Subtype</field>
+        <field name="name">Task Subtype</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">openg2p.task.subtype</field>
         <field name="view_type">form</field>

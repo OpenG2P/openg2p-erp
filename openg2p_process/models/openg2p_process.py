@@ -126,6 +126,7 @@ class Openg2pProcess(models.Model):
                     self.curr_process_stage = self.process_type.stages[idx + 1].id
                     break
 
+    # handles intermediate automated tasks
     def handle_intermediate_task(self):
         context = json.loads(self.context)
         task_code = self.get_ext_id_from_id(
@@ -165,6 +166,7 @@ class Openg2pProcess(models.Model):
         )
         self._update_task_list(next_task.id)
 
+    # receiver of event notifications
     def handle_tasks(self, events, process=None):
         print("handle_tasks", events, process)
         """

@@ -2,19 +2,19 @@
 <odoo>
 
     <menuitem id="menu_openg2p_process_options"
-              name="OpenG2P Process"
+              name="Process"
               sequence="1"
               web_icon="openg2p_process,static/description/icon.png" />
 
 
     <menuitem id="menu_openg2p_process"
-              name="OpenG2P Processes"
+              name="Processes"
               action="action_openg2p_process"
               parent="menu_openg2p_process_options"
               sequence="9"/>
 
     <menuitem id="menu_openg2p_process_type"
-              name="OpenG2P Process Type"
+              name="Process Types"
               action="action_openg2p_process_type"
               parent="menu_openg2p_process_options"
               sequence="10"/>
