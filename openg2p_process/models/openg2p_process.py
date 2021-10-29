@@ -1,6 +1,7 @@
 import json
 
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 
 class Openg2pProcess(models.Model):
@@ -60,7 +61,6 @@ class Openg2pProcess(models.Model):
     def _compute_fields(self):
         for rec in self:
             rec.process_stage_count = len(rec.process_type.stages.ids)
-            print(rec.process_type.stages.ids, rec.curr_process_stage.id)
             if rec.curr_process_stage.id:
                 try:
                     rec.curr_process_stage_index = (
@@ -87,7 +87,6 @@ class Openg2pProcess(models.Model):
         return None
 
     def _update_context(self, event_code, obj_ids):
-        print("_update_context", event_code, obj_ids)
         if obj_ids is None:
             return
         if isinstance(obj_ids, (list, tuple)):
@@ -126,7 +125,6 @@ class Openg2pProcess(models.Model):
             )
             context = json.loads(self.context)
             for idx, ext_id in enumerate(ext_ids):
-                print("update_curr_stage-else", idx, ext_id)
                 if ext_id not in context:
                     self.curr_process_stage_index = idx + 1
                     self.curr_process_stage = self.process_type.stages[idx].id
@@ -138,17 +136,14 @@ class Openg2pProcess(models.Model):
         task_code = self.get_ext_id_from_id(
             "openg2p.task.subtype", self.curr_process_stage.task_subtype_id.id
         )
-        print("handle_intermediate_task", task_code)
         success = True
         if task_code == "task_subtype_regd_make_beneficiary":
             regd_ids = json.loads(context["task_subtype_regd_create"])
             bene_ids = []
             for regd_id in regd_ids:
-                print("handle_intermediate_task", regd_id)
                 regd = self.env["openg2p.registration"].search([("id", "=", regd_id)])
                 if regd and len(regd) > 0:
                     bene_ids.append(regd.task_convert_registration_to_beneficiary())
-            print("handle_intermediate_task", task_code, bene_ids)
             self._update_context(task_code, True)
             self._update_context("task_subtype_beneficiary_create", bene_ids)
         elif task_code == "task_subtype_beneficiary_enroll_programs":
@@ -169,19 +164,22 @@ class Openg2pProcess(models.Model):
             self._update_context("task_subtype_beneficiary_enroll_programs", prog_ids)
         elif task_code == "task_subtype_beneficiary_create_disbursement_batch":
             context = json.loads(self.context)
-            bene_ids = json.loads(context["task_subtype_beneficiary_create"])
-            batch_ids = self.env[
-                "openg2p.beneficiary.transaction.wizard"
-            ].task_create_batch(bene_ids)
-            self._update_context(
-                "task_subtype_beneficiary_create_disbursement_batch", batch_ids
-            )
+            odk_config_id = json.loads(context["task_subtype_odk_pull"])[0]
+            odk_config = self.env["odk.config"].search([("id", "=", odk_config_id)])
+            if len(odk_config) > 0:
+                odk_config = odk_config[0]
+                bene_ids = json.loads(context["task_subtype_beneficiary_create"])
+                batch_ids = self.env[
+                    "openg2p.beneficiary.transaction.wizard"
+                ].task_create_batch(odk_config.form_name, bene_ids)
+                self._update_context(
+                    "task_subtype_beneficiary_create_disbursement_batch", batch_ids
+                )
         self.update_curr_stage()
         return success
 
     # receiver of event notifications
     def handle_tasks(self, events, process=None):
-        print("handle_tasks", events, process)
         """
         :param events: list of tuples of event_code and obj_ids,
                         ex: [('event1', [1,2,3]),('event2', 45), ('event3', (1,5))]
@@ -211,7 +209,6 @@ class Openg2pProcess(models.Model):
                 assert isinstance(process, self.__class__)
                 for event in events:
                     event_code, obj_ids = event
-                    print("handle_tasks", event_code, obj_ids)
                     process._update_context(event_code, obj_ids)
                 process.update_curr_stage(events[-1][0])
                 process.handle_intermediate_task()
@@ -242,7 +239,13 @@ class Openg2pProcess(models.Model):
                 else:
                     process.process_completed = True
             except BaseException as e:
-                print(e)
+                if process and process.context:
+                    print(e)
+                    context = json.loads(process.context)
+                    context["error"] = str(e)
+                    process.context = json.dumps(context, indent=2)
+                else:
+                    raise ValidationError(e)
 
     @api.model
     def create(self, vals_list):
