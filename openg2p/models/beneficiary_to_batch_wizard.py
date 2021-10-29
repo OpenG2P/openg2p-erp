@@ -108,3 +108,4 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                     )
                     m.generate_uuid()
                 count += 1000
+        return batch_ids
