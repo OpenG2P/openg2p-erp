@@ -62,8 +62,8 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                     "One or more beneficiaries do not have bank account details"
                 )
 
-            if b.batch_status:
-                raise ValidationError("Beneficiary already under a batch")
+            # if b.batch_status:
+            #     raise ValidationError("Beneficiary already under a batch")
 
             # Storing according to batch ID's
             # batch_wise={
@@ -128,10 +128,7 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                     )
                     m.generate_uuid()
 
-                # Emitting events for task
-                self.env["openg2p.workflow"].handle_tasks("batch_create", batch)
-
         # Changing batch status of records true
-        for beneficiary in beneficiaries_selected:
-            beneficiary.batch_status = True
+        # for beneficiary in beneficiaries_selected:
+        #     beneficiary.batch_status = True
         return batch_ids
