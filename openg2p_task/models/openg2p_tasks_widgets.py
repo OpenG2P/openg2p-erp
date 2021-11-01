@@ -253,3 +253,15 @@ class ChangeStateRegistrationWidget(models.TransientModel):
             "target": "current",
             "context": context,
         }
+
+
+class MultiBatchTransactionUpdateWidget(models.TransientModel):
+    _name = "openg2p.task.multibatchtxnupdate.widget"
+
+    batch_ids = fields.Many2many(
+        comodel_name="openg2p.disbursement.batch.transaction",
+        relation="tasks_multibatch",
+    )
+
+    def approve_batches(self):
+        print(self.batch_ids)
