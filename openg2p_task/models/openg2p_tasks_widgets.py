@@ -227,14 +227,10 @@ class ChangeStateRegistrationWidget(models.TransientModel):
 
         async def enroll_bene(regd):
             try:
-                # r = random()
-                # if r < 0.4:
-                #     await sleep(2)
                 regd.stage_id = self.target_stage_id
                 temp.append(regd.id)
             except BaseException as e:
                 print(e)
-                # raise ValidationError(e)
 
         for r in self._records():
             asyncio.run(enroll_bene(r))
