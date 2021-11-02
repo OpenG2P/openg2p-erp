@@ -19,8 +19,7 @@
                             <field name="is_active"/>
                         </group>
                         <group>
-                            <field name="program_ids"/>
-                            <field name="program_count"/>
+                            <field name="program_id"/>
                             <field name="program_enroll_date"/>
                         </group>
                     </group>
@@ -42,7 +41,8 @@
                 <field name="odk_email" readonly="1"/>
                 <field name="odk_submissions_count"/>
                 <field name="odk_last_sync_date" readonly="1"/>
-                <field name="program_count"/>
+                <field name="program_id"/>
+                <field name="program_enroll_date"/>
                 <field name="is_active"/>
                 <button name="odk_button_update_form_submissions"
                     type="object"

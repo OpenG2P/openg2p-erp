@@ -136,7 +136,6 @@ class Openg2pProcess(models.Model):
         task_code = self.get_ext_id_from_id(
             "openg2p.task.subtype", self.curr_process_stage.task_subtype_id.id
         )
-        success = True
         if task_code == "task_subtype_regd_make_beneficiary":
             regd_ids = json.loads(context["task_subtype_regd_create"])
             bene_ids = []
@@ -154,13 +153,12 @@ class Openg2pProcess(models.Model):
             benes = self.env["openg2p.beneficiary"].browse(
                 json.loads(context["task_subtype_beneficiary_create"])
             )
-            for prog_id in odk_config.program_ids.ids:
-                benes.program_enroll(
-                    program_id=prog_id,
-                    date_start=odk_config.program_enroll_date,
-                    confirm=True,
-                )
-            prog_ids = list(odk_config.program_ids.ids)
+            benes.program_enroll(
+                program_id=odk_config.program_id.id,
+                date_start=odk_config.program_enroll_date,
+                confirm=True,
+            )
+            prog_ids = [odk_config.program_id.id]
             self._update_context("task_subtype_beneficiary_enroll_programs", prog_ids)
         elif task_code == "task_subtype_beneficiary_create_disbursement_batch":
             context = json.loads(self.context)
@@ -176,7 +174,23 @@ class Openg2pProcess(models.Model):
                     "task_subtype_beneficiary_create_disbursement_batch", batch_ids
                 )
         self.update_curr_stage()
-        return success
+
+    def update_completed_task(self, task):
+        task.status_id = 3
+        self.create_next_task()
+
+    def create_next_task(self):
+        context = json.loads(self.context)
+        prev_task_entity_id = json.loads(list(dict(context).values())[-1])[-1]
+        next_task = self.env["openg2p.task"].create(
+            {
+                "subtype_id": self.curr_process_stage.task_subtype_id.id,
+                "process_id": self.id,
+                "status_id": 2,
+                "entity_id": prev_task_entity_id,
+            }
+        )
+        self._update_task_list(next_task.id)
 
     # receiver of event notifications
     def handle_tasks(self, events, process=None):
@@ -227,15 +241,7 @@ class Openg2pProcess(models.Model):
                             break
                         else:
                             prev_task_idx = process.curr_process_stage_index
-                    task.status_id = 3
-                    next_task = self.env["openg2p.task"].create(
-                        {
-                            "subtype_id": process.curr_process_stage.task_subtype_id.id,
-                            "process_id": process.id,
-                            "status_id": 2,
-                        }
-                    )
-                    process._update_task_list(next_task.id)
+                    process.update_completed_task(task)
                 else:
                     process.process_completed = True
             except BaseException as e:

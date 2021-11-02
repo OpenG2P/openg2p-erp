@@ -115,12 +115,7 @@ class ODKSubmissions(models.Model):
                 )
 
             else:
-                value.update(
-                    {
-                        "odk_batch_id": odk_batch_id,
-                        "program_ids": odk_config.program_ids.ids,
-                    }
-                )
+                value.update({"odk_batch_id": odk_batch_id})
                 registration = self.create_registration_from_submission(value)
                 self.odk_create_submissions_data(
                     value,

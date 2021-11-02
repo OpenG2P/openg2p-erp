@@ -63,7 +63,7 @@ class Openg2pTask(models.Model):
             rec.type_id = rec.subtype_id.task_type_id.id
 
     def target_url_button(self):
-        return {
+        data = {
             "name": "Complete Task",
             "res_model": self.subtype_id.entity_type_id,
             "type": "ir.actions.act_window",
@@ -73,6 +73,10 @@ class Openg2pTask(models.Model):
             "view_id": self.env.ref(self.subtype_id.entity_view_id).id,
             "target": "fullscreen",
         }
+        if self.entity_id:
+            data["res_id"] = self.entity_id
+            data["flags"] = {"mode": "readonly"}
+        return data
 
     @api.multi
     def _create_history(self):

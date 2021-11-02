@@ -152,6 +152,9 @@ class BatchTransaction(models.Model):
     def action_confirm(self):
         for rec in self:
             rec.state = "confirm"
+        self.env["openg2p.process"].handle_tasks(
+            [("task_subtype_disbursement_approve_batch", self.id)]
+        )
 
     def action_pending(self):
         for rec in self:
@@ -262,7 +265,9 @@ class BatchTransaction(models.Model):
 
             self.transaction_status = response_data["status"]
             self.transaction_batch_id = response_data["batch_id"]
-
+            self.env["openg2p.process"].handle_tasks(
+                [("task_subtype_disbursement_send_batch", self.id)]
+            )
         except BaseException as e:
             print(e)
 
