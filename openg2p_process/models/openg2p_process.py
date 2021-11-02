@@ -105,30 +105,21 @@ class Openg2pProcess(models.Model):
         context["tasks"] = json.dumps(tasks)
         self.context = json.dumps(context, indent=2)
 
-    def update_curr_stage(self, event_code=None):
-        if event_code:
-            latest_event_id = self.get_id_from_ext_id(event_code)
-            for idx, stage in enumerate(self.process_type.stages):
-                if stage.task_subtype_id.id == latest_event_id:
-                    self.curr_process_stage_index = idx + 1
-                    self.curr_process_stage = self.process_type.stages[
-                        self.curr_process_stage_index
-                    ].id
-        else:
-            ext_ids = list(
-                map(
-                    lambda x: self.get_ext_id_from_id(
-                        "openg2p.task.subtype", x.task_subtype_id.id
-                    ),
-                    self.process_type.stages,
+    def update_curr_stage(self):
+        ext_ids = list(
+            map(
+                lambda x: self.get_ext_id_from_id(
+                    "openg2p.task.subtype", x.task_subtype_id.id
                 ),
-            )
-            context = json.loads(self.context)
-            for idx, ext_id in enumerate(ext_ids):
-                if ext_id not in context:
-                    self.curr_process_stage_index = idx + 1
-                    self.curr_process_stage = self.process_type.stages[idx].id
-                    break
+                self.process_type.stages,
+            ),
+        )
+        context = json.loads(self.context)
+        for idx, ext_id in enumerate(ext_ids):
+            if ext_id not in context:
+                self.curr_process_stage_index = idx + 1
+                self.curr_process_stage = self.process_type.stages[idx].id
+                break
 
     # handles intermediate automated tasks
     def handle_intermediate_task(self):
@@ -206,7 +197,7 @@ class Openg2pProcess(models.Model):
             for event in events:
                 event_code, obj_ids = event
                 process._update_context(event_code, obj_ids)
-            process.update_curr_stage(events[-1][0])
+            process.update_curr_stage()
             return
 
         # find task that is done
@@ -224,7 +215,7 @@ class Openg2pProcess(models.Model):
                 for event in events:
                     event_code, obj_ids = event
                     process._update_context(event_code, obj_ids)
-                process.update_curr_stage(events[-1][0])
+                process.update_curr_stage()
                 process.handle_intermediate_task()
             try:
                 stages = self.env["openg2p.process.stage"].search(
