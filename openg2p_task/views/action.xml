@@ -91,12 +91,4 @@
         <field name="view_mode">form</field>
     </record>
 
-    <record id="action_openg2p_task_multibatchtxnupdate" model="ir.actions.act_window">
-        <field name="name">Update Multiple Batch Disbursements</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">openg2p.task.multibatchtxnupdate.widget</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">form</field>
-    </record>
-
 </odoo>
