@@ -4,6 +4,7 @@ from odoo import models, fields
 class Openg2pTaskHistory(models.Model):
     _name = "openg2p.task.history"
     _description = "Task History for OpenG2P"
+    _order = "id desc"
 
     task_id = fields.Many2one(
         comodel_name="openg2p.task",
@@ -14,16 +15,13 @@ class Openg2pTaskHistory(models.Model):
 
     task_subtype_id = fields.Many2one("openg2p.task.subtype", string="Task Subtype")
 
-    task_status = fields.Selection(
-        selection=(
-            ("todo", "To-Do"),
-            ("done", "Done"),
-        ),
+    task_status_id = fields.Many2one(
+        "openg2p.task.status",
         string="Task Status",
     )
 
     # for building url
-    task_entity_type_id = fields.Integer(
+    task_entity_type_id = fields.Char(
         string="Entity Type",
     )
 
@@ -31,7 +29,7 @@ class Openg2pTaskHistory(models.Model):
     task_entity_id = fields.Integer(
         string="Entity ID",
     )
-
+    process_id = fields.Integer(string="Process")
     program_id = fields.Integer(
         string="Program",
     )
@@ -49,9 +47,7 @@ class Openg2pTaskHistory(models.Model):
     )
 
     def name_get(self):
-        return [
-            (rec.id, f"{rec.task_type_id.name}/{rec.task_subtype_id.name} (H{rec.id})")
-            for rec in self
-        ]
+        for rec in self:
+            yield rec.id, f"{rec.task_type_id.name}/{rec.task_subtype_id.name} (H{rec.id})"
 
     # create_date of this entity = modifiedby_date of task

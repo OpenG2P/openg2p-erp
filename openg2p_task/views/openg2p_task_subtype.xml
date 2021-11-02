@@ -7,14 +7,18 @@
             <field name="name">openg2p.task.subtype.form</field>
             <field name="model">openg2p.task.subtype</field>
             <field name="arch" type="xml">
-                <form>
-                    <group>
+                <form create="0" edit="0" delete="0" import="0">
+                    <sheet>
                         <group>
-                            <field name="task_type_id" string="Task Type"/>
-                            <field name="name" string="Sub Task Type"/>
-                            <field name="role_id" string="Role"/>
+                            <group>
+                                <field name="task_type_id" string="Task Type"/>
+                                <field name="name" string="Sub Task Type"/>
+                                <field name="role_id" string="Role"/>
+                                <field name="entity_type_id" string="Entity Type ID"/>
+                                <field name="entity_view_id"/>
+                            </group>
                         </group>
-                    </group>
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -24,10 +28,13 @@
             <field name="name">openg2p.task.subtype.tree</field>
             <field name="model">openg2p.task.subtype</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree create="0" edit="0" delete="0" import="0">
                     <field name="task_type_id"/>
                     <field name="name"/>
                     <field name="role_id"/>
+                    <field name="entity_type_id" string="Entity Type ID"/>
+                    <field name="entity_view_type" string="Entity View Type"/>
+                    <field name="entity_view_id"/>
                 </tree>
             </field>
         </record>
@@ -37,7 +44,7 @@
             <field name="name">openg2p.task.subtype.kanban</field>
             <field name="model">openg2p.task.subtype</field>
             <field name="arch" type="xml">
-                <kanban class="o_kanban_registration" create="0" import="0" group_create="0"
+                <kanban class="o_kanban_registration" create="0" edit="0" delete="0" import="0" group_create="0"
                         quick_create="false">
                     <field name="task_type_id"/>
                     <field name="name"/>

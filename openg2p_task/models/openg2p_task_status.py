@@ -1,9 +1,9 @@
 from odoo import models, fields
 
 
-class Openg2pTaskType(models.Model):
-    _name = "openg2p.task.type"
-    _description = "Task types for OpenG2P"
+class Openg2pTaskStatus(models.Model):
+    _name = "openg2p.task.status"
+    _description = "Task status for OpenG2P Tasks"
 
     name = fields.Char(string="Name")
 
