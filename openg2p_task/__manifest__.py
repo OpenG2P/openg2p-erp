@@ -5,7 +5,12 @@
     "category": "Project",
     "sequence": 10,
     "summary": "Guided navigation to tasks.",
-    "depends": [],
+    "depends": [
+        "odk-connector",
+        "openg2p_registration",
+        "openg2p",
+        "openg2p_disbursement_advice",
+    ],
     "description": "",
     "data": [
         "security/ir.model.access.csv",
