@@ -39,7 +39,6 @@ class ProgramEnrollment(models.Model):
     category_id = fields.Many2one(
         "openg2p.program.enrollment_category",
         string="Category",
-        required=True,
         track_visibility="onchange",
     )
     date_start = fields.Date(

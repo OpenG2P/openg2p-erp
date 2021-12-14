@@ -19,7 +19,7 @@
 
     <record id="group_openg2p_manager" model="res.groups">
         <field name="name">Manager</field>
-        <field name="comment">Administers, approves and manages beneficiary workflows.</field>
+        <field name="comment">Administers, approves and manages beneficiary processes.</field>
         <field name="category_id" ref="openg2p.module_category_openg2p"/>
         <field name="implied_ids"
                eval="[(4, ref('group_openg2p_officer'))]"/>

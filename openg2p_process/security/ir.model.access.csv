@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_openg2p_process_stage,access.openg2p.process.stage,model_openg2p_process_stage,,1,1,1,1
+access_openg2p_process_type,access.openg2p.process.type,model_openg2p_process_type,,1,1,1,1
+access_openg2p_process,access.openg2p.process,model_openg2p_process,,1,1,1,1

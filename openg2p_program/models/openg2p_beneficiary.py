@@ -31,7 +31,7 @@ class Beneficiary(models.Model):
     def program_enroll(
         self,
         program_id,
-        category_id,
+        category_id=None,
         date_start=fields.Date.today(),
         confirm=False,
         raise_error=True,

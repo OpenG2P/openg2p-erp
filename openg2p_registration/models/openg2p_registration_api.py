@@ -1,12 +1,14 @@
 import json
-
+import asyncio
 from odoo.http import Controller, route, request
 
 
 class Openg2pRegistrationApi(Controller):
     @route("/registrations", type="json", auth="user", methods=["GET"])
-    def get_all_registrations(self):
+    def get_all_registrations(self, **kwargs):
         try:
+            print(kwargs)
+            print(kwargs.get("page"))
             regd_objs = request.env["openg2p.registration"].search([])
             regds = []
             for r in regd_objs:
@@ -85,6 +87,9 @@ class Openg2pRegistrationApi(Controller):
 
     @route("/beneficiaries", type="json", auth="user", methods=["POST"])
     def convert_to_beneficiaries(self, **kwargs):
+        async def convert(regd):
+            return regd.create_beneficiary_from_registration()["res_id"]
+
         if "check_stage" not in kwargs:
             return {
                 "status": 200,
@@ -107,13 +112,10 @@ class Openg2pRegistrationApi(Controller):
             res_ids = {}
             for regd in regds:
                 if not regd.beneficiary_id:
-                    if kwargs["check_stage"]:
-                        if regd.stage_id == 6:
-                            b_id = regd.create_beneficiary_from_registration()["res_id"]
-                            res_ids[int(regd.id)] = b_id
-                    else:
-                        b_id = regd.create_beneficiary_from_registration()["res_id"]
-                        res_ids[int(regd.id)] = b_id
+                    if kwargs["check_stage"] and regd.stage_id != 6:
+                        continue
+                    b_id = asyncio.run(convert(regd))
+                    res_ids[int(regd.id)] = b_id
             data["beneficiary_ids"] = res_ids
             return data
         except BaseException as e:

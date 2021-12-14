@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import uuid
 
 import requests
 from odoo.addons.openg2p.services.matching_service import (
@@ -196,6 +197,8 @@ class Registration(models.Model):
         ],
         default="none",
     )
+
+    odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
 
     # will be return registration details on api call
     def api_json(self):
@@ -862,6 +865,8 @@ class Registration(models.Model):
             "bank_account_id": self.bank_account_id.id,
             "emergency_contact": self.emergency_contact,
             "emergency_phone": self.emergency_phone,
+            "odk_batch_id": self.odk_batch_id,
+            "program_ids": self.program_ids.ids,
         }
         beneficiary = self.env["openg2p.beneficiary"].create(data)
         org_fields = self.env["openg2p.registration.orgmap"].search(
@@ -895,7 +900,6 @@ class Registration(models.Model):
 
         # Indexing the beneficiary
         self.index_beneficiary()
-
         return {
             "type": "ir.actions.act_window",
             "view_type": "form",
@@ -1065,6 +1069,11 @@ class Registration(models.Model):
             elif isinstance(value, dict):
                 self.del_none(value)
         return d
+
+    def task_convert_registration_to_beneficiary(self):
+        self.stage_id = 6
+        self.active = False
+        return self.create_beneficiary_from_registration()["res_id"]
 
     @api.multi
     def archive_registration(self):

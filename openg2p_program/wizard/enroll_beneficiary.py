@@ -18,7 +18,6 @@ class EnrollWizard(models.TransientModel):
     category_id = fields.Many2one(
         "openg2p.program.enrollment_category",
         string="Classification",
-        required=True,
     )
     date_start = fields.Date(
         "Enrollment Date",

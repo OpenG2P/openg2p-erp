@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models
-from .odk import ODK
+from odoo.exceptions import ValidationError
 
 
 class ODKConfig(models.Model):
@@ -46,6 +46,15 @@ class ODKConfig(models.Model):
     odk_submissions_count = fields.Integer(
         string="Submissions Count", readonly=True, default=0
     )
+    program_id = fields.Many2one(
+        "openg2p.program",
+        help="Active programs enrolled to",
+        store=True,
+        required=True,
+    )
+    program_enroll_date = fields.Date(
+        "Program Enrollment Date", default=fields.Date.today()
+    )
 
     @api.multi
     def odk_button_update_form_submissions(self):
@@ -66,5 +75,27 @@ class ODKConfig(models.Model):
     # Method calling submissions call to fetch data
     def call_submission(self):
         submissions_obj = self.env["odk.submissions"]
-        submissions_obj.update_submissions(self)
+        regd_ids = submissions_obj.update_submissions(self)
+        self.env["openg2p.process"].handle_tasks(
+            [
+                ("task_subtype_odk_pull", self.id),
+                ("task_subtype_regd_create", regd_ids),
+            ]
+        )
         print("Call Submission ends")
+
+    def write(self, vals):
+        res = super().write(vals)
+        if self.program_enroll_date > self.program_id.date_start:
+            raise ValidationError(
+                "Program Enrollment start date must not be earlier  than program's start date."
+            )
+        return res
+
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        if res.program_enroll_date > res.program_id.date_start:
+            raise ValidationError(
+                "Program Enrollment start date must not be earlier  than program's start date."
+            )
+        return res

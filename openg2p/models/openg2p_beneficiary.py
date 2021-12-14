@@ -7,6 +7,7 @@ import copy
 import logging
 import random
 import string
+import uuid
 
 from dateutil.relativedelta import relativedelta
 from odoo.addons.component.core import WorkContext
@@ -144,7 +145,7 @@ class Beneficiary(models.Model):
     gender = fields.Selection(
         [("male", "Male"), ("female", "Female"), ("other", "Other")],
         track_visibility="onchange",
-        required=True,
+        required=False,
     )
     birth_city = fields.Char(track_visibility="onchange")
     birth_state_id = fields.Many2one(
@@ -346,6 +347,8 @@ class Beneficiary(models.Model):
         compute="_compute_org_fields",
         search="_search_grand_tot",
     )
+
+    odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
 
     def api_json(self):
         return {
@@ -702,7 +705,8 @@ class Beneficiary(models.Model):
         if not vals.get("phone") and vals.get("mobile"):
             vals["phone"] = vals.get("mobile")
         self._partner_create(vals)
-        return super(Beneficiary, self).create(vals)
+        res = super(Beneficiary, self).create(vals)
+        return res
 
     @api.multi
     def write(self, vals):
