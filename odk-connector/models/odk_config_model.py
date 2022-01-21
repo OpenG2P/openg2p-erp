@@ -92,6 +92,7 @@ class ODKConfig(models.Model):
             )
         return res
 
+    @api.model
     def create(self, vals_list):
         res = super().create(vals_list)
         if res.program_enroll_date > res.program_id.date_start:
