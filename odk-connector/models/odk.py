@@ -112,6 +112,7 @@ class HTTPTokenAuth(AuthBase):
         url = base_url + _ODK_TYPE_URL["auth"]["session"]
         response_data = self.auth_call(url, auth_data)
         self.token = response_data["token"]
+        self.user = user
 
     def __call__(self, request):
         request.headers["Authorization"] = self.auth_header_format.format(self.token)
