@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import uuid
 
-from odoo import fields, models
+from odoo import fields, models, api
 from .odk import ODK
 
 
@@ -92,6 +92,8 @@ class ODKSubmissions(models.Model):
                 (odk_config.odk_project_id, odk_config.odk_form_id),
                 {"$top": top_count, "$count": "true"},
             )
+            print(submission_response)
+            print("SubR Size < 100:", len(submission_response))
             regds = self.save_data_into_all(
                 submission_response["value"], odk_config, odk_batch_id
             )
@@ -117,15 +119,26 @@ class ODKSubmissions(models.Model):
             else:
                 value.update({"odk_batch_id": odk_batch_id})
                 registration = self.create_registration_from_submission(value)
-                self.odk_create_submissions_data(
-                    value,
-                    {
-                        "odk_config_id": odk_config.id,
-                        "odoo_corresponding_id": registration.id,
-                        "odk_batch_id": odk_batch_id,
-                    },
-                )
-                regd_ids.append(registration.id)
+                if registration is not None:
+                    self.odk_create_submissions_data(
+                        value,
+                        {
+                            "odk_config_id": odk_config.id,
+                            "odoo_corresponding_id": registration.id,
+                            "odk_batch_id": odk_batch_id,
+                            "regd_creation_status": True,
+                        },
+                    )
+                    regd_ids.append(registration.id)
+                else:
+                    self.odk_create_submissions_data(
+                        value,
+                        {
+                            "odk_config_id": odk_config.id,
+                            "odk_batch_id": odk_batch_id,
+                            "regd_creation_status": False,
+                        },
+                    )
         return regd_ids
 
     # Method to add registration record from ODK submission
@@ -140,10 +153,13 @@ class ODKSubmissions(models.Model):
 
         # res.update(extra_data)
         # registration = self.env['openg2p.registration'].create(res)
-        registration = self.env["openg2p.registration"].create_registration_from_odk(
-            data
-        )
-        return registration
+        try:
+            registration = self.env[
+                "openg2p.registration"
+            ].create_registration_from_odk(data)
+            return registration
+        except BaseException as e:
+            print("Failed in creating registration!")
 
     # Store submissions data in odk.submissions
     # Need to pass odoo_corresponding_id and odk_config_id in extra_data
@@ -176,3 +192,9 @@ class ODKSubmissions(models.Model):
             "country_id": "country_id",
             "gender": "gender",
         }
+
+    @api.model
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        # self.env["openg2p.workflow"].handle_tasks("odk_pull", res.id)
+        return res

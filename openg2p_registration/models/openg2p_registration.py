@@ -496,26 +496,30 @@ class Registration(models.Model):
             else:
                 if not str(k).startswith("_"):
                     temp[str(k).replace("-", "_").lower()] = v
-        regd = self.create(
-            {
-                "firstname": "_",
-                "lastname": "_",
-                "street": (temp["chiefdom"] if "chiefdom" in temp.keys() else "-"),
-                "street2": (temp["district"] if "district" in temp.keys() else "-")
-                + ", "
-                + (temp["region"] if "region" in temp.keys() else "-"),
-                "city": (
-                    (temp["city"] if "city" in temp.keys() else "Freetown")
-                    or "Freetown"
-                )
-                if "city" in temp.keys()
-                else "Freetown",
-                "country_id": 202,
-                "state_id": 710,
-                "gender": "male",
-            }
-        )
-        id = regd.id
+        try:
+            regd = self.create(
+                {
+                    "firstname": "_",
+                    "lastname": "_",
+                    "street": (temp["chiefdom"] if "chiefdom" in temp.keys() else "-"),
+                    "street2": (temp["district"] if "district" in temp.keys() else "-")
+                    + ", "
+                    + (temp["region"] if "region" in temp.keys() else "-"),
+                    "city": (
+                        (temp["city"] if "city" in temp.keys() else "Freetown")
+                        or "Freetown"
+                    )
+                    if "city" in temp.keys()
+                    else "Freetown",
+                    "country_id": 202,
+                    "state_id": 710,
+                    "gender": "male",
+                }
+            )
+            id = regd.id
+        except BaseException as e:
+            print(e)
+
         from datetime import datetime
 
         data = {}
