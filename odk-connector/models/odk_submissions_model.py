@@ -92,8 +92,6 @@ class ODKSubmissions(models.Model):
                 (odk_config.odk_project_id, odk_config.odk_form_id),
                 {"$top": top_count, "$count": "true"},
             )
-            print(submission_response)
-            print("SubR Size < 100:", len(submission_response))
             regds = self.save_data_into_all(
                 submission_response["value"], odk_config, odk_batch_id
             )
