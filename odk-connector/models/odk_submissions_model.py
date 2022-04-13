@@ -31,6 +31,8 @@ class ODKSubmissions(models.Model):
     )
     odk_batch_id = fields.Char()
 
+    regd_creation_status = fields.Boolean(default=False)
+
     # Method to update/sync submissions from a specific config
     def update_submissions(self, odk_config):
         updated_submissions_count, regd_ids = self.get_data_from_odk(odk_config)
@@ -103,11 +105,19 @@ class ODKSubmissions(models.Model):
         regd_ids = []
         for value in odk_response_data:
             # Add check if the record already exists in the database
-            existing_object = self.search(
-                [("odk_submission_id", "=", value.get("__id"))]
-            )
+            existing_object = None
 
-            if len(existing_object) >= 1:
+            if value is None or value["group_ey66y74"]["New_EMIS_Code"] == "null":
+                continue
+
+            try:
+                existing_object = self.search(
+                    [("odk_submission_id", "=", value.get("__id"))]
+                )
+            except BaseException as e:
+                return e
+
+            if existing_object and len(existing_object) >= 1:
                 print(
                     "Submissions with Id: ",
                     value.get("__id"),
@@ -158,25 +168,34 @@ class ODKSubmissions(models.Model):
             return registration
         except BaseException as e:
             print("Failed in creating registration!")
+            return None
 
     # Store submissions data in odk.submissions
     # Need to pass odoo_corresponding_id and odk_config_id in extra_data
     def odk_create_submissions_data(self, data, extra_data=None):
-        extra_data = extra_data and extra_data or {}
-        res = {}
-        res.update(
-            {
-                "odk_submission_id": data.get("__id"),
-                "submission_date": data.get("__system").get("submissionDate"),
-                "submission_response": data,
-            }
-        )
-        res.update(extra_data)
-        self.create(res)
+        try:
+            extra_data = extra_data and extra_data or {}
+            res = {}
+            res.update(
+                {
+                    "odk_submission_id": data.get("__id"),
+                    "submission_date": data.get("__system").get("submissionDate"),
+                    "submission_response": data,
+                }
+            )
+            res.update(extra_data)
+            self.create(res)
+        except BaseException as e:
+            print(e)
 
     # Wrapper function to update config
     def odk_update_configuration(self, data, odk_config_id):
-        return self.env["odk.config"].search([("id", "=", odk_config_id)]).write(data)
+        try:
+            return (
+                self.env["odk.config"].search([("id", "=", odk_config_id)]).write(data)
+            )
+        except BaseException as e:
+            print(e)
 
     # Mappings between openg2p.registration and odk form fields
     def get_conversion_dict(self):
@@ -193,6 +212,9 @@ class ODKSubmissions(models.Model):
 
     @api.model
     def create(self, vals_list):
-        res = super().create(vals_list)
-        # self.env["openg2p.workflow"].handle_tasks("odk_pull", res.id)
-        return res
+        try:
+            res = super().create(vals_list)
+            # self.env["openg2p.workflow"].handle_tasks("odk_pull", res.id)
+            return res
+        except BaseException as e:
+            print(e)
