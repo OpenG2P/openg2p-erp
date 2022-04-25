@@ -14,6 +14,7 @@ from odoo.tools.translate import _
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
+
 class Registration(models.Model):
     _name = "openg2p.registration"
     _description = "Registration"

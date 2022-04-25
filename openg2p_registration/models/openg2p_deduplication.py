@@ -6,7 +6,7 @@ BASE_URL = "http://3.139.225.16:9080"
 
 
 class Openg2pDeduplication(models.Model):
-    _inherit = 'openg2p.registration'
+    _inherit = "openg2p.registration"
 
     def search_beneficiary(self):
         search_data = {
