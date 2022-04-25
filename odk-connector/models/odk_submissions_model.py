@@ -107,7 +107,7 @@ class ODKSubmissions(models.Model):
             # Add check if the record already exists in the database
             existing_object = None
 
-            if value is None or value["group_ey66y74"]["New_EMIS_Code"] == "null":
+            if value is None:
                 continue
 
             try:
