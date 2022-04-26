@@ -2,8 +2,6 @@
 # Copyright 2020 OpenG2P (https://openg2p.org)
 # @author: Salton Massally <saltonmassally@gmail.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
-
 {
     "name": "OpenG2P Digital Payments",
     "summary": "Enable Digital Payments to Beneficiaries",
@@ -14,6 +12,7 @@
     "depends": ["openg2p_disbursement", "openg2p_payment_gateway"],
     "data": [
         "data/openg2p_disbursement_advice_data.xml",
+        "security/openg2p_banks_security.xml",
         "views/openg2p_beneficiary.xml",
         "views/openg2p_disbursement_advice.xml",
         "views/openg2p_disbursement_advice_line.xml",
@@ -27,16 +26,17 @@
         "views/res_bank.xml",
         "views/res_partner_bank.xml",
         "views/openg2p_gateway_transaction.xml",
-        "views/openg2p_disbursement_batch_transaction.xml",
-        "views/openg2p_disbursement_single_transaction.xml",
-        "views/openg2p_disbursement_main.xml",
-        "views/openg2p_disbursement_file.xml",
         "views/action_menu.xml",
         "views/transaction_menu.xml",
-        "security/openg2p_banks_security.xml",
+        "views/openg2p_disbursement_single_transaction.xml",
+        "views/openg2p_disbursement_batch_transaction.xml",
+        "views/openg2p_disbursement_main.xml",
+        "views/openg2p_disbursement_file.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [
         "data/demo.xml",
     ],
 }
+
+
