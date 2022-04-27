@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_openg2p_process_options"
+              name="Process"
+              sequence="1"
+              web_icon="openg2p_process,static/description/icon.png" />
+
+
+    <menuitem id="menu_openg2p_process"
+              name="Processes"
+              action="action_openg2p_process"
+              parent="menu_openg2p_process_options"
+              sequence="9"/>
+
+    <menuitem id="menu_openg2p_process_type"
+              name="Process Types"
+              action="action_openg2p_process_type"
+              parent="menu_openg2p_process_options"
+              sequence="10"/>
+
+
+</odoo>

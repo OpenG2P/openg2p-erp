@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_openg2p_task" model="ir.actions.act_window">
+        <field name="name">Tasks</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.task</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No tasks here!
+            </p>
+        </field>
+    </record>
+
+    <record id="action_openg2p_task_history" model="ir.actions.act_window">
+        <field name="name">Task History</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.task.history</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No history!
+            </p>
+        </field>
+    </record>
+
+
+    <record id="action_openg2p_task_role" model="ir.actions.act_window">
+        <field name="name">Task Role</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.task.role</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No roles yet!
+            </p>
+        </field>
+    </record>
+
+    <record id="action_openg2p_task_type" model="ir.actions.act_window">
+        <field name="name">Task Type</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.task.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No task types yet!
+            </p>
+        </field>
+    </record>
+
+    <record id="action_openg2p_task_subtype" model="ir.actions.act_window">
+        <field name="name">Task Subtype</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.task.subtype</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No task subtypes yet!
+            </p>
+        </field>
+    </record>
+
+    <record id="action_openg2p_task_regd2bene" model="ir.actions.act_window">
+        <field name="name">Convert Registrations to Beneficiaries</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.task.regd2bene.widget</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+    </record>
+
+    <record id="action_openg2p_task_enrollbene" model="ir.actions.act_window">
+        <field name="name">Convert Registrations to Beneficiaries</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.task.enrollbene.widget</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+    </record>
+
+    <record id="action_openg2p_task_regdchangestage" model="ir.actions.act_window">
+        <field name="name">Change stage of Registrations</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.task.regdchangestage.widget</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_openg2p_task_history,access.openg2p.task.history,model_openg2p_task_history,,1,1,1,1
+access_openg2p_task_role,access.openg2p.task.role,model_openg2p_task_role,,1,1,1,1
+access_openg2p_task_subtype,access.openg2p.task.subtype,model_openg2p_task_subtype,,1,1,1,1
+access_openg2p_task_type,access.openg2p.task.type,model_openg2p_task_type,,1,1,1,1
+access_openg2p_task,access.openg2p.task,model_openg2p_task,,1,1,1,1
+access_openg2p_task_status,access.openg2p.task.status,model_openg2p_task_status,,1,1,1,1

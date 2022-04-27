@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_openg2p_process_type" model="ir.actions.act_window">
+        <field name="name">Process Type</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.process.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No process types yet!
+            </p>
+        </field>
+    </record>
+
+    <record id="action_openg2p_process" model="ir.actions.act_window">
+        <field name="name">Processes</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.process</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No processes yet!
+            </p>
+        </field>
+    </record>
+
+</odoo>

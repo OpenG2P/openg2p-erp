@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_openg2p_task_home"
+              name="Task"
+              action="action_openg2p_task"
+              sequence="1"
+              web_icon="openg2p_task,static/description/icon.png" />
+
+
+    <menuitem id="menu_openg2p_task_history"
+              name="Task History"
+              action="action_openg2p_task_history"
+              parent="menu_openg2p_task_home"
+              sequence="2"/>
+
+
+    <menuitem id="menu_openg2p_task_others"
+              name="Additional Options"
+              parent="menu_openg2p_task_home"
+              sequence="3"/>
+
+    <menuitem id="menu_openg2p_task_type"
+              name="Task Type"
+              action="action_openg2p_task_type"
+              parent="menu_openg2p_task_others"
+              sequence="4"/>
+
+    <menuitem id="menu_openg2p_task_role"
+              name="Task Role"
+              action="action_openg2p_task_role"
+              parent="menu_openg2p_task_others"
+              sequence="5"/>
+
+    <menuitem id="menu_openg2p_task_subtype"
+              name="Task Subtype"
+              action="action_openg2p_task_subtype"
+              parent="menu_openg2p_task_others"
+              sequence="6"/>
+
+    <menuitem id="menu_openg2p_custom_tasks"
+              name="Custom tasks"
+              parent="menu_openg2p_task_home"
+              sequence="11"/>
+
+    <menuitem id="menu_openg2p_task_regdchangestage"
+              name="Change stage of Registrations"
+              parent="menu_openg2p_custom_tasks"
+              action="action_openg2p_task_regdchangestage"
+              sequence="11"/>
+
+    <menuitem id="menu_openg2p_task_regd2bene"
+              name="Convert Registrations to Beneficiaries"
+              parent="menu_openg2p_custom_tasks"
+              action="action_openg2p_task_regd2bene"
+              sequence="11"/>
+
+    <menuitem id="menu_openg2p_task_enrollbene"
+              name="Enroll Beneficiaries into program"
+              parent="menu_openg2p_custom_tasks"
+              action="action_openg2p_task_enrollbene"
+              sequence="11"/>
+
+
+
+</odoo>
