@@ -47,7 +47,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page name="notes" string="Description">
+                        <page name="notes" string="Criteria">
                             <field name="note" nolabel="1" placeholder="Description of program..."/>
                         </page>
                     </notebook>

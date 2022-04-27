@@ -198,6 +198,14 @@ class Registration(models.Model):
 
     odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
 
+    program_ids = fields.Many2many(
+        comodel_name="openg2p.program",
+        relation="regd_programs",
+        string="Active Programs",
+        help="Active programs enrolled to",
+        store=True,
+        required=False,
+    )
     # will be return registration details on api call
     def api_json(self):
         data = {
@@ -495,12 +503,16 @@ class Registration(models.Model):
                 if not str(k).startswith("_"):
                     temp[str(k).replace("-", "_").lower()] = v
 
-        country_id = (
-            self.env["res.country"].search([("name", "=", "Sierra Leone")])[0].id
+        country_name = (
+            temp["country"] if "country" in temp.keys() else "Sierra Leone"
         )
+        state_name = temp["state"] if "state" in temp.keys() else "Freetown"
+
+        country_id = self.env["res.country"].search([("name", "=", country_name)])[0].id
         state_id = (
-            self.env["res.country.state"].search([("name", "=", "Freetown")])[0].id
+            self.env["res.country.state"].search([("name", "=", state_name)])[0].id
         )
+
         try:
             regd = self.create(
                 {
@@ -676,6 +688,8 @@ class Registration(models.Model):
                 print(e)
         try:
             regd.write(data)
+            # Updating Program for Registration
+            regd.program_ids = [(6, 0, temp["program_ids"])]
         except BaseException as e:
             print(e)
         return regd
@@ -876,9 +890,12 @@ class Registration(models.Model):
             "emergency_contact": self.emergency_contact,
             "emergency_phone": self.emergency_phone,
             "odk_batch_id": self.odk_batch_id,
-            "program_ids": self.program_ids.ids,
         }
         beneficiary = self.env["openg2p.beneficiary"].create(data)
+
+        # Updating Program for beneficiary
+        beneficiary.program_ids = [(6, 0, self.program_ids.ids)]
+
         org_fields = self.env["openg2p.registration.orgmap"].search(
             [("regd_id", "=", self.id)]
         )

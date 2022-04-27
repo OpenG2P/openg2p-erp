@@ -125,7 +125,12 @@ class ODKSubmissions(models.Model):
                 )
 
             else:
-                value.update({"odk_batch_id": odk_batch_id})
+                value.update(
+                    {
+                        "odk_batch_id": odk_batch_id,
+                        "program_ids": odk_config.program_id.ids,
+                    }
+                )
                 registration = self.create_registration_from_submission(value)
                 if registration is not None:
                     self.odk_create_submissions_data(
@@ -214,7 +219,6 @@ class ODKSubmissions(models.Model):
     def create(self, vals_list):
         try:
             res = super().create(vals_list)
-            # self.env["openg2p.workflow"].handle_tasks("odk_pull", res.id)
             return res
         except BaseException as e:
             print(e)
