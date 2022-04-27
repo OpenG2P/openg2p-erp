@@ -30,7 +30,7 @@ class ODKConfig(models.Model):
         # readonly=True
     )
     odk_email = fields.Char(
-        string="ODK User EMail",
+        string="ODK User Email",
         required=True,
         # readonly=True
     )
@@ -76,12 +76,6 @@ class ODKConfig(models.Model):
     def call_submission(self):
         submissions_obj = self.env["odk.submissions"]
         regd_ids = submissions_obj.update_submissions(self)
-        self.env["openg2p.process"].handle_tasks(
-            [
-                ("task_subtype_odk_pull", self.id),
-                ("task_subtype_regd_create", regd_ids),
-            ]
-        )
         print("Call Submission ends")
 
     def write(self, vals):

@@ -126,8 +126,7 @@ class HTTPTokenAuth(AuthBase):
 
         if response.status_code == _CODE_401:
             raise exceptions.Warning(
-                _("401 - Unable to authenticate to ODK with the user '%s'.\n")
-                % self.user
+                _("401 - Unable to authenticate to ODK with the given user.\nq")
             )
         elif response.status_code not in [_CODE_200, _CODE_201]:
             raise exceptions.Warning(
