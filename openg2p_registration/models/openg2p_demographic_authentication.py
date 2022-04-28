@@ -15,7 +15,7 @@ class Openg2pDemographicAuthentication(models.Model):
 
     def demo_auth(self, data):
         import os
-        DEMO_AUTHENTICATE_URL = os.getenv("DEMO_AUTHENTICATE_URL", "http://localhost:8045/demoAuth")
+        DEMO_AUTHENTICATE_URL = os.getenv("DEMO_AUTHENTICATE_URL", "http://openg2p-mosip-auth-mediator.openg2p-mosip/demoAuth")
         response = requests.post(DEMO_AUTHENTICATE_URL, json=data)
         _logger.info("Demo Auth Response: " + str(response.content))
         return json.loads(response.content)

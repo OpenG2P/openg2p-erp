@@ -524,7 +524,7 @@ class Registration(models.Model):
         should_merge = False
         should_create_beneficiary = False
         demo_auth_res = {}
-        if os.getenv("SHOULD_DEMO_AUTH", "false").lower() == "true":
+        if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
             demo_auth_res = self.demo_auth_merge(temp)
             temp["stage_id"] = demo_auth_res["stage_id"]
             should_merge = demo_auth_res["should_merge"]
@@ -712,7 +712,7 @@ class Registration(models.Model):
         except BaseException as e:
             print(e)
 
-        if os.getenv("SHOULD_DEMO_AUTH", "false").lower() == "true":
+        if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
             regd.post_auth_create_id(demo_auth_res)
         if should_merge:
             regd.post_auth_merge(demo_auth_res)
