@@ -1,6 +1,9 @@
 import json
 import asyncio
+import logging
 from odoo.http import Controller, route, request
+
+_logger = logging.getLogger(__name__)
 
 
 class Openg2pRegistrationApi(Controller):
@@ -61,6 +64,8 @@ class Openg2pRegistrationApi(Controller):
             response["id"] = new_regd.id
             return response
         except BaseException as e:
+            import traceback
+            _logger.error(traceback.format_exc())
             return {"status": 400, "error": str(e)}
 
     @route("/duplicates/<int:id>", type="json", auth="user", methods=["GET"])
