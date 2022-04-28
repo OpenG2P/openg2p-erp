@@ -161,8 +161,14 @@
                                 </field>
                             </group>
                             <group string="Internal Info" name="internal_notes_right">
+                           
+                            </group>
+                            <group></group>
+                            <group  name="internal_notes_right">
+                            <field name="payment_address" string="Payment Address"/>
 
                             </group>
+
         
                         </group>
                         <group string="Organization">
@@ -171,6 +177,7 @@
                                     <field name="field_name"/>
                                     <field name="field_value"/>
                                 </tree>
+                                
                             </field>
                         </group>
                             <!-- Duplicate Beneficiaries -->

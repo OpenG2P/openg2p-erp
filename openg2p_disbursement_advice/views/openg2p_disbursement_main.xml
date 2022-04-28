@@ -20,6 +20,7 @@
                                 <field name="name"/>
                                 <field name="acc_holder_name"/>
                                 <field name="payment_mode"/>
+                                <field name="payment_address"/>
                             </group>
                             <group>
                                 <!-- <field name="state" invisible="1"/> -->

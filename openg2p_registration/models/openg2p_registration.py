@@ -206,6 +206,9 @@ class Registration(models.Model):
         store=True,
         required=False,
     )
+    # payment_address field
+    payment_address = fields.Char(string="Payment Address")
+
     # will be return registration details on api call
     def api_json(self):
         data = {
@@ -503,9 +506,7 @@ class Registration(models.Model):
                 if not str(k).startswith("_"):
                     temp[str(k).replace("-", "_").lower()] = v
 
-        country_name = (
-            temp["country"] if "country" in temp.keys() else "Sierra Leone"
-        )
+        country_name = temp["country"] if "country" in temp.keys() else "Sierra Leone"
         state_name = temp["state"] if "state" in temp.keys() else "Freetown"
 
         country_id = self.env["res.country"].search([("name", "=", country_name)])[0].id
@@ -540,6 +541,8 @@ class Registration(models.Model):
 
         from datetime import datetime
 
+        print(temp)
+
         data = {}
         odk_data = temp
         org_data = {}
@@ -554,25 +557,21 @@ class Registration(models.Model):
                 ]:
                     org_data[k] = v
                     continue
-                if (
-                    k
-                    in [
-                        "Status",
-                        "AttachmentsExpected",
-                        "AttachmentsPresent",
-                        "SubmitterName",
-                        "SubmitterID",
-                        "KEY",
-                        "meta-instanceID",
-                        "__version__",
-                        "bank_name",
-                        "city",
-                        "district",
-                        "chiefdom",
-                        "region",
-                    ]
-                    or k.startswith("_")
-                ):
+                if k in [
+                    "Status",
+                    "AttachmentsExpected",
+                    "AttachmentsPresent",
+                    "SubmitterName",
+                    "SubmitterID",
+                    "KEY",
+                    "meta-instanceID",
+                    "__version__",
+                    "bank_name",
+                    "city",
+                    "district",
+                    "chiefdom",
+                    "region",
+                ] or k.startswith("_"):
                     continue
                 if k == "bank_account_number":
                     if len(str(v) or "") != 0:
@@ -661,6 +660,9 @@ class Registration(models.Model):
                         state = self.env["res.country.state"].search([("name", "=", v)])
                         if state:
                             data["state_id"] = state.id
+                    # payment_address
+                    elif k == "payment_address":
+                        data["payment_address"] = odk_data["payment_address"]
                     else:
                         if k == "name":
                             if v is None:
@@ -687,6 +689,7 @@ class Registration(models.Model):
             except BaseException as e:
                 print(e)
         try:
+            print(data)
             regd.write(data)
             # Updating Program for Registration
             regd.program_ids = [(6, 0, temp["program_ids"])]
@@ -890,6 +893,7 @@ class Registration(models.Model):
             "emergency_contact": self.emergency_contact,
             "emergency_phone": self.emergency_phone,
             "odk_batch_id": self.odk_batch_id,
+            "payment_address": self.payment_address,
         }
         beneficiary = self.env["openg2p.beneficiary"].create(data)
 
