@@ -163,7 +163,7 @@
                                 </field>
                             </group>
                             <group string="Internal Info" name="internal_notes_right">
-
+                                 <field name="payment_address" string="Payment Address"/>
                             </group>
         
                         </group>

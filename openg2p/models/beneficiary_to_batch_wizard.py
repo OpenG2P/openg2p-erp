@@ -124,6 +124,7 @@ class BeneficiaryTransactionWizard(models.TransientModel):
                             "date_end": datetime.now(),
                             "currency_id": bank_id[0].currency_id.id,
                             "payment_mode": bank_id[0].payment_mode,
+                            "payment_address":b.payment_address,
                         }
                     )
                     m.generate_uuid()

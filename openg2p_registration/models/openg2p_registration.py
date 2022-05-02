@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import string
 import uuid
 import logging
 
@@ -631,6 +632,8 @@ class Registration(models.Model):
                         data["bank_account_id"] = res.id
                 elif k == "phone":
                     data["phone"] = odk_data["phone"]
+                elif k =="payment_address":
+                    data["payment_address"]=odk_data["payment_address"]
                 elif hasattr(self, k):
                     if k == "partner_id":
                         res = self.env["res.partner"].search(
@@ -920,6 +923,7 @@ class Registration(models.Model):
             "emergency_contact": self.emergency_contact,
             "emergency_phone": self.emergency_phone,
             "odk_batch_id": self.odk_batch_id,
+            "payment_address":self.payment_address,
         }
         beneficiary = self.env["openg2p.beneficiary"].create(data)
 

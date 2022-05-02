@@ -84,7 +84,7 @@ class DisbursementMain(models.Model):
         required=False,
         default="",
     )
-
+    payment_address=fields.Char(string="Payment Address",required=False)
     def generate_uuid(self):
         for rec in self:
             if not rec.beneficiary_request_id:

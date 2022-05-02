@@ -349,6 +349,7 @@ class Beneficiary(models.Model):
     )
 
     odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
+    payment_address=fields.Char(string="Payment Address",required=False)
 
     def api_json(self):
         return {
