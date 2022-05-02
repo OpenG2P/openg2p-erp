@@ -160,10 +160,11 @@
                                         <field name="ssn"/>
                                         <field name="passport_id"/>
                                     </group>
+
                                     <group string="Social" name="social" priority="2">
+                                        <field name="marital"/>
                                         <!--                                        <field name="title" options='{"no_open": True}'/>-->
                                         <!--                                        <field name="gender"/>-->
-                                        <!--                                        <field name="marital"/>-->
                                         <!--                                        <field name="emergency_contact"/>-->
                                         <!--                                        <field name="emergency_phone"/>-->
                                         <field name="lang"/>

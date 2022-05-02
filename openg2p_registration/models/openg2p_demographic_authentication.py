@@ -77,7 +77,6 @@ class Openg2pDemographicAuthentication(models.Model):
             [("name", "=", auth_id), ("category_id", "=", type_code_id)])
         existing_beneficiary = auth_id_object.beneficiary_id
         _logger.info(f"auth_id: {auth_id}. Entered Post Auth Merge.")
-
         # Fields to be merged
         overwrite_data = {
             "firstname": self.firstname,
@@ -97,9 +96,9 @@ class Openg2pDemographicAuthentication(models.Model):
             "marital": self.marital,
             "bank_account_id": self.bank_account_id.id,
             "emergency_contact": self.emergency_contact,
-            "emergency_phone": self.emergency_phone,
+            "emergency_phone": self.emergency_phone
         }
-
+        program_ids=self.program_ids.ids
         # Removing None fields
         cleaned_overwrite_data = self.del_none(overwrite_data)
 
@@ -127,6 +126,7 @@ class Openg2pDemographicAuthentication(models.Model):
             "bank_account_id": existing_beneficiary.bank_account_id.id,
             "emergency_contact": existing_beneficiary.emergency_contact,
             "emergency_phone": existing_beneficiary.emergency_phone,
+            "program_ids": [(4,program)for program in existing_beneficiary.program_ids.ids ]
         }
 
         cleaned_existing_data = self.del_none(existing_data)
@@ -142,6 +142,11 @@ class Openg2pDemographicAuthentication(models.Model):
         # Storing merged id's in fields
         existing_beneficiary.write(
             {"merged_beneficiary_ids": [(4, new_beneficiary.id)]}
+        )
+        existing_beneficiary.write(
+            {
+                "program_ids":[(4,program)for program in program_ids ]
+            }
         )
 
         # Setting active false

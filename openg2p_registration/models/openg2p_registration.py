@@ -209,6 +209,7 @@ class Registration(models.Model):
         store=True,
         required=False,
     )
+
     # will be return registration details on api call
     def api_json(self):
         data = {
@@ -308,7 +309,7 @@ class Registration(models.Model):
                 rec.total_equity = 0
 
             field = self.env["openg2p.registration.orgmap"].search(
-                ["&", ("regd_id", "=", rec.id), ("field_name", "=", "grand_total_le")]
+                ["&", ("regd_id", "=", rec.id), ("field_name", "=", "grand_total")]
             )
             try:
                 rec.grand_total = int(field.field_value) if field else 0
@@ -328,7 +329,7 @@ class Registration(models.Model):
                 else:
                     rec.school_approved = "yes"
             except BaseException as e:
-                print(e)
+                _logger.error(e)
                 rec.school_approved = "no"
 
     # example for filtering on org custom fields
@@ -471,7 +472,7 @@ class Registration(models.Model):
             try:
                 val = rec.school_approved
             except BaseException as e:
-                print(e)
+                _logger.error(e)
                 continue
             if operator == "=":
                 if val == val2:
@@ -516,6 +517,7 @@ class Registration(models.Model):
             self.env["res.country.state"].search([("name", "=", state_name)])[0].id
         )
 
+        _logger.info("Country ID:"+str(country_id) + " State ID:"+str(state_id))
         # calling demo auth url with data
         temp["lang"] = "en_US"
 
@@ -548,13 +550,14 @@ class Registration(models.Model):
                     else "Freetown",
                     "country_id": country_id,
                     "state_id": state_id,
-                    "gender": "male",
-                    "stage_id": (temp["stage_id"] if "stage_id" in temp.keys() else "-")
+                    "gender": (temp["gender"] if "gender" in temp.keys() else "male"),
+                    "stage_id": (temp["stage_id"] if "stage_id" in temp.keys() else "-"),
+                    "marital": temp["status_sibil"] if "status_sibil" in temp.keys() and temp["status_sibil"] is not None else "single"
                 }
             )
             id = regd.id
         except BaseException as e:
-            print(e)
+            _logger.error(e)
             return None
 
         from datetime import datetime
@@ -693,7 +696,7 @@ class Registration(models.Model):
                 else:
                     org_data.update({k: v})
             except Exception as e:
-                print(e)
+                _logger.error(e)
         for k, v in org_data.items():
             try:
                 self.env["openg2p.registration.orgmap"].create(
@@ -704,13 +707,13 @@ class Registration(models.Model):
                     }
                 )
             except BaseException as e:
-                print(e)
+                _logger.error(e)
         try:
             regd.write(data)
             # Updating Program for Registration
             regd.program_ids = [(6, 0, temp["program_ids"])]
         except BaseException as e:
-            print(e)
+            _logger.error(e)
 
         if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
             regd.post_auth_create_id(demo_auth_res)
