@@ -12,3 +12,5 @@ from . import openg2p_registration_org_map
 from . import openg2p_registration_api
 from . import openg2p_deduplication
 from . import openg2p_demographic_authentication
+from . import openg2p_registration_org_functions
+from . import openg2p_create_registrations
