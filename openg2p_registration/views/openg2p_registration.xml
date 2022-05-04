@@ -157,11 +157,13 @@
                                     <tree string="Identifications" editable="bottom">
                                         <field name="type" string="ID Type"/>
                                         <field name="name"  string="ID Number"/>
+                                        <field name="status"  string="Status"/>
+                                        <field name="message"  string="Message"/>
                                     </tree>
                                 </field>
                             </group>
                             <group string="Internal Info" name="internal_notes_right">
-
+                                 <field name="payment_address" string="Payment Address"/>
                             </group>
         
                         </group>

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
+import string
 import uuid
+import logging
 
 import requests
 from odoo.addons.openg2p.services.matching_service import (
@@ -11,6 +13,8 @@ from odoo.addons.queue_job.job import job
 from odoo import api, fields, models, SUPERUSER_ID
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.translate import _
+
+_logger = logging.getLogger(__name__)
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
@@ -206,6 +210,7 @@ class Registration(models.Model):
         store=True,
         required=False,
     )
+
     # will be return registration details on api call
     def api_json(self):
         data = {
@@ -305,7 +310,7 @@ class Registration(models.Model):
                 rec.total_equity = 0
 
             field = self.env["openg2p.registration.orgmap"].search(
-                ["&", ("regd_id", "=", rec.id), ("field_name", "=", "grand_total_le")]
+                ["&", ("regd_id", "=", rec.id), ("field_name", "=", "grand_total")]
             )
             try:
                 rec.grand_total = int(field.field_value) if field else 0
@@ -325,7 +330,7 @@ class Registration(models.Model):
                 else:
                     rec.school_approved = "yes"
             except BaseException as e:
-                print(e)
+                _logger.error(e)
                 rec.school_approved = "no"
 
     # example for filtering on org custom fields
@@ -468,7 +473,7 @@ class Registration(models.Model):
             try:
                 val = rec.school_approved
             except BaseException as e:
-                print(e)
+                _logger.error(e)
                 continue
             if operator == "=":
                 if val == val2:
@@ -503,15 +508,48 @@ class Registration(models.Model):
                 if not str(k).startswith("_"):
                     temp[str(k).replace("-", "_").lower()] = v
 
-        country_name = (
-            temp["country"] if "country" in temp.keys() else "Sierra Leone"
-        )
+        country_name = temp["country"] if "country" in temp.keys() else "Sierra Leone"
         state_name = temp["state"] if "state" in temp.keys() else "Freetown"
 
         country_id = self.env["res.country"].search([("name", "=", country_name)])[0].id
         state_id = (
             self.env["res.country.state"].search([("name", "=", state_name)])[0].id
         )
+
+        _logger.info("Country ID:" + str(country_id) + " State ID:" + str(state_id))
+        # calling demo auth url with data
+        temp["lang"] = "en_US"
+
+        _logger.debug("Raw Data From ODK: " + json.dumps(temp))
+        # check both Bank Account No and Payment address are empty or filled
+        if "bank_account_number" in temp.keys() and "payment_address" in temp.keys():
+            if temp["bank_account_number"] is None and temp["payment_address"] is None:
+                raise Exception("Both the fields are empty")
+                return None
+            elif (
+                temp["bank_account_number"] is not None
+                and temp["payment_address"] is not None
+            ):
+                raise Exception("Both the fields are present")
+                return None
+        elif (
+            "bank_account_number" not in temp.keys()
+            and "payment_address" not in temp.keys()
+        ):
+            raise Exception("Both the fields are empty")
+            return None
+
+        import os
+
+        should_merge = False
+        should_create_beneficiary = False
+        demo_auth_res = {}
+        if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
+            demo_auth_res = self.demo_auth_merge(temp)
+            temp["stage_id"] = demo_auth_res["stage_id"]
+            should_merge = demo_auth_res["should_merge"]
+            should_create_beneficiary = demo_auth_res["should_create_beneficiary"]
+        temp["gender"] = temp["gender"].lower()
 
         try:
             regd = self.create(
@@ -530,12 +568,19 @@ class Registration(models.Model):
                     else "Freetown",
                     "country_id": country_id,
                     "state_id": state_id,
-                    "gender": "male",
+                    "gender": (temp["gender"] if "gender" in temp.keys() else "male"),
+                    "stage_id": (
+                        temp["stage_id"] if "stage_id" in temp.keys() else "-"
+                    ),
+                    "marital": temp["status_sibil"]
+                    if "status_sibil" in temp.keys()
+                    and temp["status_sibil"] is not None
+                    else "single",
                 }
             )
             id = regd.id
         except BaseException as e:
-            print(e)
+            _logger.error(e)
             return None
 
         from datetime import datetime
@@ -554,27 +599,23 @@ class Registration(models.Model):
                 ]:
                     org_data[k] = v
                     continue
-                if (
-                    k
-                    in [
-                        "Status",
-                        "AttachmentsExpected",
-                        "AttachmentsPresent",
-                        "SubmitterName",
-                        "SubmitterID",
-                        "KEY",
-                        "meta-instanceID",
-                        "__version__",
-                        "bank_name",
-                        "city",
-                        "district",
-                        "chiefdom",
-                        "region",
-                    ]
-                    or k.startswith("_")
-                ):
+                if k in [
+                    "Status",
+                    "AttachmentsExpected",
+                    "AttachmentsPresent",
+                    "SubmitterName",
+                    "SubmitterID",
+                    "KEY",
+                    "meta-instanceID",
+                    "__version__",
+                    "bank_name",
+                    "city",
+                    "district",
+                    "chiefdom",
+                    "region",
+                ] or k.startswith("_"):
                     continue
-                if k == "bank_account_number":
+                if k == "bank_account_number" and v is not None:
                     if len(str(v) or "") != 0:
                         data["bank_account_number"] = str(v)
                         res = self.env["res.partner.bank"].search(
@@ -607,6 +648,8 @@ class Registration(models.Model):
                                 }
                             )
                         data["bank_account_id"] = res.id
+                elif k == "payment_address" and v is not None:
+                    data["payment_address"] = odk_data["payment_address"]
                 elif k == "phone":
                     data["phone"] = odk_data["phone"]
                 elif hasattr(self, k):
@@ -674,7 +717,7 @@ class Registration(models.Model):
                 else:
                     org_data.update({k: v})
             except Exception as e:
-                print(e)
+                _logger.error(e)
         for k, v in org_data.items():
             try:
                 self.env["openg2p.registration.orgmap"].create(
@@ -685,13 +728,21 @@ class Registration(models.Model):
                     }
                 )
             except BaseException as e:
-                print(e)
+                _logger.error(e)
         try:
             regd.write(data)
             # Updating Program for Registration
             regd.program_ids = [(6, 0, temp["program_ids"])]
         except BaseException as e:
-            print(e)
+            _logger.error(e)
+
+        if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
+            regd.post_auth_create_id(demo_auth_res)
+        if should_merge:
+            regd.post_auth_merge(demo_auth_res)
+        if should_create_beneficiary:
+            regd.create_beneficiary_from_registration()
+
         return regd
 
     @api.depends("date_open", "date_closed")
@@ -890,6 +941,7 @@ class Registration(models.Model):
             "emergency_contact": self.emergency_contact,
             "emergency_phone": self.emergency_phone,
             "odk_batch_id": self.odk_batch_id,
+            "payment_address": self.payment_address,
         }
         beneficiary = self.env["openg2p.beneficiary"].create(data)
 
@@ -909,7 +961,7 @@ class Registration(models.Model):
             )
         for code, number in self.get_identities():
             category = self.env["openg2p.beneficiary.id_category"].search(
-                [("type", "=", code)]
+                [("code", "=", code)]
             )
             self.env["openg2p.beneficiary.id_number"].create(
                 {
@@ -963,3 +1015,8 @@ class Registration(models.Model):
             )
         default_stage_id = self._default_stage_id()
         self.write({"active": True, "stage_id": default_stage_id})
+
+    @api.multi
+    @api.depends("identities", "identities.name", "identities.type")
+    def _compute_identification(self, field_name, category_code):
+        """Overriding from openg2p.beneficiary model."""

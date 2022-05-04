@@ -83,7 +83,7 @@ class MatchingServiceExactIdentities(Component):
             for ID, number in query.get_identities()
         )
         matches = (
-            self.with_context(active_test=False)
+            query.with_context(active_test=False)
             .env["openg2p.beneficiary.id_number"]
             .search(domain)
         )

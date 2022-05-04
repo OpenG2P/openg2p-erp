@@ -172,6 +172,7 @@ class ODKSubmissions(models.Model):
             ].create_registration_from_odk(data)
             return registration
         except BaseException as e:
+            print(e)
             print("Failed in creating registration!")
             return None
 

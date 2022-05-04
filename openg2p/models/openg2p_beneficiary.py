@@ -349,6 +349,7 @@ class Beneficiary(models.Model):
     )
 
     odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
+    payment_address = fields.Char(string="Payment Address", required=False)
 
     def api_json(self):
         return {
@@ -466,7 +467,7 @@ class Beneficiary(models.Model):
                 [
                     "&",
                     ("beneficiary_id", "=", rec.id),
-                    ("field_name", "=", "grand_total_le"),
+                    ("field_name", "=", "grand_total"),
                 ]
             )
             try:
@@ -731,7 +732,7 @@ class Beneficiary(models.Model):
         for beneficiary in self:
             if beneficiary.email:
                 beneficiary.email_formatted = tools.formataddr(
-                    (beneficiary.name or u"False", beneficiary.email or u"False")
+                    (beneficiary.name or "False", beneficiary.email or "False")
                 )
             else:
                 beneficiary.email_formatted = ""
