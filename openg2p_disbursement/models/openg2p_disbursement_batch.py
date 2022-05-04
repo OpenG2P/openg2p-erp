@@ -161,16 +161,12 @@ class SlipBatch(models.Model):
     @api.multi
     def _compute_can_cancel(self):
         self.ensure_one()
-        self.can_cancel = (
-            self.state
-            in (
-                "generating",
-                "draft",
-                "confirm",
-                "approved",
-            )
-            and not isinstance(self.id, models.NewId)
-        )
+        self.can_cancel = self.state in (
+            "generating",
+            "draft",
+            "confirm",
+            "approved",
+        ) and not isinstance(self.id, models.NewId)
 
     @api.multi
     def _compute_can_confirm(self):

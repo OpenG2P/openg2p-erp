@@ -191,7 +191,7 @@
                                         <field name="create_date" widget="date" string="Created On"/>
                                     </group>
                                     <group name="internal_notes_right">
-
+                                        <field name="payment_address" string="Payment Address"/>
                                     </group>
                                 </group>
                                 <field name="comment" placeholder="Internal note..."/>

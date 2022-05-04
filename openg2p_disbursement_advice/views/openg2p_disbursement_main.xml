@@ -25,6 +25,7 @@
                                 <!-- <field name="state" invisible="1"/> -->
                                 <field name="amount"/>
                                 <field name="currency_id"/>
+                                <field name="payment_address"/>
 
                             </group>
                             <group name="secondary">
