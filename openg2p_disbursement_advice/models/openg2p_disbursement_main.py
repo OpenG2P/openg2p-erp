@@ -25,7 +25,7 @@ class DisbursementMain(models.Model):
         "openg2p.disbursement.batch.transaction", "Batch", required=True
     )
     bank_account_id = fields.Many2one(
-        "res.partner.bank", "Account ID", ondelete="restrict"
+        "res.partner.bank", "Account ID", ondelete="restrict",required=False
     )
     program_id = fields.Many2one(
         "openg2p.program",

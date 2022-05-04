@@ -57,9 +57,9 @@ class BeneficiaryTransactionWizard(models.TransientModel):
 
         for b in beneficiaries_selected:
 
-            if not b.bank_account_number:
+            if not b.bank_account_number and not b.payment_address:
                 raise ValidationError(
-                    "One or more beneficiaries do not have bank account details"
+                    "One or more beneficiaries do not have bank account details or payment address"
                 )
 
             # if b.batch_status:
@@ -110,23 +110,24 @@ class BeneficiaryTransactionWizard(models.TransientModel):
 
                 for b in beneficiaries_list:
                     bank_id = self._get_bank_id(b)
+                    beneficiaries_details={
+                        "batch_id": batch.id,
+                        "state": "draft",
+                        "name": str(b.name),
+                        "beneficiary_id": b.id,
+                        "amount": b.grand_total,
+                        "program_id": b.program_ids.ids[0],
+                        "date_start": datetime.now(),
+                        "date_end": datetime.now(),
+                    }
+                    if bank_id.id:
+                        beneficiaries_details["bank_account_id"]=bank_id[0].id
+                        beneficiaries_details["currency_id"]= bank_id[0].currency_id.id
+                        beneficiaries_details["payment_mode"]= bank_id[0].payment_mode
+                    else:
+                        beneficiaries_details["payment_address"]=b.payment_address
 
-                    m = self.env["openg2p.disbursement.main"].create(
-                        {
-                            "bank_account_id": bank_id[0].id,
-                            "batch_id": batch.id,
-                            "state": "draft",
-                            "name": str(b.name),
-                            "beneficiary_id": b.id,
-                            "amount": b.grand_total,
-                            "program_id": b.program_ids.ids[0],
-                            "date_start": datetime.now(),
-                            "date_end": datetime.now(),
-                            "currency_id": bank_id[0].currency_id.id,
-                            "payment_mode": bank_id[0].payment_mode,
-                            "payment_address": b.payment_address,
-                        }
-                    )
+                    m = self.env["openg2p.disbursement.main"].create(beneficiaries_details)
                     m.generate_uuid()
 
         # Changing batch status of records true

@@ -524,19 +524,13 @@ class Registration(models.Model):
         # check both Bank Account No and Payment address are empty or filled
         if "bank_account_number" in temp.keys() and "payment_address" in temp.keys():
             if temp["bank_account_number"] is None and temp["payment_address"] is None:
-                raise Exception("Both the fields are empty")
-                return None
-            elif (
-                temp["bank_account_number"] is not None
-                and temp["payment_address"] is not None
-            ):
-                raise Exception("Both the fields are present")
+                raise Exception("Bank Account Number and Payment Address both are empty")
                 return None
         elif (
             "bank_account_number" not in temp.keys()
             and "payment_address" not in temp.keys()
         ):
-            raise Exception("Both the fields are empty")
+            raise Exception("Bank Account Number and Payment Address both are empty")
             return None
 
         import os
@@ -649,7 +643,8 @@ class Registration(models.Model):
                             )
                         data["bank_account_id"] = res.id
                 elif k == "payment_address" and v is not None:
-                    data["payment_address"] = odk_data["payment_address"]
+                    if "bank_account_number" not in temp.keys() or ("bank_account_number" in temp.keys() and temp["bank_account_number"] is None):
+                        data["payment_address"] = odk_data["payment_address"]
                 elif k == "phone":
                     data["phone"] = odk_data["phone"]
                 elif hasattr(self, k):
