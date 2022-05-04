@@ -525,16 +525,19 @@ class Registration(models.Model):
         if "bank_account_number" in temp.keys() and "payment_address" in temp.keys():
             if temp["bank_account_number"] is None and temp["payment_address"] is None:
                 raise Exception("Both the fields are empty")
+                return None
             elif (
                 temp["bank_account_number"] is not None
                 and temp["payment_address"] is not None
             ):
                 raise Exception("Both the fields are present")
+                return None
         elif (
             "bank_account_number" not in temp.keys()
             and "payment_address" not in temp.keys()
         ):
             raise Exception("Both the fields are empty")
+            return None
 
         import os
 
@@ -586,8 +589,6 @@ class Registration(models.Model):
         odk_data = temp
         org_data = {}
         format = "%Y-%m-%dT%H:%M:%SZ"
-        # flag variables
-        flag = 0
         for k, v in odk_data.items():
             try:
                 if k in [
@@ -614,7 +615,7 @@ class Registration(models.Model):
                     "region",
                 ] or k.startswith("_"):
                     continue
-                if k == "bank_account_number" and flag == 0:
+                if k == "bank_account_number" and v is not None:
                     if len(str(v) or "") != 0:
                         data["bank_account_number"] = str(v)
                         res = self.env["res.partner.bank"].search(
@@ -647,8 +648,7 @@ class Registration(models.Model):
                                 }
                             )
                         data["bank_account_id"] = res.id
-                        flag = 1
-                elif k == "payment_address" and flag == 0:
+                elif k == "payment_address" and v is not None:
                     data["payment_address"] = odk_data["payment_address"]
                 elif k == "phone":
                     data["phone"] = odk_data["phone"]
