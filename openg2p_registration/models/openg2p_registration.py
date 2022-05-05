@@ -643,8 +643,8 @@ class Registration(models.Model):
                             )
                         data["bank_account_id"] = res.id
                 elif k == "payment_address" and v is not None:
-                    if "bank_account_number" not in temp.keys() or ("bank_account_number" in temp.keys() and temp["bank_account_number"] is None):
-                        data["payment_address"] = odk_data["payment_address"]
+                   # if "bank_account_number" not in temp.keys() or ("bank_account_number" in temp.keys() and temp["bank_account_number"] is None):
+                    data["payment_address"] = odk_data["payment_address"]
                 elif k == "phone":
                     data["phone"] = odk_data["phone"]
                 elif hasattr(self, k):
