@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_openg2p_beneficiary_relative_beneficiary,openg2p.beneficiary.relative,model_openg2p_beneficiary_relative,base.group_user,1,0,0,0
-access_openg2p_beneficiary_relative_user,openg2p.beneficiary.relative,model_openg2p_beneficiary_relative,openg2p.group_openg2p_officer,1,1,1,1
-access_openg2p_beneficiary_relative_relation_beneficiary,openg2p.beneficiary.relative.relation,model_openg2p_beneficiary_relative_relation,base.group_user,1,0,0,0
-access_openg2p_beneficiary_relative_relation_user,openg2p.beneficiary.relative.relation,model_openg2p_beneficiary_relative_relation,openg2p.group_openg2p_manager,1,1,1,1
