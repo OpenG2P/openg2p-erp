@@ -466,7 +466,7 @@ class Beneficiary(models.Model):
                 [
                     "&",
                     ("beneficiary_id", "=", rec.id),
-                    ("field_name", "=", "grand_total"),
+                    ("field_name", "=", "grand_total_le"),
                 ]
             )
             try:

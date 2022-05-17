@@ -20,10 +20,8 @@ class RegistrationIdentification(models.Model):
     type = fields.Selection(
         selection=lambda x: x._get_supported_id_categories(), required=True
     )
-    status = fields.Char("Status of ID", required=False)
-    message = fields.Char("Message from ID Provider", required=False)
     registration_id = fields.Many2one("openg2p.registration", required=True, index=True)
 
     _sql_constraints = [
-        ("id_uniq", "unique (type, name, registration_id)", "ID already exists !"),
+        ("id_uniq", "unique (type, name)", "ID already exists !"),
     ]

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import uuid
-import logging
 
 import requests
 from odoo.addons.openg2p.services.matching_service import (
@@ -12,8 +11,6 @@ from odoo.addons.queue_job.job import job
 from odoo import api, fields, models, SUPERUSER_ID
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.translate import _
-
-_logger = logging.getLogger(__name__)
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
@@ -309,7 +306,7 @@ class Registration(models.Model):
                 rec.total_equity = 0
 
             field = self.env["openg2p.registration.orgmap"].search(
-                ["&", ("regd_id", "=", rec.id), ("field_name", "=", "grand_total")]
+                ["&", ("regd_id", "=", rec.id), ("field_name", "=", "grand_total_le")]
             )
             try:
                 rec.grand_total = int(field.field_value) if field else 0
@@ -517,22 +514,6 @@ class Registration(models.Model):
             self.env["res.country.state"].search([("name", "=", state_name)])[0].id
         )
 
-        _logger.info("Country ID:"+str(country_id) + " State ID:"+str(state_id))
-        # calling demo auth url with data
-        temp["lang"] = "en_US"
-
-        _logger.debug("Raw Data From ODK: " + json.dumps(temp))
-        import os
-        should_merge = False
-        should_create_beneficiary = False
-        demo_auth_res = {}
-        if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
-            demo_auth_res = self.demo_auth_merge(temp)
-            temp["stage_id"] = demo_auth_res["stage_id"]
-            should_merge = demo_auth_res["should_merge"]
-            should_create_beneficiary = demo_auth_res["should_create_beneficiary"]
-        temp["gender"] = temp["gender"].lower()
-
         try:
             regd = self.create(
                 {
@@ -550,9 +531,7 @@ class Registration(models.Model):
                     else "Freetown",
                     "country_id": country_id,
                     "state_id": state_id,
-                    "gender": (temp["gender"] if "gender" in temp.keys() else "male"),
-                    "stage_id": (temp["stage_id"] if "stage_id" in temp.keys() else "-"),
-                    "marital": temp["status_sibil"] if "status_sibil" in temp.keys() and temp["status_sibil"] is not None else "single"
+                    "gender": "male",
                 }
             )
             id = regd.id
@@ -713,15 +692,7 @@ class Registration(models.Model):
             # Updating Program for Registration
             regd.program_ids = [(6, 0, temp["program_ids"])]
         except BaseException as e:
-            _logger.error(e)
-
-        if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
-            regd.post_auth_create_id(demo_auth_res)
-        if should_merge:
-            regd.post_auth_merge(demo_auth_res)
-        if should_create_beneficiary:
-            regd.create_beneficiary_from_registration()
-
+            print(e)
         return regd
 
     @api.depends("date_open", "date_closed")
@@ -939,7 +910,7 @@ class Registration(models.Model):
             )
         for code, number in self.get_identities():
             category = self.env["openg2p.beneficiary.id_category"].search(
-                [("code", "=", code)]
+                [("type", "=", code)]
             )
             self.env["openg2p.beneficiary.id_number"].create(
                 {
@@ -993,9 +964,3 @@ class Registration(models.Model):
             )
         default_stage_id = self._default_stage_id()
         self.write({"active": True, "stage_id": default_stage_id})
-
-    @api.multi
-    @api.depends("identities", "identities.name", "identities.type")
-    def _compute_identification(self, field_name, category_code):
-        """Overriding from openg2p.beneficiary model.
-        """
