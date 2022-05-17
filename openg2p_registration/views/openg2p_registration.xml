@@ -157,8 +157,6 @@
                                     <tree string="Identifications" editable="bottom">
                                         <field name="type" string="ID Type"/>
                                         <field name="name"  string="ID Number"/>
-                                        <field name="status"  string="Status"/>
-                                        <field name="message"  string="Message"/>
                                     </tree>
                                 </field>
                             </group>
