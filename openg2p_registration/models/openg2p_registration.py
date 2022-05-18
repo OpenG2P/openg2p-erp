@@ -538,12 +538,13 @@ class Registration(models.Model):
             return None
 
         from datetime import datetime
-
+        #print(temp)
         data = {}
         odk_data = temp
         org_data = {}
         format = "%Y-%m-%dT%H:%M:%SZ"
         for k, v in odk_data.items():
+            print(k)
             try:
                 if k in [
                     "regression_and_progression",
@@ -604,6 +605,23 @@ class Registration(models.Model):
                         data["bank_account_id"] = res.id
                 elif k == "phone":
                     data["phone"] = odk_data["phone"]
+                elif k == "bban":
+                    print(odk_data["bban"])
+                    data["kyc_id"] = odk_data["bban"]
+                    print(data["kyc_id"])
+                    print("this is data0", data)
+                elif k == "ward":
+                    data["ward"] = odk_data["ward"]
+                elif k == "new_emis_code":
+                    data["external_id"] = odk_data["new_emis_code"]
+                elif k == "cycle":
+                    data["cycle"] = odk_data["cycle"]
+                elif k == "section":
+                    data["section"] = odk_data["section"]
+                elif k == "town_village":
+                    data["town_village"] = odk_data["town_village"]
+                elif k == "school_ownership":
+                    data["school_ownership"] = odk_data["school_ownership"]
                 elif hasattr(self, k):
                     if k == "partner_id":
                         res = self.env["res.partner"].search(
@@ -670,6 +688,7 @@ class Registration(models.Model):
                     org_data.update({k: v})
             except Exception as e:
                 _logger.error(e)
+        print("this is data",data)
         for k, v in org_data.items():
             try:
                 self.env["openg2p.registration.orgmap"].create(
@@ -885,6 +904,13 @@ class Registration(models.Model):
             "emergency_contact": self.emergency_contact,
             "emergency_phone": self.emergency_phone,
             "odk_batch_id": self.odk_batch_id,
+            "kyc_id":self.kyc_id,
+            "external_id":self.external_id,
+            "ward":self.ward,
+            "school_ownership":self.school_ownership,
+            "section":self.section,
+            "town_village":self.town_village,
+            "cycle":self.cycle
         }
         beneficiary = self.env["openg2p.beneficiary"].create(data)
 
