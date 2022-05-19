@@ -65,7 +65,6 @@ class Openg2pRegistrationApi(Controller):
             return response
         except BaseException as e:
             import traceback
-
             _logger.error(traceback.format_exc())
             return {"status": 400, "error": str(e)}
 

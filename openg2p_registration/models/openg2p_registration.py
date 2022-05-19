@@ -507,7 +507,9 @@ class Registration(models.Model):
                 if not str(k).startswith("_"):
                     temp[str(k).replace("-", "_").lower()] = v
 
-        country_name = temp["country"] if "country" in temp.keys() else "Sierra Leone"
+        country_name = (
+            temp["country"] if "country" in temp.keys() else "Sierra Leone"
+        )
         state_name = temp["state"] if "state" in temp.keys() else "Freetown"
 
         country_id = self.env["res.country"].search([("name", "=", country_name)])[0].id
@@ -515,13 +517,12 @@ class Registration(models.Model):
             self.env["res.country.state"].search([("name", "=", state_name)])[0].id
         )
 
-        _logger.info("Country ID:" + str(country_id) + " State ID:" + str(state_id))
+        _logger.info("Country ID:"+str(country_id) + " State ID:"+str(state_id))
         # calling demo auth url with data
         temp["lang"] = "en_US"
 
         _logger.debug("Raw Data From ODK: " + json.dumps(temp))
         import os
-
         should_merge = False
         should_create_beneficiary = False
         demo_auth_res = {}
@@ -550,13 +551,8 @@ class Registration(models.Model):
                     "country_id": country_id,
                     "state_id": state_id,
                     "gender": (temp["gender"] if "gender" in temp.keys() else "male"),
-                    "stage_id": (
-                        temp["stage_id"] if "stage_id" in temp.keys() else "-"
-                    ),
-                    "marital": temp["status_sibil"]
-                    if "status_sibil" in temp.keys()
-                    and temp["status_sibil"] is not None
-                    else "single",
+                    "stage_id": (temp["stage_id"] if "stage_id" in temp.keys() else "-"),
+                    "marital": temp["status_sibil"] if "status_sibil" in temp.keys() and temp["status_sibil"] is not None else "single"
                 }
             )
             id = regd.id
@@ -1001,4 +997,5 @@ class Registration(models.Model):
     @api.multi
     @api.depends("identities", "identities.name", "identities.type")
     def _compute_identification(self, field_name, category_code):
-        """Overriding from openg2p.beneficiary model."""
+        """Overriding from openg2p.beneficiary model.
+        """

@@ -15,11 +15,7 @@ class Openg2pDemographicAuthentication(models.Model):
 
     def demo_auth(self, data):
         import os
-
-        DEMO_AUTHENTICATE_URL = os.getenv(
-            "DEMO_AUTHENTICATE_URL",
-            "http://openg2p-mosip-auth-mediator.openg2p-mosip/demoAuth",
-        )
+        DEMO_AUTHENTICATE_URL = os.getenv("DEMO_AUTHENTICATE_URL", "http://openg2p-mosip-auth-mediator.openg2p-mosip/demoAuth")
         response = requests.post(DEMO_AUTHENTICATE_URL, json=data)
         _logger.info("Demo Auth Response: " + str(response.content))
         return json.loads(response.content)
@@ -32,8 +28,7 @@ class Openg2pDemographicAuthentication(models.Model):
         if auth_res["authIdStatus"] == SUCCESS:
             stage_id = 6
             should_merge = self.post_auth_find_duplicate_beneficiary(
-                auth_res["authId"], auth_res["authIdType"]
-            )
+                auth_res["authId"], auth_res["authIdType"])
             if not should_merge:
                 should_create_beneficiary = True
         elif auth_res["authIdStatus"] == SUCCESS_WITH_ERRORS:
@@ -47,19 +42,17 @@ class Openg2pDemographicAuthentication(models.Model):
             "auth_id": auth_res["authId"],
             "auth_id_type": auth_res["authIdType"],
             "auth_id_status": auth_res["authIdStatus"],
-            "auth_id_message": auth_res["authIdMessage"],
+            "auth_id_message": auth_res["authIdMessage"]
         }
 
     def post_auth_create_id(self, response):
-        return self.env["openg2p.registration.identity"].create(
-            {
-                "name": response["auth_id"],
-                "type": response["auth_id_type"],
-                "status": response["auth_id_status"],
-                "message": response["auth_id_message"],
-                "registration_id": self.id,
-            }
-        )
+        return self.env["openg2p.registration.identity"].create({
+            "name": response["auth_id"],
+            "type": response["auth_id_type"],
+            "status": response["auth_id_status"],
+            "message": response["auth_id_message"],
+            "registration_id": self.id
+        })
         res = self.env["openg2p.registration.identity"].search(
             [("registration_id", "=", self.id)]
         )
@@ -67,16 +60,10 @@ class Openg2pDemographicAuthentication(models.Model):
             self.write({"identities": res.ids})
 
     def post_auth_find_duplicate_beneficiary(self, auth_id, auth_id_type):
-        type_code_id = (
-            self.env["openg2p.beneficiary.id_category"]
-            .search([("code", "=", auth_id_type)], limit=1)
-            .id
-        )
-        length = len(
-            self.env["openg2p.beneficiary.id_number"].search(
-                [("name", "=", auth_id), ("category_id", "=", type_code_id)]
-            )
-        )
+        type_code_id = self.env["openg2p.beneficiary.id_category"].search(
+            [("code", "=", auth_id_type)], limit=1).id
+        length = len(self.env["openg2p.beneficiary.id_number"].search(
+            [("name", "=", auth_id), ("category_id", "=", type_code_id)]))
         _logger.info(f"auth_id : {auth_id}. Post Auth. Size of duplicates: {length}")
         return length > 0
 
@@ -84,14 +71,10 @@ class Openg2pDemographicAuthentication(models.Model):
         auth_id = response["auth_id"]
         auth_id_type = response["auth_id_type"]
 
-        type_code_id = (
-            self.env["openg2p.beneficiary.id_category"]
-            .search([("code", "=", auth_id_type)], limit=1)
-            .id
-        )
+        type_code_id = self.env["openg2p.beneficiary.id_category"].search(
+            [("code", "=", auth_id_type)], limit=1).id
         auth_id_object = self.env["openg2p.beneficiary.id_number"].search(
-            [("name", "=", auth_id), ("category_id", "=", type_code_id)]
-        )
+            [("name", "=", auth_id), ("category_id", "=", type_code_id)])
         existing_beneficiary = auth_id_object.beneficiary_id
         _logger.info(f"auth_id: {auth_id}. Entered Post Auth Merge.")
         # Fields to be merged
@@ -113,9 +96,9 @@ class Openg2pDemographicAuthentication(models.Model):
             "marital": self.marital,
             "bank_account_id": self.bank_account_id.id,
             "emergency_contact": self.emergency_contact,
-            "emergency_phone": self.emergency_phone,
+            "emergency_phone": self.emergency_phone
         }
-        program_ids = self.program_ids.ids
+        program_ids=self.program_ids.ids
         # Removing None fields
         cleaned_overwrite_data = self.del_none(overwrite_data)
 
@@ -143,9 +126,7 @@ class Openg2pDemographicAuthentication(models.Model):
             "bank_account_id": existing_beneficiary.bank_account_id.id,
             "emergency_contact": existing_beneficiary.emergency_contact,
             "emergency_phone": existing_beneficiary.emergency_phone,
-            "program_ids": [
-                (4, program) for program in existing_beneficiary.program_ids.ids
-            ],
+            "program_ids": [(4,program)for program in existing_beneficiary.program_ids.ids ]
         }
 
         cleaned_existing_data = self.del_none(existing_data)
@@ -156,14 +137,16 @@ class Openg2pDemographicAuthentication(models.Model):
         # Creating new beneficiary whose active=False
         new_beneficiary = self.env["openg2p.beneficiary"].create(cleaned_existing_data)
         # Create new registration with existing data
-        self.write({"beneficiary_id": existing_beneficiary.id})
+        self.write({"beneficiary_id": existing_beneficiary.id })
 
         # Storing merged id's in fields
         existing_beneficiary.write(
             {"merged_beneficiary_ids": [(4, new_beneficiary.id)]}
         )
         existing_beneficiary.write(
-            {"program_ids": [(4, program) for program in program_ids]}
+            {
+                "program_ids":[(4,program)for program in program_ids ]
+            }
         )
 
         # Setting active false
