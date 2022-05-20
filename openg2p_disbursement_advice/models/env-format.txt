@@ -1,5 +1,0 @@
-access_key=XXXXX
-secret_access_key=XXXXX
-username=XXXXX
-password=XXXXX
-grant_type=XXXXX
