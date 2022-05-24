@@ -7,6 +7,7 @@
         <field name="res_model">openg2p.disbursement.batch.transaction</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,kanban</field>
+        <field name="limit">20</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your Batch !
@@ -20,6 +21,7 @@
         <field name="res_model">openg2p.disbursement.main</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+        <field name="limit">20</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Mapping your Transaction !
@@ -34,6 +36,7 @@
         <field name="res_model">openg2p.disbursement.single.transaction</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,kanban</field>
+        <field name="limit">20</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your Transaction !
@@ -46,6 +49,7 @@
         <field name="res_model">openg2p.disbursement.file</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,kanban</field>
+        <field name="limit">20</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new batch from CSV !
