@@ -504,9 +504,7 @@ class Registration(models.Model):
                 if not str(k).startswith("_"):
                     temp[str(k).replace("-", "_").lower()] = v
 
-        country_name = (
-            temp["country"] if "country" in temp.keys() else "Sierra Leone"
-        )
+        country_name = temp["country"] if "country" in temp.keys() else "Sierra Leone"
         state_name = temp["state"] if "state" in temp.keys() else "Freetown"
 
         country_id = self.env["res.country"].search([("name", "=", country_name)])[0].id
