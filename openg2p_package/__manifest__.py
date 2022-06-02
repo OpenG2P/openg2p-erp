@@ -10,6 +10,6 @@
         "openg2p_registration",
         "openg2p",
         "openg2p_disbursement",
-        "openg2p_program"
+        "openg2p_program",
     ],
 }
