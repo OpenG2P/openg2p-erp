@@ -731,7 +731,7 @@ class Beneficiary(models.Model):
         for beneficiary in self:
             if beneficiary.email:
                 beneficiary.email_formatted = tools.formataddr(
-                    (beneficiary.name or u"False", beneficiary.email or u"False")
+                    (beneficiary.name or "False", beneficiary.email or "False")
                 )
             else:
                 beneficiary.email_formatted = ""

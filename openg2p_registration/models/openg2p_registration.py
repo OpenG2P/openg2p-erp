@@ -553,25 +553,21 @@ class Registration(models.Model):
                 ]:
                     org_data[k] = v
                     continue
-                if (
-                    k
-                    in [
-                        "Status",
-                        "AttachmentsExpected",
-                        "AttachmentsPresent",
-                        "SubmitterName",
-                        "SubmitterID",
-                        "KEY",
-                        "meta-instanceID",
-                        "__version__",
-                        "bank_name",
-                        "city",
-                        "district",
-                        "chiefdom",
-                        "region",
-                    ]
-                    or k.startswith("_")
-                ):
+                if k in [
+                    "Status",
+                    "AttachmentsExpected",
+                    "AttachmentsPresent",
+                    "SubmitterName",
+                    "SubmitterID",
+                    "KEY",
+                    "meta-instanceID",
+                    "__version__",
+                    "bank_name",
+                    "city",
+                    "district",
+                    "chiefdom",
+                    "region",
+                ] or k.startswith("_"):
                     continue
                 if k == "bank_account_number":
                     if len(str(v) or "") != 0:
