@@ -16,3 +16,4 @@ from . import res_country_state
 from . import res_users
 from . import openg2p_beneficiary_org_map
 from . import openg2p_beneficiary_api
+from . import openg2p_registration_stage

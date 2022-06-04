@@ -17,6 +17,7 @@ from odoo.tools.translate import _
 _logger = logging.getLogger(__name__)
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
+_logger = logging.getLogger(__name__)
 
 
 class Registration(models.Model):
@@ -693,6 +694,9 @@ class Registration(models.Model):
             "emergency_contact": self.emergency_contact,
             "emergency_phone": self.emergency_phone,
             "odk_batch_id": self.odk_batch_id,
+            "kyc_id": self.kyc_id,
+            "external_id": self.external_id,
+            "town_village": self.town_village,
         }
         beneficiary = self.env["openg2p.beneficiary"].create(data)
 

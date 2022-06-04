@@ -1,5 +1,6 @@
 from odoo import models
 from odoo.exceptions import UserError, ValidationError, _logger
+from odoo.tools.translate import _
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
@@ -9,10 +10,77 @@ class RegistrationService(models.Model):
 
     def create_registration_for_single_submission(self, odk_data):
         temp = {}
+        # current program id of a registration
+        current_program_id = int(
+            odk_data["program_ids"][len(odk_data["program_ids"]) - 1]
+        )
+        program_obj = self.env["openg2p.program"].search(
+            [("id", "=", current_program_id)]
+        )
         self.renaming_submission_data_fields(temp, odk_data)
-        self.create_fields_for_registration(temp)
+        autodedup_field = program_obj.autodedup_field
+        action = program_obj.action
+        stage_name = program_obj.stage_name
+        if autodedup_field == "kyc":
+            kycdup_list = (
+                self.env["openg2p.registration"]
+                .search([("kyc_id", "=", temp["bban"])])
+                .ids
+            )
 
-    def create_fields_for_registration(self, temp):
+            if len(kycdup_list) != 0:
+                if action == "merge":
+                    # merging the existing ones with new one and passing the existing_id and current_id as arguments
+                    self.merge_registrations(temp, kycdup_list[0])
+                elif action == "del_old":
+                    # deleting the old registration
+                    duplicate_kyc = self.env["openg2p.registration"].search(
+                        [("kyc_id", "=", temp["bban"])]
+                    )
+                    duplicate_kyc.active = False
+                    # deleting the old beneficiary
+                    duplicate_kyc_bene = self.env["openg2p.beneficiary"].search(
+                        [("kyc_id", "=", temp["bban"])]
+                    )
+                    duplicate_kyc_bene.active = False
+                    # creating registration for new record
+                    self.create_fields_for_registration(temp, stage_name)
+                elif action == "del_new":
+                    print("kyc and delete new")
+                    # deleting the current record
+            else:
+                self.create_fields_for_registration(temp, stage_name)
+        elif autodedup_field == "ext_id":
+            externaldup_list = (
+                self.env["openg2p.registration"]
+                .search([("external_id", "=", temp["new_emis_code"])])
+                .ids
+            )
+            if len(externaldup_list) != 0:
+                if action == "merge":
+                    # merging the existing ones with new one and passing the existing_id and current_id as arguments
+                    self.merge_registrations(temp, externaldup_list[0])
+                elif action == "del_old":
+                    # deleting the old registration
+                    duplicate_external = self.env["openg2p.registration"].search(
+                        [("external_id", "=", temp["new_emis_code"])]
+                    )
+                    duplicate_external.active = False
+                    # deleting the old beneficiary
+                    duplicate_external_bene = self.env["openg2p.beneficiary"].search(
+                        [("external_id", "=", temp["new_emis_code"])]
+                    )
+                    duplicate_external_bene.active = False
+                    # creating registration for new record
+                    self.create_fields_for_registration(temp, stage_name)
+                elif action == "del_new":
+                    print("External id & delete new")
+            else:
+                self.create_fields_for_registration(temp, stage_name)
+        else:
+            self.create_fields_for_registration(temp, stage_name)
+
+    def create_fields_for_registration(self, temp, stage_name):
         country_name = temp["country"] if "country" in temp.keys() else "Sierra Leone"
         state_name = temp["state"] if "state" in temp.keys() else "Freetown"
         country_id = self.env["res.country"].search([("name", "=", country_name)])[0].id
@@ -20,8 +88,8 @@ class RegistrationService(models.Model):
             self.env["res.country.state"].search([("name", "=", state_name)])[0].id
         )
         # Creating registration in final stage
-        # stage_id_default = 6
-        # temp["stage_id"] = stage_id_default
+        stage_id_default = 6
+        temp["stage_id"] = stage_name.id
         try:
             regd = self.create(
                 {
@@ -145,6 +213,12 @@ class RegistrationService(models.Model):
                         data["bank_account_id"] = res.id
                 elif k == "phone":
                     data["phone"] = odk_data["phone"]
+                elif k == "bban":
+                    data["kyc_id"] = odk_data["bban"]
+                elif k == "new_emis_code":
+                    data["external_id"] = odk_data["new_emis_code"]
+                elif k == "town_village":
+                    data["town_village"] = odk_data["town_village"]
                 elif hasattr(self, k):
                     if k == "partner_id":
                         res = self.env["res.partner"].search(
@@ -228,8 +302,35 @@ class RegistrationService(models.Model):
             regd.write(data)
             # Updating Program for Registration
             regd.program_ids = [(6, 0, temp["program_ids"])]
+            if temp["stage_id"] == 6:
+                regd.create_beneficiary_from_registration()
 
         except BaseException as e:
             print(e)
 
         return regd
+
+    def merge_registrations(self, temp, old_id):
+        # Browsing that existing beneficiary
+        # existing_registration = self.env["openg2p.registration"].search([("id","=",int(old_id))])
+        existing_registration = self.env["openg2p.registration"].browse(old_id)
+
+        # Fields to be merged
+        overwrite_data = {
+            "street": (temp["chiefdom"] if "chiefdom" in temp.keys() else "-"),
+            "street2": (temp["district"] if "district" in temp.keys() else "-")
+            + ", "
+            + (temp["region"] if "region" in temp.keys() else "-"),
+            "city": (
+                (temp["city"] if "city" in temp.keys() else "Freetown") or "Freetown"
+            ),
+            "phone": temp["phone"] or None,
+            "kyc_id": temp["bban"] or None,
+            "external_id": temp["new_emis_code"] or None,
+        }
+
+        # Removing None fields
+        cleaned_overwrite_data = self.del_none(overwrite_data)
+
+        # Merging specfic fields to beneficiary
+        existing_registration.write(cleaned_overwrite_data)

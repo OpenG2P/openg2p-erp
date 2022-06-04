@@ -333,6 +333,10 @@ class Beneficiary(models.Model):
     odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
 
     org_custom_field = fields.One2many("openg2p.beneficiary.orgmap", "beneficiary_id")
+    # newly added fields
+    kyc_id = fields.Char("KYC ID", required=False, index=True)
+    external_id = fields.Char("External ID", required=False, index=True)
+    town_village = fields.Char("Town Village", required=False)
 
     def api_json(self):
         return {
