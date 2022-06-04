@@ -350,6 +350,21 @@ class Beneficiary(models.Model):
 
     odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
 
+    # newly added fields
+    kyc_id = fields.Char("KYC ID", required=False)
+
+    external_id = fields.Char("External ID", required=False)
+
+    ward = fields.Char("Ward", required=False)
+
+    section = fields.Char("Section", required=False)
+
+    town_village = fields.Char("Town Village", required=False)
+
+    school_ownership = fields.Char("School Ownership", required=False)
+
+    cycle = fields.Char("Cycle", required=False)
+
     def api_json(self):
         return {
             "id": self.id,
