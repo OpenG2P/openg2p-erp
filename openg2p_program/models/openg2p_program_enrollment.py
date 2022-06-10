@@ -13,7 +13,7 @@ class ProgramEnrollment(models.Model):
     _inherit = [
         "mail.thread",
         "mail.activity.mixin",
-        "generic.mixin.no.unlink",
+        # "generic.mixin.no.unlink",
         "openg2p.mixin.has_document",
     ]
 
@@ -39,7 +39,7 @@ class ProgramEnrollment(models.Model):
     category_id = fields.Many2one(
         "openg2p.program.enrollment_category",
         string="Category",
-        track_visibility="onchange",
+        tracking=True,
     )
     date_start = fields.Date(
         "Enrollment Date",
@@ -47,12 +47,12 @@ class ProgramEnrollment(models.Model):
         default=fields.Date.context_today,
         help="Start date of the program enrollment.",
         states={"draft": [("readonly", False)]},
-        track_visibility="onchange",
+        tracking=True,
     )
     date_end = fields.Date(
         "Enrollment End",
         help="End date of the program enrollment (if it's a fixed-term program enrollment).",
-        track_visibility="onchange",
+        tracking=True,
     )
     notes = fields.Text("Notes")
     state = fields.Selection(
@@ -64,7 +64,7 @@ class ProgramEnrollment(models.Model):
         ],
         string="Status",
         group_expand="_expand_states",
-        track_visibility="onchange",
+        tracking=True,
         help="Status of enrollment",
         default="draft",
         readonly=True,
@@ -72,9 +72,7 @@ class ProgramEnrollment(models.Model):
             "draft": [("readonly", False)]
         },  # we seem to need this to have our demo data change the state
     )
-    company_id = fields.Many2one(
-        "res.company", default=lambda self: self.env.user.company_id
-    )
+    company_id = fields.Many2one("res.company", default=lambda self: self.env.company)
     currency_id = fields.Many2one(
         string="Currency", related="company_id.currency_id", readonly=True
     )
@@ -82,7 +80,6 @@ class ProgramEnrollment(models.Model):
     def action_activate(self):
         self.write({"state": "open"})
 
-    @api.multi
     def toggle_active(self):
         for rec in self:
             if not rec.active and not rec.date_end:
@@ -140,7 +137,6 @@ class ProgramEnrollment(models.Model):
         ).write({"state": "close"})
         return True
 
-    @api.multi
     def _track_subtype(self, init_values):
         self.ensure_one()
         if "state" in init_values and self.state == "close":

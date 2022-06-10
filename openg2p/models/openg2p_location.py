@@ -19,13 +19,11 @@ class Location(models.Model):
     _order = "name"
     _rec_name = "complete_name"
 
-    name = fields.Char(
-        "Location Name", required=True, index=True, track_visibility="onchange"
-    )
+    name = fields.Char("Location Name", required=True, index=True, tracking=True)
     complete_name = fields.Char(
         "Complete Name", compute="_compute_complete_name", store=True
     )
-    active = fields.Boolean(default=True, track_visibility="onchange")
+    active = fields.Boolean(default=True, tracking=True)
     company_id = fields.Many2one(
         "res.company",
         string="Company",
@@ -33,10 +31,7 @@ class Location(models.Model):
         default=lambda self: self.env.user.company_id,
     )
     parent_id = fields.Many2one(
-        "openg2p.location",
-        string="Parent Location",
-        index=True,
-        track_visibility="onchange",
+        "openg2p.location", string="Parent Location", index=True, tracking=True
     )
     child_ids = fields.One2many(
         "openg2p.location", "parent_id", string="Child Locations"
@@ -46,7 +41,7 @@ class Location(models.Model):
     )
     members_count = fields.Integer(compute="_compute_member_count")
     manager_id = fields.Many2one(
-        "res.users", string="Manager", index=True, track_visibility="onchange"
+        "res.users", string="Manager", index=True, tracking=True
     )
     note = fields.Text("Note")
     color = fields.Integer("Color Index")

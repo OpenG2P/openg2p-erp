@@ -3,10 +3,11 @@
     <!-- wizard action on openg2p.beneficiary -->
     <act_window id="partner_wizard_action"
                 name="Enroll Into Program"
-                src_model="openg2p.beneficiary"
+                binding_model="openg2p.beneficiary"
                 res_model="beneficiary.enroll.wizard"
-                view_type="form" view_mode="form"
-                key2="client_action_multi" target="new"
+                view_mode="form"
+                binding_views="form"
+                target="new"
                 groups="openg2p.group_openg2p_officer"/>
 
     <!-- wizard view -->

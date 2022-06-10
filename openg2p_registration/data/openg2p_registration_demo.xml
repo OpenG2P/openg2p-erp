@@ -21,7 +21,7 @@
             <field name="emergency_contact">Steven Jackson</field>
             <field name="emergency_phone">+23265765875</field>
             <field name="location_id" ref="openg2p.location_0"/>
-            <field name="image" type="base64" file="openg2p_registration/static/img/employee_vad-image.jpg"/>
+<!--            <field name="image" type="base64" file="openg2p_registration/static/img/employee_vad-image.jpg"/>-->
         </record>
 
         <record id="openg2p_registration_2" model="openg2p.registration">
@@ -43,7 +43,7 @@
             <field name="emergency_contact">Michael Jackson</field>
             <field name="emergency_phone">+23265765875</field>
             <field name="location_id" ref="openg2p.location_2"/>
-            <field name="image" type="base64" file="openg2p_registration/static/img/employee_qdp-image.png"/>
+<!--            <field name="image" type="base64" file="openg2p_registration/static/img/employee_qdp-image.png"/>-->
         </record>
 
         <record id="openg2p_registration_3" model="openg2p.registration">
@@ -65,7 +65,7 @@
             <field name="emergency_contact">Michael Jackson</field>
             <field name="emergency_phone">+23265765875</field>
             <field name="location_id" ref="openg2p.location_2"/>
-            <field name="image" type="base64" file="openg2p_registration/static/img/employee_stw-image.jpg"/>
+<!--            <field name="image" type="base64" file="openg2p_registration/static/img/employee_stw-image.jpg"/>-->
         </record>
 
     </data>

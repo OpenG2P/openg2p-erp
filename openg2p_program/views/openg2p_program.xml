@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <data>
 
     <!-- Program -->
     <record id="edit_program" model="ir.ui.view">
@@ -94,7 +95,6 @@
     <record id="open_view_program_all_config" model="ir.actions.act_window">
         <field name="name">Programs</field>
         <field name="res_model">openg2p.program</field>
-        <field name="view_type">form</field>
         <field name="domain">[]</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_openg2p_program_filter"/>
@@ -112,4 +112,5 @@
     <menuitem action="open_view_program_all_config" id="menu_programs_config" name="Programs"
               parent="openg2p.menu_openg2p_configuration" sequence="1"/>
 
+    </data>
 </odoo>

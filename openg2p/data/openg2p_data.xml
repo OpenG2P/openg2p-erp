@@ -22,7 +22,7 @@
             <field name="padding">8</field>
         </record>
 
-        <record model="mass.object" id="openg2p_mass_edit_beneficiary_tag">
+        <!-- <record model="mass.object" id="openg2p_mass_edit_beneficiary_tag">
             <field name="name">Edit Tag</field>
             <field name="model_id" ref="openg2p.model_openg2p_beneficiary"/>
             <field name="field_ids" eval="[(4, ref('openg2p.field_openg2p_beneficiary__category_id'))]"/>
@@ -34,7 +34,7 @@
             <field name="model_id" ref="openg2p.model_openg2p_location"/>
             <field name="field_ids" eval="[(4, ref('openg2p.field_openg2p_beneficiary__location_id'))]"/>
             <field name="group_ids" eval="[(4, ref('openg2p.group_openg2p_manager'))]"/>
-        </record>
+        </record> -->
 
         <record id="base.partner_root" model="res.partner">
             <field name="name">OpenG2P-Bot</field>
@@ -43,16 +43,6 @@
 
         <record id="base.main_company" model="res.company">
             <field name="beneficiary_id_sequence" ref="seq_openg2p_beneficiary_id"/>
-        </record>
-
-        <record id="web_m2x_options_create" model="ir.config_parameter">
-            <field name="key">web_m2x_options.create</field>
-            <field name="value">False</field>
-        </record>
-
-        <record id="web_m2x_options_create_edit" model="ir.config_parameter">
-            <field name="key">web_m2x_options.create_edit</field>
-            <field name="value">False</field>
         </record>
 
     </data>

@@ -28,8 +28,8 @@ def _lang_get(self):
 
 
 _PARTNER_FIELDS = [
-    "firstname",
-    "lastname",
+    # "firstname",
+    # "lastname",
     "street",
     "street2",
     "zip",
@@ -47,21 +47,13 @@ class Beneficiary(models.Model):
         "format.address.mixin",
         "mail.thread",
         "mail.activity.mixin",
-        "generic.mixin.no.unlink",
         "phone.validation.mixin",
         "openg2p.mixin.has_document",
         "openg2p.mixin.no_copy",
         "openg2p.mixin.no_name_create",
+        "image.mixin"
+        # "generic.mixin.no.unlink",
     ]
-
-    @api.model
-    def _default_image(self):
-        image_path = get_module_resource(
-            "openg2p", "static/src/img", "default_image.png"
-        )
-        return tools.image_resize_image_big(
-            base64.b64encode(open(image_path, "rb").read())
-        )
 
     partner_id = fields.Many2one(
         "res.partner",
@@ -71,13 +63,13 @@ class Beneficiary(models.Model):
         help="Partner-related data of the beneficiary",
     )
     firstname = fields.Char(
-        track_visibility="onchange", index=True, required=True, string="First Name"
+        tracking=True, index=True, required=True, string="First Name"
     )
     lastname = fields.Char(
-        track_visibility="onchange", index=True, required=True, string="Last Name"
+        tracking=True, index=True, required=True, string="Last Name"
     )
     othernames = fields.Char(
-        track_visibility="onchange", index=True, string="Other Names"
+        tracking=True, index=True, string="Other Names"
     )
     name = fields.Char(
         compute="_compute_full_name", store=True, index=True, readonly=True
@@ -92,40 +84,40 @@ class Beneficiary(models.Model):
         help="All the emails and documents sent to this contact will be translated in this language.",
     )
     ref = fields.Char(string="Internal Reference", index=True)
-    street = fields.Char(track_visibility="onchange", required=True)
-    street2 = fields.Char(track_visibility="onchange")
-    zip = fields.Char(track_visibility="onchange", change_default=True, index=True)
-    city = fields.Char(track_visibility="onchange", required=True, string="City/Town")
+    street = fields.Char(tracking=True, required=True)
+    street2 = fields.Char(tracking=True)
+    zip = fields.Char(tracking=True, change_default=True, index=True)
+    city = fields.Char(tracking=True, required=True, string="City/Town")
     state_id = fields.Many2one(
         "res.country.state",
         string="State/District",
         ondelete="restrict",
         domain="[('country_id', '=', country_id)]",
-        track_visibility="onchange",
+        tracking=True,
         required=True,
     )
     country_id = fields.Many2one(
         "res.country",
         string="Country",
         ondelete="restrict",
-        track_visibility="onchange",
+        tracking=True,
         required=True,
         default=lambda self: self.env.user.company_id.country_id.id,
     )
-    email = fields.Char(track_visibility="onchange")
+    email = fields.Char(tracking=True)
     email_formatted = fields.Char(
         "Formatted Email",
         compute="_compute_email_formatted",
         help='Format email address "Name <email@domain>"',
     )
-    phone = fields.Char(track_visibility="onchange", string="Primary Phone", index=True)
+    phone = fields.Char(tracking=True, string="Primary Phone", index=True)
     mobile = fields.Char(
-        track_visibility="onchange", string="Secondary Phone", index=True
+        tracking=True, string="Secondary Phone", index=True
     )
     active = fields.Boolean(
         default=True,
         readonly=True,
-        track_visibility="onchange",
+        tracking=True,
     )
     display_address = fields.Char(
         compute="_compute_display_address", store=True, readonly=True, index=True
@@ -140,29 +132,29 @@ class Beneficiary(models.Model):
         ],
         string="Marital Status",
         default="single",
-        track_visibility="onchange",
+        tracking=True,
     )
     gender = fields.Selection(
         [("male", "Male"), ("female", "Female"), ("other", "Other")],
-        track_visibility="onchange",
+        tracking=True,
         required=False,
     )
-    birth_city = fields.Char(track_visibility="onchange")
+    birth_city = fields.Char(tracking=True)
     birth_state_id = fields.Many2one(
         comodel_name="res.country.state",
         string="Birth State/District",
         domain="[('country_id', '=', birth_country_id)]",
         ondelete="restrict",
-        track_visibility="onchange",
+        tracking=True,
     )
     birth_country_id = fields.Many2one(
         comodel_name="res.country",
         string="Birth Country",
         ondelete="restrict",
         default=lambda self: self.env.user.company_id.country_id.id,
-        track_visibility="onchange",
+        tracking=True,
     )
-    birthday = fields.Date("Birth Date", track_visibility="onchange")
+    birthday = fields.Date("Birth Date", tracking=True)
     age = fields.Integer(
         string="Age",
         readonly=True,
@@ -175,12 +167,12 @@ class Beneficiary(models.Model):
         comodel_name="openg2p.beneficiary.id_number",
         inverse_name="beneficiary_id",
         string="Identifications",
-        track_visibility="onchange",
+        tracking=True,
         index=True,
     )
     national_id = fields.Char(
         string="National ID",
-        track_visibility="onchange",
+        tracking=True,
         compute=lambda s: s._compute_identification(
             "national_id",
             "NIN",
@@ -195,7 +187,7 @@ class Beneficiary(models.Model):
     )
     passport_id = fields.Char(
         string="Passport No",
-        track_visibility="onchange",
+        tracking=True,
         compute=lambda s: s._compute_identification(
             "passport_id",
             "PASSPORT",
@@ -210,7 +202,7 @@ class Beneficiary(models.Model):
     )
     ssn = fields.Char(
         string="Social Security #",
-        track_visibility="onchange",
+        tracking=True,
         compute=lambda s: s._compute_identification(
             "ssn",
             "SSN",
@@ -223,42 +215,42 @@ class Beneficiary(models.Model):
         readonly=True,
         index=True,
     )
-    emergency_contact = fields.Char("Emergency Contact", track_visibility="onchange")
-    emergency_phone = fields.Char("Emergency Phone", track_visibility="onchange")
+    emergency_contact = fields.Char("Emergency Contact", tracking=True)
+    emergency_phone = fields.Char("Emergency Phone", tracking=True)
     # image: all image fields are base64 encoded and PIL-supported
-    image = fields.Binary(
-        "Image",
-        default=_default_image,
-        track_visibility="onchange",
-        attachment=True,
-        help="This field holds the image used as avatar for this beneficiary, limited to 1024x1024px",
-    )
-    image_medium = fields.Binary(
-        "Medium-sized image",
-        attachment=True,
-        help="Medium-sized image of this beneficiary. It is automatically "
-        "resized as a 128x128px image, with aspect ratio preserved. "
-        "Use this field in form views or some kanban views.",
-    )
-    image_small = fields.Binary(
-        "Small-sized image",
-        attachment=True,
-        help="Small-sized image of this beneficiary. It is automatically "
-        "resized as a 64x64px image, with aspect ratio preserved. "
-        "Use this field anywhere a small image is required.",
-    )
+    # image = fields.Image(
+    #     "Image",
+    #     default=True,
+    #     tracking=True,
+    #     attachment=True,
+    #     help="This field holds the image used as avatar for this beneficiary, limited to 1024x1024px",
+    # )
+    # image_medium = fields.Binary(
+    #     "Medium-sized image",
+    #     attachment=True,
+    #     help="Medium-sized image of this beneficiary. It is automatically "
+    #          "resized as a 128x128px image, with aspect ratio preserved. "
+    #          "Use this field in form views or some kanban views.",
+    # )
+    # image_small = fields.Binary(
+    #     "Small-sized image",
+    #     attachment=True,
+    #     help="Small-sized image of this beneficiary. It is automatically "
+    #          "resized as a 64x64px image, with aspect ratio preserved. "
+    #          "Use this field anywhere a small image is required.",
+    # )
     location_id = fields.Many2one(
         "openg2p.location",
         "Location",
         index=True,
-        track_visibility="onchange",
+        tracking=True,
         ondelete="restrict",
         required=False,
     )
     category_id = fields.Many2many(
         "openg2p.beneficiary.category",
         string="Tags",
-        track_visibility="onchange",
+        tracking=True,
         index=True,
     )
     search_no_category_id = fields.Many2one(
@@ -287,11 +279,7 @@ class Beneficiary(models.Model):
         index=True,
         context={"active_test": False},
         help="Duplicate records that have been merged with this."
-        " Primary function is to allow to reference of merged records ",
-    )
-    org_custom_field = fields.One2many(
-        "openg2p.beneficiary.orgmap",
-        "beneficiary_id",
+             " Primary function is to allow to reference of merged records ",
     )
 
     # example for filtering on org custom fields
@@ -349,6 +337,11 @@ class Beneficiary(models.Model):
     )
 
     odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
+
+    org_custom_field = fields.One2many(
+        "openg2p.beneficiary.orgmap",
+        "beneficiary_id"
+    )
 
     def api_json(self):
         return {
@@ -701,16 +694,15 @@ class Beneficiary(models.Model):
     def create(self, vals):
         if not vals.get("ref"):
             vals["ref"] = self._generate_ref()
-        tools.image_resize_images(vals)
+        # tools.image_resize_images(vals)
         if not vals.get("phone") and vals.get("mobile"):
             vals["phone"] = vals.get("mobile")
         self._partner_create(vals)
         res = super(Beneficiary, self).create(vals)
         return res
 
-    @api.multi
     def write(self, vals):
-        tools.image_resize_images(vals)
+        # tools.image_resize_images(vals)
         res = super(Beneficiary, self).write(vals)
         for i in self:
             i._partner_update(vals)
@@ -731,7 +723,7 @@ class Beneficiary(models.Model):
         for beneficiary in self:
             if beneficiary.email:
                 beneficiary.email_formatted = tools.formataddr(
-                    (beneficiary.name or "False", beneficiary.email or "False")
+                    (beneficiary.name or u"False", beneficiary.email or u"False")
                 )
             else:
                 beneficiary.email_formatted = ""
@@ -746,7 +738,6 @@ class Beneficiary(models.Model):
         """Returns the list of address fields usable to format addresses."""
         return self._address_fields()
 
-    @api.multi
     def update_address(self, vals):
         addr_vals = {key: vals[key] for key in self._address_fields() if key in vals}
         if addr_vals:
@@ -766,7 +757,6 @@ class Beneficiary(models.Model):
         for beneficiary in self:
             beneficiary.display_name = names.get(beneficiary.id)
 
-    @api.multi
     @api.depends("birthday")
     def _compute_age(self):
         for record in self:
@@ -789,7 +779,6 @@ class Beneficiary(models.Model):
         for rec in self:
             rec.search_no_category_id = False
 
-    @api.multi
     @api.depends(
         "street",
         "street2",
@@ -805,7 +794,7 @@ class Beneficiary(models.Model):
     )
     def _compute_display_address(self):
         for rec in self:
-            rec.display_address = self._display_address()
+            rec.display_address = rec._display_address()
 
     @api.model
     def _get_default_address_format(self):
@@ -817,7 +806,6 @@ class Beneficiary(models.Model):
     def _get_address_format(self):
         return self.country_id.address_format or self._get_default_address_format()
 
-    @api.multi
     def _display_address(self):
         """
         The purpose of this function is to build and return an address formatted accordingly to the
@@ -882,11 +870,9 @@ class Beneficiary(models.Model):
                         "state_id"
                     ] = state.id  # replace state or remove it if not found
 
-    @api.multi
     def _get_country_name(self):
         return self.country_id.name or ""
 
-    @api.multi
     def name_get(self):
         return [(record.id, record.name + " (" + record.ref + ")") for record in self]
 
@@ -899,7 +885,6 @@ class Beneficiary(models.Model):
             }
         ]
 
-    @api.multi
     @api.depends("identities", "identities.name", "identities.category_id.code.")
     def _compute_identification(self, field_name, category_code):
         """Compute a field that indicates a certain ID type.
@@ -939,7 +924,6 @@ class Beneficiary(models.Model):
             value = identities[0].name
             record[field_name] = value
 
-    @api.multi
     def _inverse_identification(self, field_name, category_code):
         """Inverse for an identification field.
 
@@ -1095,7 +1079,7 @@ class Beneficiary(models.Model):
 
     @api.model
     def matches(
-        self, query, mode=MATCH_MODE_NORMAL, stop_on_first=False, threshold=None
+            self, query, mode=MATCH_MODE_NORMAL, stop_on_first=False, threshold=None
     ):
         """
         Given an query find recordset that is strongly similar
@@ -1128,7 +1112,6 @@ class Beneficiary(models.Model):
         """
         pass
 
-    @api.multi
     def merge(self, merges, copy_data={}):
         """
         @param merges - A recordset of beneficiaries we want to merge

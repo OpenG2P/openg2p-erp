@@ -84,7 +84,7 @@
     <record id="open_module_tree_beneficiary_exception" model="ir.actions.act_window">
         <field name="name">Alerts</field>
         <field name="res_model">openg2p.beneficiary.exception</field>
-        <field name="view_type">form</field>
+        <!-- <field name="view_type">form</field> -->
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_beneficiary_exception_filter"/>
         <field name="help" type="html">

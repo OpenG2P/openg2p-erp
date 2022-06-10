@@ -6,7 +6,7 @@
         <record id="openg2p_beneficiary_stage_act" model="ir.actions.act_window">
             <field name="name">Registration / Registrations Stages</field>
             <field name="res_model">openg2p.registration.stage</field>
-            <field name="view_type">form</field>
+            <!-- <field name="view_type">form</field> -->
             <field name="domain">[]</field>
             <field name="context">{}</field>
             <field name="help" type="html">
@@ -99,7 +99,7 @@
         <record id="openg2p_registration_stage_act" model="ir.actions.act_window">
             <field name="name">Stages</field>
             <field name="res_model">openg2p.registration.stage</field>
-            <field name="view_type">form</field>
+            <!-- <field name="view_type">form</field> -->
             <field name="view_mode">tree,kanban,form</field>
             <field name="view_id" ref="openg2p_registration_stage_tree"/>
             <field name="help" type="html">

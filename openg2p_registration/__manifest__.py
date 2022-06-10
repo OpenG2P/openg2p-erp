@@ -13,7 +13,7 @@
         "openg2p",
         "calendar",
         "fetchmail",
-        "document",
+        # "document",
         #   'digest',
     ],
     "data": [

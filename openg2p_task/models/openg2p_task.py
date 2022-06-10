@@ -78,7 +78,6 @@ class Openg2pTask(models.Model):
             data["flags"] = {"mode": "readonly"}
         return data
 
-    @api.multi
     def _create_history(self):
         self.env["openg2p.task.history"].create(
             {
@@ -100,7 +99,6 @@ class Openg2pTask(models.Model):
         res._create_history()
         return res
 
-    @api.multi
     @api.model
     def write(self, vals):
         res = super(Openg2pTask, self).write(vals)

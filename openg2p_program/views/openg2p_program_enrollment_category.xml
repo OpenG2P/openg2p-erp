@@ -46,7 +46,6 @@
     <record id="action_openg2p_program_enrollment_category" model="ir.actions.act_window">
         <field name="name">Program Categories</field>
         <field name="res_model">openg2p.program.enrollment_category</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="openg2p_program_enrollment_category_view_search"/>
     </record>
@@ -54,7 +53,6 @@
     <record id="act_program_category_list" model="ir.actions.act_window">
         <field name="name">Program Categories</field>
         <field name="res_model">openg2p.program.enrollment_category</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('program_id','=', active_id)]</field>
         <field name="context">{'search_default_program_id': active_id, 'default_program_id': active_id}</field>

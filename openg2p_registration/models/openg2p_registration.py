@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 import json
 import uuid
-
+import logging
 import requests
+from datetime import datetime
 from odoo.addons.openg2p.services.matching_service import (
     MATCH_MODE_COMPREHENSIVE,
 )
-from odoo.addons.queue_job.job import job
+# from odoo.addons.queue_job.job import job
 
 from odoo import api, fields, models, SUPERUSER_ID
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.translate import _
+
+_logger = logging.getLogger(__name__)
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
@@ -32,7 +35,7 @@ class Registration(models.Model):
         return False
 
     def _default_company_id(self):
-        return self.env["res.company"]._company_default_get()
+        return self.env.user.company_id
 
     partner_id = fields.Many2one(
         "res.partner",
@@ -47,7 +50,7 @@ class Registration(models.Model):
         "openg2p.registration.stage",
         "Stage",
         ondelete="restrict",
-        track_visibility="onchange",
+        tracking=True,
         copy=False,
         index=True,
         group_expand="_read_group_stage_ids",
@@ -63,7 +66,7 @@ class Registration(models.Model):
     user_id = fields.Many2one(
         "res.users",
         "Responsible",
-        track_visibility="onchange",
+        tracking=True,
         default=lambda self: self.env.uid,
     )
     date_closed = fields.Datetime("Closed", readonly=True, index=True)
@@ -89,16 +92,16 @@ class Registration(models.Model):
     beneficiary_id = fields.Many2one(
         "openg2p.beneficiary",
         string="Beneficiary",
-        track_visibility="onchange",
+        tracking=True,
         help="Beneficiary linked to the registration.",
     )
     identity_national = fields.Char(
         string="National ID",
-        track_visibility="onchange",
+        tracking=True,
     )
     identity_passport = fields.Char(
         string="Passport No",
-        track_visibility="onchange",
+        tracking=True,
     )
     kanban_state = fields.Selection(
         [("normal", "Grey"), ("done", "Green"), ("blocked", "Red")],
@@ -205,6 +208,17 @@ class Registration(models.Model):
         help="Active programs enrolled to",
         store=True,
         required=False,
+    )
+    merged_beneficiary_ids = fields.Many2many(
+        'openg2p.beneficiary',
+        'merged_beneficiary_rel_regd',
+        'retained_id',
+        'merged_id',
+        string="Merged Duplicates",
+        index=True,
+        context={'active_test': False},
+        help="Duplicate records that have been merged with this."
+             " Primary function is to allow to reference of merged records "
     )
 
     # will be return registration details on api call
@@ -504,45 +518,44 @@ class Registration(models.Model):
                 if not str(k).startswith("_"):
                     temp[str(k).replace("-", "_").lower()] = v
 
-        country_name = temp["country"] if "country" in temp.keys() else "Sierra Leone"
-        state_name = temp["state"] if "state" in temp.keys() else "Freetown"
+        # Required fields to create registration
+        country_name = (
+            temp["country"] if "country" in temp.keys() else "Sierra Leone"
+        )
+        state_name = temp["state"] if "state" in temp.keys() else "Free State"
 
         country_id = self.env["res.country"].search([("name", "=", country_name)])[0].id
         state_id = (
             self.env["res.country.state"].search([("name", "=", state_name)])[0].id
         )
-
-        try:
-            regd = self.create(
-                {
-                    "firstname": "_",
-                    "lastname": "_",
-                    "street": (temp["chiefdom"] if "chiefdom" in temp.keys() else "-"),
-                    "street2": (temp["district"] if "district" in temp.keys() else "-")
-                    + ", "
-                    + (temp["region"] if "region" in temp.keys() else "-"),
-                    "city": (
-                        (temp["city"] if "city" in temp.keys() else "Freetown")
-                        or "Freetown"
-                    )
-                    if "city" in temp.keys()
-                    else "Freetown",
-                    "country_id": country_id,
-                    "state_id": state_id,
-                    "gender": "male",
-                }
+        regd_info = {
+            "firstname": "_",
+            "lastname": "_",
+            "street": (temp["chiefdom"] if "chiefdom" in temp.keys() else "-"),
+            "street2": (temp["district"] if "district" in temp.keys() else "-")
+                       + ", "
+                       + (temp["region"] if "region" in temp.keys() else "-"),
+            "city": (
+                    (temp["city"] if "city" in temp.keys() else "Freetown")
+                    or "Freetown"
             )
-            id = regd.id
+            if "city" in temp.keys()
+            else "Freetown",
+            "country_id": country_id,
+            "state_id": state_id,
+            "gender": "male",
+        }
+        try:
+            regd = self.create(regd_info)
+            idr = regd.id
         except BaseException as e:
             _logger.error(e)
             return None
 
-        from datetime import datetime
-
         data = {}
         odk_data = temp
         org_data = {}
-        format = "%Y-%m-%dT%H:%M:%SZ"
+        format = "%Y-%m-%d %H:%M:%S"
         for k, v in odk_data.items():
             try:
                 if k in [
@@ -553,7 +566,9 @@ class Registration(models.Model):
                 ]:
                     org_data[k] = v
                     continue
-                if k in [
+                if (
+                        k
+                        in [
                     "Status",
                     "AttachmentsExpected",
                     "AttachmentsPresent",
@@ -567,7 +582,9 @@ class Registration(models.Model):
                     "district",
                     "chiefdom",
                     "region",
-                ] or k.startswith("_"):
+                ]
+                        or k.startswith("_")
+                ):
                     continue
                 if k == "bank_account_number":
                     if len(str(v) or "") != 0:
@@ -634,7 +651,7 @@ class Registration(models.Model):
                             data["priority"] = v
                     elif k == "beneficiary_id":
                         res = self.env["openg2p.beneficiary"].search(
-                            [("beneficiary_id", "=", id)], limit=1
+                            [("beneficiary_id", "=", idr)], limit=1
                         )
                         if res:
                             data["beneficiary_id"] = res.id
@@ -644,11 +661,11 @@ class Registration(models.Model):
                                 {
                                     "name": list(vi.keys())[0],
                                     "type": list(vi.values())[0],
-                                    "registration_id": id,
+                                    "registration_id": idr,
                                 }
                             )
                         res = self.env["openg2p.registration.identity"].search(
-                            [("registration_id", "=", id)]
+                            [("registration_id", "=", idr)]
                         )
                         if res:
                             data["identities"] = res.ids
@@ -676,7 +693,7 @@ class Registration(models.Model):
                     {
                         "field_name": k,
                         "field_value": str(v) if v else "",
-                        "regd_id": id,
+                        "regd_id": idr,
                     }
                 )
             except BaseException as e:
@@ -686,22 +703,22 @@ class Registration(models.Model):
             # Updating Program for Registration
             regd.program_ids = [(6, 0, temp["program_ids"])]
         except BaseException as e:
-            print(e)
+            _logger.error(e)
         return regd
 
     @api.depends("date_open", "date_closed")
-    @api.one
     def _compute_day(self):
-        if self.date_open:
-            date_create = self.create_date
-            date_open = self.date_open
-            self.day_open = (date_open - date_create).total_seconds() / (24.0 * 3600)
+        for record in self:
+            if record.date_open:
+                date_create = record.create_date
+                date_open = record.date_open
+                record.day_open = (date_open - date_create).total_seconds() / (24.0 * 3600)
 
-        if self.date_closed:
-            date_create = self.create_date
-            date_closed = self.date_closed
-            self.day_close = (date_closed - date_create).total_seconds() / (24.0 * 3600)
-            self.delay_close = self.day_close - self.day_open
+            if record.date_closed:
+                date_create = record.create_date
+                date_closed = record.date_closed
+                record.day_close = (date_closed - date_create).total_seconds() / (24.0 * 3600)
+                record.delay_close = record.day_close - record.day_open
 
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):
@@ -723,7 +740,6 @@ class Registration(models.Model):
         return {"value": {"date_closed": False}}
 
     @api.model
-    @api.multi
     def create(self, vals):
         if vals.get("location_id") and not self._context.get("default_location_id"):
             self = self.with_context(default_location_id=vals.get("location_id"))
@@ -739,7 +755,6 @@ class Registration(models.Model):
         )  # let's queue uniqueness check
         return res
 
-    @api.multi
     def write(self, vals):
         # user_id change: update date_open
         if vals.get("user_id"):
@@ -757,10 +772,10 @@ class Registration(models.Model):
                     vals["stage_id"]
                 )
                 if (
-                    not registration.stage_id.fold
-                    and next_stage.fold
-                    and next_stage.sequence > 1
-                    and registration.active
+                        not registration.stage_id.fold
+                        and next_stage.fold
+                        and next_stage.sequence > 1
+                        and registration.active
                 ):  # ending stage
                     if not registration.beneficiary_id:
                         raise UserError(
@@ -777,8 +792,8 @@ class Registration(models.Model):
                         )
 
                 if (
-                    registration.stage_id.sequence > next_stage.sequence
-                    and registration.beneficiary_id
+                        registration.stage_id.sequence > next_stage.sequence
+                        and registration.beneficiary_id
                 ):
                     raise UserError(
                         _(
@@ -791,7 +806,6 @@ class Registration(models.Model):
             res = super(Registration, self).write(vals)
         return res
 
-    @api.multi
     def action_get_created_beneficiary(self):
         self.ensure_one()
         context = dict(self.env.context)
@@ -804,25 +818,24 @@ class Registration(models.Model):
             "context": context,
         }
 
-    @api.multi
     def _track_subtype(self, init_values):
         record = self[0]
         if (
-            "beneficiary_id" in init_values
-            and record.beneficiary_id
-            and record.beneficiary_id.active
+                "beneficiary_id" in init_values
+                and record.beneficiary_id
+                and record.beneficiary_id.active
         ):
             return "openg2p_registration.mt_registration_registered"
         elif (
-            "stage_id" in init_values
-            and record.stage_id
-            and record.stage_id.sequence <= 1
+                "stage_id" in init_values
+                and record.stage_id
+                and record.stage_id.sequence <= 1
         ):
             return "openg2p_registration.mt_registration_new"
         elif (
-            "stage_id" in init_values
-            and record.stage_id
-            and record.stage_id.sequence > 1
+                "stage_id" in init_values
+                and record.stage_id
+                and record.stage_id.sequence > 1
         ):
             return "openg2p_registration.mt_registration_stage_changed"
         return super(Registration, self)._track_subtype(init_values)
@@ -832,28 +845,26 @@ class Registration(models.Model):
             [("beneficiary_id", "=", None), ("duplicate_beneficiaries_ids", "=", None)]
         ).sudo().with_delay().ensure_unique(MATCH_MODE_COMPREHENSIVE)
 
-    @api.multi
     def get_identities(self):
         self.ensure_one()
         return [(i.type, i.name) for i in self.identities]
 
-    @job
+    # @job
     def ensure_unique(self, mode):
         for rec in self:
             self.env["openg2p.beneficiary"].matches(rec, mode, stop_on_first=False)
 
-    @api.multi
     def create_beneficiary_from_registration(self):
         """Create an openg2p.beneficiary from the openg2p.registrations"""
         self.ensure_one()
 
         if (
-            not self.duplicate_beneficiaries_ids
+                not self.duplicate_beneficiaries_ids
         ):  # last chance to make sure no duplicates
             self.ensure_unique(mode=MATCH_MODE_COMPREHENSIVE)
 
         if (
-            self.duplicate_beneficiaries_ids
+                self.duplicate_beneficiaries_ids
         ):  # TODO ability to force create if maanger... pass via context
             raise ValidationError(
                 _("Potential duplicates exists for this record and so can not be added")
@@ -877,7 +888,7 @@ class Registration(models.Model):
             "lang": self.lang,
             "gender": self.gender,
             "birthday": self.birthday,
-            "image": self.image,
+            # "image": self.image,
             "marital": self.marital,
             "national_id": self.identity_national,
             "passport_id": self.identity_passport,
@@ -936,7 +947,6 @@ class Registration(models.Model):
         self.active = False
         return self.create_beneficiary_from_registration()["res_id"]
 
-    @api.multi
     def archive_registration(self):
         for registration in self:
             if registration.beneficiary_id:
@@ -947,7 +957,6 @@ class Registration(models.Model):
                 )
         self.write({"active": False})
 
-    @api.multi
     def reset_registration(self):
         """Reinsert the registration into the registration pipe in the first stage"""
         if self.filtered("beneficiary_id"):

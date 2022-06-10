@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import uuid
-
+from datetime import datetime
 from odoo import fields, models, api
 from .odk import ODK
+import logging
 
+_logger = logging.getLogger(__name__)
 
 class ODKSubmissions(models.Model):
     _name = "odk.submissions"
@@ -172,7 +174,7 @@ class ODKSubmissions(models.Model):
             ].create_registration_from_odk(data)
             return registration
         except BaseException as e:
-            print(e)
+            _logger.error(e)
             print("Failed in creating registration!")
             return None
 
@@ -182,17 +184,18 @@ class ODKSubmissions(models.Model):
         try:
             extra_data = extra_data and extra_data or {}
             res = {}
+            date_time_str = data.get("__system").get("submissionDate")
             res.update(
                 {
                     "odk_submission_id": data.get("__id"),
-                    "submission_date": data.get("__system").get("submissionDate"),
+                    "submission_date": fields.datetime.now(),
                     "submission_response": data,
                 }
             )
             res.update(extra_data)
             self.create(res)
         except BaseException as e:
-            print(e)
+            _logger.error(e)
 
     # Wrapper function to update config
     def odk_update_configuration(self, data, odk_config_id):
@@ -201,7 +204,7 @@ class ODKSubmissions(models.Model):
                 self.env["odk.config"].search([("id", "=", odk_config_id)]).write(data)
             )
         except BaseException as e:
-            print(e)
+            _logger.error(e)
 
     # Mappings between openg2p.registration and odk form fields
     def get_conversion_dict(self):
@@ -222,4 +225,4 @@ class ODKSubmissions(models.Model):
             res = super().create(vals_list)
             return res
         except BaseException as e:
-            print(e)
+            _logger.error(e)

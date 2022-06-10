@@ -4,7 +4,6 @@
     <record id="act_openg2p_beneficiary_2_openg2p_program_enrollment" model="ir.actions.act_window">
         <field name="name">Program Enrollments</field>
         <field name="res_model">openg2p.program.enrollment</field>
-        <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="context">{
             'search_default_beneficiary_id': [active_id],
@@ -163,10 +162,10 @@
                                     <field name="category_id" domain="[('program_id','=', program_id)]"/>
                                 </div>
                                 <div class="oe_kanban_bottom_right">
-                                    <img t-att-src="kanban_image('openg2p.beneficiary', 'image_medium', record.beneficiary_id.raw_value)"
-                                         t-att-title="record.beneficiary_id.value"
-                                         t-att-alt="record.beneficiary_id.value" width="24" height="24"
-                                         class="oe_kanban_avatar float-right"/>
+<!--                                    <img t-att-src="kanban_image('openg2p.beneficiary', 'image_medium', record.beneficiary_id.raw_value)"-->
+<!--                                         t-att-title="record.beneficiary_id.value"-->
+<!--                                         t-att-alt="record.beneficiary_id.value" width="24" height="24"-->
+<!--                                         class="oe_kanban_avatar float-right"/>-->
                                 </div>
                             </div>
                             <div class="oe_clear"></div>
@@ -180,7 +179,6 @@
     <record id="action_openg2p_program_enrollment" model="ir.actions.act_window">
         <field name="name">Program Enrollments</field>
         <field name="res_model">openg2p.program.enrollment</field>
-        <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form,activity</field>
         <field name="domain">[('beneficiary_id', '!=', False)]</field>
         <field name="context">{'search_default_current':1, 'search_default_group_by_state': 1}</field>

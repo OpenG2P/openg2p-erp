@@ -127,7 +127,7 @@
     <record id="open_module_tree_location" model="ir.actions.act_window">
         <field name="name">Locations</field>
         <field name="res_model">openg2p.location</field>
-        <field name="view_type">form</field>
+        <!-- <field name="view_type">form</field> -->
         <field name="view_mode">kanban,tree,form</field>
         <field name="search_view_id" ref="view_location_filter"/>
         <field name="help" type="html">

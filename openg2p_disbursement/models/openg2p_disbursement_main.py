@@ -1,6 +1,6 @@
 # Created a separate model for disbursement without relating advice and slip
 
-import odoo.addons.decimal_precision as dp
+# import odoo.addons.decimal_precision as dp
 
 from dateutil.relativedelta import relativedelta
 from datetime import date, datetime, time
@@ -14,7 +14,7 @@ import requests
 class DisbursementMain(models.Model):
     _name = "openg2p.disbursement.main"
     _description = "Disbursement Main Transaction"
-    _inherit = ["generic.mixin.no.unlink", "mail.thread", "openg2p.mixin.has_document"]
+    _inherit = ["mail.thread", "openg2p.mixin.has_document"]
 
     batch_id = fields.Many2one(
         "openg2p.disbursement.batch.transaction", "Batch", required=True
@@ -45,7 +45,7 @@ class DisbursementMain(models.Model):
     )
     amount = fields.Float(
         "Amount",
-        digits=dp.get_precision("Disbursement"),
+        digits="Disbursement",
         required=True,
     )
     company_id = fields.Many2one("res.company", readonly=True, store=True)
@@ -53,7 +53,7 @@ class DisbursementMain(models.Model):
         string="Date From",
         required=True,
         default=lambda self: fields.Date.to_string(date.today().replace(day=1)),
-        track_visibility="onchange",
+        tracking=True,
     )
     date_end = fields.Date(
         string="Date To",
@@ -61,7 +61,7 @@ class DisbursementMain(models.Model):
         default=lambda self: fields.Date.to_string(
             (datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()
         ),
-        track_visibility="onchange",
+        tracking=True,
     )
     currency_id = fields.Many2one("res.currency", required=True, default=1)
     payment_mode = fields.Selection(

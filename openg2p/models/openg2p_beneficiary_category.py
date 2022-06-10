@@ -42,7 +42,6 @@ class BeneficiaryCategory(models.Model):
         if not self._check_recursion():
             raise ValidationError(_("You can not create recursive categories."))
 
-    @api.multi
     def name_get(self):
         """Return the categories' display name, including their direct
         parent by default.

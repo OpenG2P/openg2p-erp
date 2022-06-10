@@ -26,21 +26,6 @@
             </field>
         </record>
 
-<!--       <record id="openg2p_registration_view_tree_activity" model="ir.ui.view">-->
-<!--           <field name="name">openg2p.registration.view.tree.activity</field>-->
-<!--           <field name="model">openg2p.registration</field>-->
-<!--           <field name="arch" type="xml">-->
-<!--               <tree string="Next Activities" decoration-danger="activity_date_deadline &lt; current_date"-->
-<!--                     default_order="activity_date_deadline" multi_edit="1">-->
-<!--                   <field name="name"/>-->
-<!--                   <field name="activity_date_deadline"/>-->
-<!--                   <field name="activity_type_id"/>-->
-<!--                   <field name="activity_summary"/>-->
-<!--                   <field name="stage_id"/>-->
-<!--               </tree>-->
-<!--           </field>-->
-<!--        </record>-->
-
         <record model="ir.ui.view" id="crm_case_form_view_beneficiary">
             <field name="name">Beneficiaries - Registration Form</field>
             <field name="model">openg2p.registration</field>
@@ -53,10 +38,10 @@
                                 attrs="{'invisible': ['|', '|', ('stage_action', '!=', 'create_beneficiary'),('beneficiary_id', '!=', False),('active', '=', False)]}"/>
                         <button string="Check Duplicates" name="find_duplicates" type="object"
                                 class="oe_highlight"
-                                attrs="{'invisible': ['|', '|', ('stage_id', '!=', 3),('duplicate_beneficiaries_ids', '!=', []),('active', '=', False)]}"/>
+                                attrs="{'invisible': ['|', '|', ('stage_id', '!=', 2),('duplicate_beneficiaries_ids', '!=', []),('active', '=', False)]}"/>
                         <button string="Merge" name="merge_beneficiaries" type="object"
                                 class="oe_highlight"
-                                attrs="{'invisible': [ '|','|', ('stage_id', '!=', 3),('active', '=', False),('duplicate_beneficiaries_ids', '=', [])]}"/>
+                                attrs="{'invisible': [ '|','|', ('stage_id', '!=', 2),('active', '=', False),('duplicate_beneficiaries_ids', '=', [])]}"/>
                         <button string="Refuse" name="archive_registration" type="object"
                                 attrs="{'invisible': [('active', '=', False)]}"/>
                         <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"
@@ -88,8 +73,8 @@
                         <field name="beneficiary_id" invisible="1"/>
                         <field name="legend_blocked" invisible="1"/>
                         <field name="legend_done" invisible="1"/>
-                        <field name="image" widget='image' class="oe_avatar"
-                               options='{"preview_image": "image_medium", "size": [90, 90]}'/>
+<!--                        <field name="image" widget='image' class="oe_avatar"-->
+<!--                               options='{"preview_image": "image_medium", "size": [90, 90]}'/>-->
                         <div class="oe_title">
                             <h3>
                                 <div class="o_row">
@@ -131,11 +116,9 @@
                                 <field name="grand_total" string="Grand Total (LE)"/>
                             </group>
                             <group>
-<!--                                <field name="othernames"/>-->
                                 <field name="phone" widget="phone"/>
                                 <field name="mobile" widget="phone"/>
                                 <field name="email" widget="email" context="{'gravatar_image': True}"/>
-<!--                                <field name="title" options='{"no_open": True}'/>-->
                                 <field name="lang"/>
                             </group>
                             <group>
@@ -144,13 +127,13 @@
                                 <field name="create_date"/>
                                 <field name="registered_date"/>
                             </group>
-<!--                            <group string="Personal">-->
-<!--                                <field name="gender"/>-->
-<!--                                <field name="marital"/>-->
-<!--                                <field name="emergency_contact"/>-->
-<!--                                <field name="emergency_phone"/>-->
-<!--                                <field name="birthday"/>-->
-<!--                            </group>-->
+                            <!-- <group string="Personal">
+                               <field name="gender"/>
+                               <field name="marital"/>
+                               <field name="emergency_contact"/>
+                               <field name="emergency_phone"/>
+                               <field name="birthday"/>
+                           </group> -->
 
                             <group string="Identifications">
                                 <field name="identities" nolabel="1">
@@ -180,7 +163,7 @@
                                     <field name="id" />
                                     <field name="firstname"/>
                                     <field name="lastname"/>
-                                    <field name="display_address"/>
+<!--                                    <field name="display_address"/>-->
                                     <field name="gender"/>
                                 </tree>
                             </field>
@@ -207,18 +190,20 @@
             </field>
         </record>
 
-        <act_window id="action_update_regd"
+        <!-- <act_window id="action_update_regd"
                 name="Update Records"
-                src_model="openg2p.registration"
+                binding_model="openg2p.registration"
                 res_model="openg2p.registration.update_regd"
-                view_type="tree" view_mode="form"
-                key2="client_action_multi" target="fullscreen"
-                groups="openg2p_registration.group_openg2p_registration_user"/>
+                view_type="tree" 
+                view_mode="form"
+                binding_views="list" 
+                target="fullscreen"
+                groups="openg2p_registration.group_openg2p_registration_user"/> -->
 
         <record id="wizard_view" model="ir.ui.view">
             <field name="name">Bulk Update Registrations</field>
             <field name="model">openg2p.registration.update_regd</field>
-            <field name="target">inline</field>
+            <!-- <field name="target">inline</field> -->
             <field name="arch" type="xml">
                 <form>
                     <group>
@@ -431,9 +416,9 @@
                                                 <field name="legend_blocked" invisible="1"/>
                                                 <field name="legend_done" invisible="1"/>
                                             </div>
-                                            <img t-att-src="kanban_image('res.users', 'image_small', record.user_id.raw_value)"
-                                                 t-att-title="record.user_id.value" t-att-alt="record.user_id.value"
-                                                 width="30" height="30" class="oe_kanban_avatar"/>
+<!--                                            <img t-att-src="kanban_image('res.users', 'image_small', record.user_id.raw_value)"-->
+<!--                                                 t-att-title="record.user_id.value" t-att-alt="record.user_id.value"-->
+<!--                                                 width="30" height="30" class="oe_kanban_avatar"/>-->
                                         </div>
                                     </div>
                                 </div>
@@ -449,7 +434,6 @@
             <field name="name">Registrations</field>
             <field name="res_model">openg2p.registration</field>
             <field name="view_mode">kanban,tree,form,pivot,graph,calendar,activity</field>
-            <field name="limit">20</field>
             <field name="search_view_id" ref="view_crm_case_beneficiaries_filter"/>
             <field name="context">{}</field>
             <field name="help" type="html">
@@ -477,7 +461,7 @@
         <record model="ir.actions.act_window" id="openg2p_registration_document">
             <field name="name">Document</field>
             <field name="res_model">ir.attachment</field>
-            <field name="view_type">form</field>
+            <!-- <field name="view_type">form</field> -->
             <field name="view_mode">kanban,tree,form</field>
             <field name="view_id" ref="mail.view_document_file_kanban"/>
             <field name="domain">[('res_model', '=', 'openg2p.registration')]</field>
@@ -574,7 +558,7 @@
         <record id="openg2p_registration_action_analysis" model="ir.actions.act_window">
             <field name="name">Registration Analysis</field>
             <field name="res_model">openg2p.registration</field>
-            <field name="view_type">form</field>
+            <!-- <field name="view_type">form</field> -->
             <field name="view_mode">graph,pivot</field>
             <field name="search_view_id" ref="openg2p_registration_view_search"/>
             <field name="view_ids" eval="[
@@ -588,7 +572,7 @@
         <record id="action_openg2p_registration_report_filtered_location" model="ir.actions.act_window">
             <field name="name">Registration Analysis</field>
             <field name="res_model">openg2p.registration</field>
-            <field name="view_type">form</field>
+            <!-- <field name="view_type">form</field> -->
             <field name="view_mode">graph,pivot</field>
             <field name="search_view_id" ref="openg2p_registration_view_search"/>
             <field name="context">{

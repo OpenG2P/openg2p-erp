@@ -18,7 +18,7 @@ class BeneficiaryTransactionWizard(models.TransientModel):
         )
         return bank_id
 
-    @api.multi
+    
     def create_single(self):
         beneficiaries = self.env["openg2p.beneficiary"].browse(
             self.env.context.get("active_ids")
@@ -44,7 +44,7 @@ class BeneficiaryTransactionWizard(models.TransientModel):
 
         return {"type": "ir.actions.act_window_close"}
 
-    @api.multi
+    
     def create_batch(self):
 
         self.task_create_batch(self.batch_name, self.env.context.get("active_ids"))
