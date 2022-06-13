@@ -22,8 +22,6 @@
                 parent="menu_openg2p_root"
                 groups="group_openg2p_manager"
                 sequence="100"/>
-
-
         <!-- Beneficiary -->
         <record id="view_beneficiary_tree" model="ir.ui.view">
             <field name="name">openg2p.beneficiary.tree</field>

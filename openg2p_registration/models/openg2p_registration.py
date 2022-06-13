@@ -522,7 +522,7 @@ class Registration(models.Model):
         country_name = (
             temp["country"] if "country" in temp.keys() else "Sierra Leone"
         )
-        state_name = temp["state"] if "state" in temp.keys() else "Free State"
+        state_name = temp["state"] if "state" in temp.keys() else "Freetown"
 
         country_id = self.env["res.country"].search([("name", "=", country_name)])[0].id
         state_id = (

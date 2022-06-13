@@ -1,4 +1,4 @@
-FROM bitnami/odoo:12.0.20210915-debian-10-r40
+FROM bitnami/odoo:14.0.20220610-debian-11-r0
 
 ARG OPENG2P_CA_REPO=https://github.com/OpenG2P/openg2p-erp-community-addon
 ARG OPENG2P_CA_BRANCH=master

@@ -665,11 +665,15 @@ class Beneficiary(models.Model):
     def _onchange_phone_validation(self):
         if self.phone:
             self.phone = self.phone_format(self.phone)
+        else:
+            self.phone=""
 
     @api.onchange("mobile", "country_id")
     def _onchange_mobile_validation(self):
         if self.mobile:
             self.mobile = self.phone_format(self.mobile)
+        else:
+            self.mobile=""
 
     def _partner_create(self, vals):
         partner_vals = {}
@@ -710,13 +714,21 @@ class Beneficiary(models.Model):
 
     @api.onchange("country_id")
     def _onchange_country_id(self):
+        state_id = (
+            self.env["res.country.state"].search([("name", "=", "Freetown")])[0].id
+        )
         if self.country_id and self.country_id != self.state_id.country_id:
             self.state_id = False
+        else:
+            self.state_id=state_id
 
     @api.onchange("state_id")
     def _onchange_state(self):
+        country_id = self.env["res.country"].search([("name", "=", "Sierra Leone")])[0].id
         if self.state_id.country_id:
             self.country_id = self.state_id.country_id
+        else:
+            self.country_id=country_id
 
     @api.depends("name", "email")
     def _compute_email_formatted(self):
@@ -919,10 +931,12 @@ class Beneficiary(models.Model):
             identities = record.identities.filtered(
                 lambda r: r.category_id.code == category_code
             )
-            if not identities:
-                continue
-            value = identities[0].name
-            record[field_name] = value
+            if identities:
+                value = identities[0].name
+                record[field_name] = value
+            else:
+                value = None
+                record[field_name] = value
 
     def _inverse_identification(self, field_name, category_code):
         """Inverse for an identification field.
