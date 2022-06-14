@@ -17,7 +17,7 @@
         "views/openg2p_beneficiary.xml",
         "wizard/enroll_beneficiary.xml",
     ],
-    "demo": ["data/openg2p_program_demo.xml"],
+    "demo": [],
     "installable": True,
     "auto_install": True,
 }

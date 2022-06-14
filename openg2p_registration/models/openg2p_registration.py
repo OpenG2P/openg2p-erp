@@ -818,7 +818,7 @@ class Registration(models.Model):
             "context": context,
         }
 
-    def _track_subtype(self, init_values):
+    def _track_subtype_val(self, init_values):
         record = self[0]
         if (
                 "beneficiary_id" in init_values
@@ -838,7 +838,7 @@ class Registration(models.Model):
                 and record.stage_id.sequence > 1
         ):
             return "openg2p_registration.mt_registration_stage_changed"
-        return super(Registration, self)._track_subtype(init_values)
+        return super(Registration, self)._track_subtype_val(init_values)
 
     def cron_check_uniqueness(self):
         self.search(

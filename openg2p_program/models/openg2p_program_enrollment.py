@@ -137,11 +137,11 @@ class ProgramEnrollment(models.Model):
         ).write({"state": "close"})
         return True
 
-    def _track_subtype(self, init_values):
+    def _track_subtype_val(self, init_values):
         self.ensure_one()
         if "state" in init_values and self.state == "close":
             return "openg2p_program.mt_program_enrollment_close"
-        return super(ProgramEnrollment, self)._track_subtype(init_values)
+        return super(ProgramEnrollment, self)._track_subtype_val(init_values)
 
     @api.constrains("program_id", "state", "beneficiary_id")
     def _check_concurrent_active_enrollment(self):
