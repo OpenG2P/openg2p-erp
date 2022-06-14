@@ -171,7 +171,7 @@ class ODKSubmissions(models.Model):
         try:
             registration = self.env[
                 "openg2p.registration"
-            ].create_registration_from_odk(data)
+            ].create_registration_for_single_submission(data)
             return registration
         except BaseException as e:
             _logger.error(e)
