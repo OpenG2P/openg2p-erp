@@ -7,6 +7,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class ODKSubmissions(models.Model):
     _name = "odk.submissions"
     _description = "ODK Form Submissions"

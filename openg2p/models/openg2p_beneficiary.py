@@ -65,12 +65,8 @@ class Beneficiary(models.Model):
     firstname = fields.Char(
         tracking=True, index=True, required=True, string="First Name"
     )
-    lastname = fields.Char(
-        tracking=True, index=True, required=True, string="Last Name"
-    )
-    othernames = fields.Char(
-        tracking=True, index=True, string="Other Names"
-    )
+    lastname = fields.Char(tracking=True, index=True, required=True, string="Last Name")
+    othernames = fields.Char(tracking=True, index=True, string="Other Names")
     name = fields.Char(
         compute="_compute_full_name", store=True, index=True, readonly=True
     )
@@ -111,9 +107,7 @@ class Beneficiary(models.Model):
         help='Format email address "Name <email@domain>"',
     )
     phone = fields.Char(tracking=True, string="Primary Phone", index=True)
-    mobile = fields.Char(
-        tracking=True, string="Secondary Phone", index=True
-    )
+    mobile = fields.Char(tracking=True, string="Secondary Phone", index=True)
     active = fields.Boolean(
         default=True,
         readonly=True,
@@ -279,7 +273,7 @@ class Beneficiary(models.Model):
         index=True,
         context={"active_test": False},
         help="Duplicate records that have been merged with this."
-             " Primary function is to allow to reference of merged records ",
+        " Primary function is to allow to reference of merged records ",
     )
 
     # example for filtering on org custom fields
@@ -338,10 +332,7 @@ class Beneficiary(models.Model):
 
     odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
 
-    org_custom_field = fields.One2many(
-        "openg2p.beneficiary.orgmap",
-        "beneficiary_id"
-    )
+    org_custom_field = fields.One2many("openg2p.beneficiary.orgmap", "beneficiary_id")
 
     def api_json(self):
         return {
@@ -666,14 +657,14 @@ class Beneficiary(models.Model):
         if self.phone:
             self.phone = self.phone_format(self.phone)
         else:
-            self.phone=""
+            self.phone = ""
 
     @api.onchange("mobile", "country_id")
     def _onchange_mobile_validation(self):
         if self.mobile:
             self.mobile = self.phone_format(self.mobile)
         else:
-            self.mobile=""
+            self.mobile = ""
 
     def _partner_create(self, vals):
         partner_vals = {}
@@ -720,15 +711,17 @@ class Beneficiary(models.Model):
         if self.country_id and self.country_id != self.state_id.country_id:
             self.state_id = False
         else:
-            self.state_id=state_id
+            self.state_id = state_id
 
     @api.onchange("state_id")
     def _onchange_state(self):
-        country_id = self.env["res.country"].search([("name", "=", "Sierra Leone")])[0].id
+        country_id = (
+            self.env["res.country"].search([("name", "=", "Sierra Leone")])[0].id
+        )
         if self.state_id.country_id:
             self.country_id = self.state_id.country_id
         else:
-            self.country_id=country_id
+            self.country_id = country_id
 
     @api.depends("name", "email")
     def _compute_email_formatted(self):
@@ -1093,7 +1086,7 @@ class Beneficiary(models.Model):
 
     @api.model
     def matches(
-            self, query, mode=MATCH_MODE_NORMAL, stop_on_first=False, threshold=None
+        self, query, mode=MATCH_MODE_NORMAL, stop_on_first=False, threshold=None
     ):
         """
         Given an query find recordset that is strongly similar

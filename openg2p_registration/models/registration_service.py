@@ -20,8 +20,8 @@ class RegistrationService(models.Model):
             self.env["res.country.state"].search([("name", "=", state_name)])[0].id
         )
         # Creating registration in final stage
-        stage_id_default = 6
-        temp["stage_id"] = stage_id_default
+        # stage_id_default = 6
+        # temp["stage_id"] = stage_id_default
         try:
             regd = self.create(
                 {
@@ -40,11 +40,11 @@ class RegistrationService(models.Model):
                     "country_id": country_id,
                     "state_id": state_id,
                     "gender": "male",
-                    "stage_id": (
-                        temp["stage_id"]
-                        if "stage_id" in temp.keys()
-                        else stage_id_default
-                    ),
+                    # "stage_id": (
+                    #     temp["stage_id"]
+                    #     if "stage_id" in temp.keys()
+                    #     else stage_id_default
+                    # ),
                 }
             )
             rid = regd.id
@@ -90,21 +90,25 @@ class RegistrationService(models.Model):
                 ]:
                     org_data[k] = v
                     continue
-                if k in [
-                    "Status",
-                    "AttachmentsExpected",
-                    "AttachmentsPresent",
-                    "SubmitterName",
-                    "SubmitterID",
-                    "KEY",
-                    "meta-instanceID",
-                    "__version__",
-                    "bank_name",
-                    "city",
-                    "district",
-                    "chiefdom",
-                    "region",
-                ] or k.startswith("_"):
+                if (
+                    k
+                    in [
+                        "Status",
+                        "AttachmentsExpected",
+                        "AttachmentsPresent",
+                        "SubmitterName",
+                        "SubmitterID",
+                        "KEY",
+                        "meta-instanceID",
+                        "__version__",
+                        "bank_name",
+                        "city",
+                        "district",
+                        "chiefdom",
+                        "region",
+                    ]
+                    or k.startswith("_")
+                ):
                     continue
                 if k == "bank_account_number":
                     if len(str(v) or "") != 0:

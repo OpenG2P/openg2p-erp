@@ -47,6 +47,7 @@
         "security/openg2p_security.xml",
         "security/ir.model.access.csv",
         "data/openg2p_data.xml",
+        "wizard/beneficiary_to_batch_view.xml",
         "views/openg2p_beneficiary.xml",
         "views/openg2p_location.xml",
         "views/openg2p_templates.xml",
