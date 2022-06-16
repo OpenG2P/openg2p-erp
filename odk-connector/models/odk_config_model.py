@@ -56,7 +56,6 @@ class ODKConfig(models.Model):
         "Program Enrollment Date", default=fields.Date.today()
     )
 
-    @api.multi
     def odk_button_update_form_submissions(self):
         self.call_submission()
 
