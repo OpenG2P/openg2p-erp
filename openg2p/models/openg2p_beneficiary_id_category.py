@@ -48,7 +48,6 @@ class HrBeneficiaryIdCategory(models.Model):
             "#  - id_number: browse_record of ID number to validate"
         )
 
-    @api.multi
     def _validation_eval_context(self, id_number):
         self.ensure_one()
         return {
@@ -56,7 +55,6 @@ class HrBeneficiaryIdCategory(models.Model):
             "id_number": id_number,
         }
 
-    @api.multi
     def validate_id_number(self, id_number):
         """Validate the given ID number
         The method raises an odoo.exceptions.ValidationError if the eval of

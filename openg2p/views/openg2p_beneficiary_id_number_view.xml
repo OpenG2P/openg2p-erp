@@ -42,7 +42,7 @@
     <record id="action_beneficiary_identities_form" model="ir.actions.act_window">
         <field name="name">Beneficiary ID Numbers</field>
         <field name="res_model">openg2p.beneficiary.id_number</field>
-        <field name="view_type">form</field>
+        <!-- <field name="view_type">form</field> -->
         <field name="view_mode">tree,form</field>
     </record>
 

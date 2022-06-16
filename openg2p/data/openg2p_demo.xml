@@ -8,27 +8,27 @@
             <field name="code">Freetown</field>
         </record>
 
-<!--        <record id="state_sl_2" model="res.country.state">-->
-<!--            <field name="country_id" ref="base.sl"/>-->
-<!--            <field name="name">Bo</field>-->
-<!--            <field name="code">Bo</field>-->
-<!--        </record>-->
+        <record id="state_sl_2" model="res.country.state">
+            <field name="country_id" ref="base.sl"/>
+            <field name="name">Bo</field>
+            <field name="code">Bo</field>
+        </record>
 
         <!--
         Resource: openg2p.beneficiary.category
         -->
-<!--        <record id="location_0" model="openg2p.location">-->
-<!--            <field name="name">Makeni Govt Hospital</field>-->
-<!--            <field name="color" eval="2"/>-->
-<!--        </record>-->
-<!--        <record id="location_2" model="openg2p.location">-->
-<!--            <field name="name">Emergency Hospital</field>-->
-<!--            <field name="color" eval="3"/>-->
-<!--        </record>-->
-<!--        <record id="location_3" model="openg2p.location">-->
-<!--            <field name="name">Marampa Health Center</field>-->
-<!--            <field name="color" eval="4"/>-->
-<!--        </record>-->
+        <record id="location_0" model="openg2p.location">
+            <field name="name">Makeni Govt Hospital</field>
+            <field name="color" eval="2"/>
+        </record>
+        <record id="location_2" model="openg2p.location">
+            <field name="name">Emergency Hospital</field>
+            <field name="color" eval="3"/>
+        </record>
+        <record id="location_3" model="openg2p.location">
+            <field name="name">Marampa Health Center</field>
+            <field name="color" eval="4"/>
+        </record>
 
         <record id="openg2p_beneficiary_category_0" model="openg2p.beneficiary.category">
             <field name="name">Volunteers</field>
@@ -55,8 +55,7 @@
 <!--            <field name="firstname">Salton</field>-->
 <!--            <field name="othernames">Arthur</field>-->
 <!--            <field name="lastname">Massally</field>-->
-<!--            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_0'), ref('openg2p_beneficiary_category_2')])]"-->
-<!--                   name="category_id"/>-->
+<!--            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_0'), ref('openg2p_beneficiary_category_2')])]" name="category_id"/>-->
 <!--            <field name="street">5 Foday Drive</field>-->
 <!--            <field name="street2">Hill Station</field>-->
 <!--            <field name="city">Freetown</field>-->
@@ -75,7 +74,7 @@
 <!--            <field name="emergency_contact">Steven Jackson</field>-->
 <!--            <field name="emergency_phone">+23265765875</field>-->
 <!--            <field name="location_id" ref="location_0"/>-->
-<!--            <field name="image" type="base64" file="openg2p/static/img/employee_han-image.jpg"/>-->
+<!--&lt;!&ndash;            <field name="image" type="base64" file="openg2p/static/img/employee_han-image.jpg"/>&ndash;&gt;-->
 <!--        </record>-->
 <!--        <record id="openg2p_beneficiary_2" model="openg2p.beneficiary">-->
 <!--            <field name="firstname">Jacob</field>-->
@@ -98,13 +97,12 @@
 <!--            <field name="emergency_contact">Steven Jackson</field>-->
 <!--            <field name="emergency_phone">+23265765875</field>-->
 <!--            <field name="location_id" ref="location_2"/>-->
-<!--            <field name="image" type="base64" file="openg2p/static/img/employee_hne-image.jpg"/>-->
+<!--&lt;!&ndash;            <field name="image" type="base64" file="openg2p/static/img/employee_hne-image.jpg"/>&ndash;&gt;-->
 <!--        </record>-->
 <!--        <record id="openg2p_beneficiary_3" model="openg2p.beneficiary">-->
 <!--            <field name="firstname">Gianna</field>-->
 <!--            <field name="lastname">Bryant</field>-->
-<!--            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_8'), ref('openg2p_beneficiary_category_0')])]"-->
-<!--                   name="category_id"/>-->
+<!--            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_8'), ref('openg2p_beneficiary_category_0')])]" name="category_id"/>-->
 <!--            <field name="street">1128 Lunetta Street</field>-->
 <!--            <field name="city">Tampa</field>-->
 <!--            <field name="state_id" ref="state_sl"/>-->
@@ -122,14 +120,13 @@
 <!--            <field name="emergency_contact">Steven Jackson</field>-->
 <!--            <field name="emergency_phone">+23265765875</field>-->
 <!--            <field name="location_id" ref="location_3"/>-->
-<!--            <field name="image" type="base64" file="openg2p/static/img/employee_jep-image.jpg"/>-->
+<!--&lt;!&ndash;            <field name="image" type="base64" file="openg2p/static/img/employee_jep-image.jpg"/>&ndash;&gt;-->
 <!--        </record>-->
 
 <!--        <record id="openg2p_beneficiary_4" model="openg2p.beneficiary">-->
 <!--            <field name="firstname">Steph</field>-->
 <!--            <field name="lastname">Curry</field>-->
-<!--            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_0'), ref('openg2p_beneficiary_category_2')])]"-->
-<!--                   name="category_id"/>-->
+<!--            <field eval="[(6, 0, [ref('openg2p_beneficiary_category_0'), ref('openg2p_beneficiary_category_2')])]" name="category_id"/>-->
 <!--            <field name="street">92 Emily Drive</field>-->
 <!--            <field name="city">Columbia</field>-->
 <!--            <field name="state_id" ref="state_sl"/>-->
@@ -147,7 +144,7 @@
 <!--            <field name="emergency_contact">Steven Jackson</field>-->
 <!--            <field name="emergency_phone">+23265765875</field>-->
 <!--            <field name="location_id" ref="location_0"/>-->
-<!--            <field name="image" type="base64" file="openg2p/static/img/employee_jgo-image.jpg"/>-->
+<!--&lt;!&ndash;            <field name="image" type="base64" file="openg2p/static/img/employee_jgo-image.jpg"/>&ndash;&gt;-->
 <!--        </record>-->
 
 <!--        <record id="openg2p_beneficiary_10" model="openg2p.beneficiary">-->
@@ -170,7 +167,7 @@
 <!--            <field name="emergency_contact">Steven Jackson</field>-->
 <!--            <field name="emergency_phone">+23265765875</field>-->
 <!--            <field name="location_id" ref="location_2"/>-->
-<!--            <field name="image" type="base64" file="openg2p/static/img/employee_jod-image.jpg"/>-->
+<!--&lt;!&ndash;            <field name="image" type="base64" file="openg2p/static/img/employee_jod-image.jpg"/>&ndash;&gt;-->
 <!--        </record>-->
 
 <!--        <record id="openg2p_beneficiary_11" model="openg2p.beneficiary">-->
@@ -194,7 +191,7 @@
 <!--            <field name="emergency_contact">Steven Jackson</field>-->
 <!--            <field name="emergency_phone">+23265765875</field>-->
 <!--            <field name="location_id" ref="location_3"/>-->
-<!--            <field name="image" type="base64" file="openg2p/static/img/employee_jog-image.jpg"/>-->
+<!--&lt;!&ndash;            <field name="image" type="base64" file="openg2p/static/img/employee_jog-image.jpg"/>&ndash;&gt;-->
 <!--        </record>-->
 
 <!--        <record id="openg2p_beneficiary_18" model="openg2p.beneficiary">-->
@@ -217,7 +214,7 @@
 <!--            <field name="emergency_contact">Steven Jackson</field>-->
 <!--            <field name="emergency_phone">+23265765875</field>-->
 <!--            <field name="location_id" ref="location_0"/>-->
-<!--            <field name="image" type="base64" file="openg2p/static/img/employee_jth-image.jpg"/>-->
+<!--&lt;!&ndash;            <field name="image" type="base64" file="openg2p/static/img/employee_jth-image.jpg"/>&ndash;&gt;-->
 <!--        </record>-->
 
     </data>
