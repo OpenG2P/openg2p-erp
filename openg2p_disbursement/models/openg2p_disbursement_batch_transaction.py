@@ -27,14 +27,14 @@ load_dotenv()  # for python-dotenv method
 class BatchTransaction(models.Model):
     _name = "openg2p.disbursement.batch.transaction"
     _description = "Disbursement Batch"
-    _inherit = ["generic.mixin.no.unlink", "mail.thread", "openg2p.mixin.has_document"]
+    _inherit = ["mail.thread", "openg2p.mixin.has_document"]
     allow_unlink_domain = [("state", "=", "draft")]
 
     name = fields.Char(
         required=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
-        track_visibility="onchange",
+        tracking=True,
     )
     program_id = fields.Many2one(
         "openg2p.program",
@@ -42,7 +42,7 @@ class BatchTransaction(models.Model):
         readonly=True,
         index=True,
         states={"draft": [("readonly", False)]},
-        track_visibility="onchange",
+        tracking=True,
     )
     state = fields.Selection(
         [
@@ -59,7 +59,7 @@ class BatchTransaction(models.Model):
         string="Date From",
         required=True,
         default=lambda self: fields.Date.to_string(date.today().replace(day=1)),
-        track_visibility="onchange",
+        tracking=True,
     )
     date_end = fields.Date(
         string="Date To",
@@ -67,7 +67,7 @@ class BatchTransaction(models.Model):
         default=lambda self: fields.Date.to_string(
             (datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()
         ),
-        track_visibility="onchange",
+        tracking=True,
     )
 
     company_id = fields.Many2one(
@@ -76,7 +76,7 @@ class BatchTransaction(models.Model):
         required=False,
         readonly=True,
         ondelete="restrict",
-        default=lambda self: self.env.user.company_id,
+        default=lambda self: self.env.company,
     )
     transaction_batch_id = fields.Char(readonly=True, string="Batch ID")
 
@@ -140,7 +140,6 @@ class BatchTransaction(models.Model):
             "beneficiary_ids": beneficiary_ids,
         }
 
-    @api.multi
     def _all_beneficiaries(self):
         self.all_beneficiaries = self.env["openg2p.disbursement.main"].search(
             [("batch_id", "=", self.id)]

@@ -28,7 +28,7 @@ def validate_mobile_money(number):
 class ResPartnerBank(models.Model):
     _name = "res.partner.bank"
     _rec_name = "name"
-    _inherit = ["res.partner.bank", "mail.thread", "generic.mixin.no.unlink"]
+    _inherit = ["res.partner.bank", "mail.thread"]
 
     _allow_unlink_domain = [("state", "=", "draft")]
 
@@ -36,22 +36,22 @@ class ResPartnerBank(models.Model):
     acc_number = fields.Char(
         index=True,
         required=True,
-        track_visibility="onchange",
+        tracking=True,
     )
     partner_id = fields.Many2one(related="beneficiary_id.partner_id")
     beneficiary_id = fields.Many2one(
         "openg2p.beneficiary",
         "Account Holder",
         index=True,
-        track_visibility="onchange",
+        tracking=True,
     )
     bank_id = fields.Many2one(
         index=True,
         required=True,
-        track_visibility="onchange",
+        tracking=True,
     )
     currency_id = fields.Many2one(
-        default=lambda self: self.env.user.company_id.currency_id, readonly=True
+        default=lambda self: self.env.company.currency_id, readonly=True
     )
     payment_mode = fields.Selection(
         [("AFM", "AfriMoney"), ("SLB", "Sierra Leone Commercial Bank")], required=True
@@ -69,7 +69,6 @@ class ResPartnerBank(models.Model):
             )
         return super(ResPartnerBank, self).create(vals)
 
-    @api.multi
     def write(self, vals):
         if vals.get("acc_number"):
             for rec in self:
@@ -77,7 +76,6 @@ class ResPartnerBank(models.Model):
                     vals["acc_number"] = pretty_iban(normalize_iban(vals["acc_number"]))
         return super(ResPartnerBank, self).write(vals)
 
-    @api.multi
     @api.depends("sanitized_acc_number", "acc_number", "bank_name")
     def _compute_name(self):
         for record in self:

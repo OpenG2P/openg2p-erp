@@ -86,16 +86,17 @@
         </record>
         <act_window id="action_check_transaction"
                     name="Check Detailed Status"
-                    src_model="openg2p.disbursement.batch.transaction"
+                    binding_model="openg2p.disbursement.batch.transaction"
                     res_model="openg2p.disbursement.batch.transaction.wizard"
-                    view_type="form" view_mode="form"
-                    key2="client_action_multi" target="new"
+                    view_mode="form"
+                    binding_views="list"
+                    target="new"
                     groups="openg2p_registration.group_openg2p_registration_user"/>
         
         <record id="wizard_batch" model="ir.ui.view">
             <field name="name">bulk_transfer_detailed_status</field>
             <field name="model">openg2p.disbursement.batch.transaction.wizard</field>
-            <field name="target">inline</field>
+            <!-- <field name="target">inline</field> -->
             <field name="arch" type="xml">
                 <form>
                     <group>

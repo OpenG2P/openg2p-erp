@@ -14,7 +14,6 @@ class DisbursementFile(models.Model):
 
     file = fields.Binary(string="CSV File", required=True)
 
-    @api.multi
     def parse_csv(self):
         # id,firstname,lastname,program,location,street,gender,city,state,country,acc_number,amount,payment_mode,currency
         csv_data = base64.b64decode(self.file)
@@ -108,7 +107,6 @@ class DisbursementFile(models.Model):
             beneficiary_list.append(beneficiary)
         self.create_batch_transaction(beneficiary_list)
 
-    @api.multi
     def _get_bank_id(self, data=None):
         if isinstance(data, pd.core.series.Series):
             bank_id = self.env["res.partner.bank"].search(
@@ -135,7 +133,6 @@ class DisbursementFile(models.Model):
         else:
             return bank_id, True
 
-    @api.multi
     def create_batch_transaction(self, beneficiaries_selected):
         # id,firstname,lastname,program,location,street,gender,city,state,country,acc_number,amount,payment_mode,currency
         program_wise = {}
