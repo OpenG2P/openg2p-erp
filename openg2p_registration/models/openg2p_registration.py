@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 import json
 import uuid
-
+import logging
 import requests
+from datetime import datetime
 from odoo.addons.openg2p.services.matching_service import (
     MATCH_MODE_COMPREHENSIVE,
 )
-from odoo.addons.queue_job.job import job
+
+# from odoo.addons.queue_job.job import job
 
 from odoo import api, fields, models, SUPERUSER_ID
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.translate import _
+
+_logger = logging.getLogger(__name__)
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
@@ -32,7 +36,7 @@ class Registration(models.Model):
         return False
 
     def _default_company_id(self):
-        return self.env["res.company"]._company_default_get()
+        return self.env.user.company_id
 
     partner_id = fields.Many2one(
         "res.partner",
@@ -47,7 +51,7 @@ class Registration(models.Model):
         "openg2p.registration.stage",
         "Stage",
         ondelete="restrict",
-        track_visibility="onchange",
+        tracking=True,
         copy=False,
         index=True,
         group_expand="_read_group_stage_ids",
@@ -63,7 +67,7 @@ class Registration(models.Model):
     user_id = fields.Many2one(
         "res.users",
         "Responsible",
-        track_visibility="onchange",
+        tracking=True,
         default=lambda self: self.env.uid,
     )
     date_closed = fields.Datetime("Closed", readonly=True, index=True)
@@ -89,16 +93,16 @@ class Registration(models.Model):
     beneficiary_id = fields.Many2one(
         "openg2p.beneficiary",
         string="Beneficiary",
-        track_visibility="onchange",
+        tracking=True,
         help="Beneficiary linked to the registration.",
     )
     identity_national = fields.Char(
         string="National ID",
-        track_visibility="onchange",
+        tracking=True,
     )
     identity_passport = fields.Char(
         string="Passport No",
-        track_visibility="onchange",
+        tracking=True,
     )
     kanban_state = fields.Selection(
         [("normal", "Grey"), ("done", "Green"), ("blocked", "Red")],
@@ -205,6 +209,17 @@ class Registration(models.Model):
         help="Active programs enrolled to",
         store=True,
         required=False,
+    )
+    merged_beneficiary_ids = fields.Many2many(
+        "openg2p.beneficiary",
+        "merged_beneficiary_rel_regd",
+        "retained_id",
+        "merged_id",
+        string="Merged Duplicates",
+        index=True,
+        context={"active_test": False},
+        help="Duplicate records that have been merged with this."
+        " Primary function is to allow to reference of merged records ",
     )
 
     # will be return registration details on api call
@@ -485,18 +500,22 @@ class Registration(models.Model):
         return odk_map_data
 
     @api.depends("date_open", "date_closed")
-    @api.one
     def _compute_day(self):
-        if self.date_open:
-            date_create = self.create_date
-            date_open = self.date_open
-            self.day_open = (date_open - date_create).total_seconds() / (24.0 * 3600)
+        for record in self:
+            if record.date_open:
+                date_create = record.create_date
+                date_open = record.date_open
+                record.day_open = (date_open - date_create).total_seconds() / (
+                    24.0 * 3600
+                )
 
-        if self.date_closed:
-            date_create = self.create_date
-            date_closed = self.date_closed
-            self.day_close = (date_closed - date_create).total_seconds() / (24.0 * 3600)
-            self.delay_close = self.day_close - self.day_open
+            if record.date_closed:
+                date_create = record.create_date
+                date_closed = record.date_closed
+                record.day_close = (date_closed - date_create).total_seconds() / (
+                    24.0 * 3600
+                )
+                record.delay_close = record.day_close - record.day_open
 
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):
@@ -518,7 +537,6 @@ class Registration(models.Model):
         return {"value": {"date_closed": False}}
 
     @api.model
-    @api.multi
     def create(self, vals):
         if vals.get("location_id") and not self._context.get("default_location_id"):
             self = self.with_context(default_location_id=vals.get("location_id"))
@@ -534,7 +552,6 @@ class Registration(models.Model):
         )  # let's queue uniqueness check
         return res
 
-    @api.multi
     def write(self, vals):
         # user_id change: update date_open
         if vals.get("user_id"):
@@ -586,7 +603,6 @@ class Registration(models.Model):
             res = super(Registration, self).write(vals)
         return res
 
-    @api.multi
     def action_get_created_beneficiary(self):
         self.ensure_one()
         context = dict(self.env.context)
@@ -599,8 +615,7 @@ class Registration(models.Model):
             "context": context,
         }
 
-    @api.multi
-    def _track_subtype(self, init_values):
+    def _track_subtype_val(self, init_values):
         record = self[0]
         if (
             "beneficiary_id" in init_values
@@ -620,24 +635,22 @@ class Registration(models.Model):
             and record.stage_id.sequence > 1
         ):
             return "openg2p_registration.mt_registration_stage_changed"
-        return super(Registration, self)._track_subtype(init_values)
+        return super(Registration, self)._track_subtype_val(init_values)
 
     def cron_check_uniqueness(self):
         self.search(
             [("beneficiary_id", "=", None), ("duplicate_beneficiaries_ids", "=", None)]
         ).sudo().with_delay().ensure_unique(MATCH_MODE_COMPREHENSIVE)
 
-    @api.multi
     def get_identities(self):
         self.ensure_one()
         return [(i.type, i.name) for i in self.identities]
 
-    @job
+    # @job
     def ensure_unique(self, mode):
         for rec in self:
             self.env["openg2p.beneficiary"].matches(rec, mode, stop_on_first=False)
 
-    @api.multi
     def create_beneficiary_from_registration(self):
         """Create an openg2p.beneficiary from the openg2p.registrations"""
         self.ensure_one()
@@ -672,7 +685,7 @@ class Registration(models.Model):
             "lang": self.lang,
             "gender": self.gender,
             "birthday": self.birthday,
-            "image": self.image,
+            # "image": self.image,
             "marital": self.marital,
             "national_id": self.identity_national,
             "passport_id": self.identity_passport,
@@ -731,7 +744,6 @@ class Registration(models.Model):
         self.active = False
         return self.create_beneficiary_from_registration()["res_id"]
 
-    @api.multi
     def archive_registration(self):
         for registration in self:
             if registration.beneficiary_id:
@@ -742,7 +754,6 @@ class Registration(models.Model):
                 )
         self.write({"active": False})
 
-    @api.multi
     def reset_registration(self):
         """Reinsert the registration into the registration pipe in the first stage"""
         if self.filtered("beneficiary_id"):

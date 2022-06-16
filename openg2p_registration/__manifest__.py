@@ -13,7 +13,7 @@
         "openg2p",
         "calendar",
         "fetchmail",
-        "document",
+        # "document", ## OCA Modules not supported
         #   'digest',
     ],
     "data": [
@@ -29,7 +29,7 @@
         "views/openg2p_location.xml",
         #    'views/digest_views.xml',
     ],
-    "demo": ["data/openg2p_registration_demo.xml"],
+    "demo": [],
     "installable": True,
     "auto_install": False,
     "registration": True,
