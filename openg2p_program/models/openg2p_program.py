@@ -9,22 +9,22 @@ class Program(models.Model):
     _description = "Disbursement Program"
     _order = "name, id"
     _inherit = [
-        "generic.mixin.name_with_code",
-        "generic.mixin.uniq_name_code",
-        "generic.mixin.no.unlink",
+        # "generic.mixin.name_with_code",
+        # "generic.mixin.uniq_name_code",
+        # "generic.mixin.no.unlink",
         "mail.thread",
         "openg2p.mixin.has_document",
     ]
     allow_unlink_domain = [("state", "=", "draft")]
 
-    name = fields.Char(track_visibility="onchange")
+    name = fields.Char(tracking=True)
     code = fields.Char(readonly=True, states={"draft": [("readonly", False)]})
     state = fields.Selection(
         [("draft", "Draft"), ("active", "Active"), ("done", "Done")],
         string="Status",
         readonly=True,
         required=True,
-        track_visibility="always",
+        tracking=True,
         default="draft",
         help="Status",
     )
@@ -51,7 +51,7 @@ class Program(models.Model):
         "End Date",
         states={"close": [("readonly", True), ("required", True)]},
         index=True,
-        track_visibility="onchange",
+        tracking=True,
     )
     active = fields.Boolean(
         default=True,
@@ -63,7 +63,7 @@ class Program(models.Model):
         string="Company",
         required=True,
         index=True,
-        default=lambda self: self.env.user.company_id,
+        default=lambda self: self.env.company,
     )
     currency_id = fields.Many2one(
         "res.currency",
@@ -88,11 +88,9 @@ class Program(models.Model):
         for program in self:
             program.category_count = len(program.category_ids)
 
-    @api.multi
     def action_activate(self):
         self.write({"state": "active"})
 
-    @api.multi
     def action_done(self):
         self.env["openg2p.program.enrollment"].search(
             ("program_id", "in", self.ids), ("state", "in", ("open", "draft"))

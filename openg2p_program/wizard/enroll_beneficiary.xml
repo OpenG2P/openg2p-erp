@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- wizard action on openg2p.beneficiary -->
-    <act_window id="partner_wizard_action"
-                name="Enroll Into Program"
-                src_model="openg2p.beneficiary"
-                res_model="beneficiary.enroll.wizard"
-                view_type="form" view_mode="form"
-                key2="client_action_multi" target="new"
-                groups="openg2p.group_openg2p_officer"/>
-
+    <record id="enroll_beneficiary_into_program" model="ir.actions.act_window">
+        <field name="name">Enroll Into Program</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">beneficiary.enroll.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="wizard_view"/>
+        <field name="target">new</field>
+    </record>
     <!-- wizard view -->
     <record id="wizard_view" model="ir.ui.view">
         <field name="name">Enroll Into Program</field>
