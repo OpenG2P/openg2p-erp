@@ -13,7 +13,6 @@ class Openg2pBeneficiary(models.Model):
         search="_search_newly_registered_beneficiary",
     )
 
-    @api.multi
     def _compute_newly_registered_beneficiary(self):
         read_group_result = self.env["openg2p.registration"].read_group(
             [

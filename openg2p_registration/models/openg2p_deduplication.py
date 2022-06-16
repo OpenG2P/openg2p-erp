@@ -36,7 +36,6 @@ class Openg2pDeduplication(models.Model):
         except requests.exceptions.RequestException as e:
             return e
 
-    @api.multi
     def find_duplicates(self):
         beneficiary_list = self.search_beneficiary()
 
@@ -48,7 +47,6 @@ class Openg2pDeduplication(models.Model):
                 {"duplicate_beneficiaries_ids": [(6, 0, list(beneficiary_ids))]}
             )
 
-    @api.multi
     def merge_beneficiaries(self):
         # ID to be retained
         idr = self.retained_id
@@ -69,7 +67,7 @@ class Openg2pDeduplication(models.Model):
             "mobile": self.mobile,
             "email": self.email,
             "lang": self.lang,
-            "image": self.image,
+            # "image": self.image,
             "marital": self.marital,
             "bank_account_id": self.bank_account_id.id,
             "emergency_contact": self.emergency_contact,
@@ -98,7 +96,7 @@ class Openg2pDeduplication(models.Model):
             "lang": existing_beneficiary.lang,
             "gender": existing_beneficiary.gender,
             "birthday": existing_beneficiary.birthday,
-            "image": existing_beneficiary.image,
+            # "image": existing_beneficiary.image,
             "marital": existing_beneficiary.marital,
             "bank_account_id": existing_beneficiary.bank_account_id.id,
             "emergency_contact": existing_beneficiary.emergency_contact,

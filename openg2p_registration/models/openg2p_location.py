@@ -16,7 +16,6 @@ class Openg2pLocation(models.Model):
         compute="_compute_registration_stats", string="Expected Beneficiaries"
     )
 
-    @api.multi
     def _compute_new_registration_count(self):
         registration_data = self.env["openg2p.registration"].read_group(
             [("location_id", "in", self.ids), ("stage_id.sequence", "<=", "1")],
@@ -30,7 +29,6 @@ class Openg2pLocation(models.Model):
         for location in self:
             location.new_registration_count = result.get(location.id, 0)
 
-    @api.multi
     def _compute_registration_stats(self):
         # TODO fix
         # beneficiary_data = self.env['openg2p.beneficiary'].read_group(
