@@ -10,7 +10,10 @@ class Openg2pBeneficiaryException(models.Model):
     _name = "openg2p.beneficiary.exception"
     _description = "Beneficiary Exception"
     _order = "date desc"
-    _inherit = ["mail.thread", "generic.mixin.no.unlink"]
+    _inherit = [
+        "mail.thread",
+        # 'generic.mixin.no.unlink'
+    ]
     _allow_unlink_domain = [("state", "=", "draft")]
 
     name = fields.Char(
@@ -33,7 +36,7 @@ class Openg2pBeneficiaryException(models.Model):
     state = fields.Selection(
         [("draft", "Draft"), ("open", "Open"), ("closed", "Closed")],
         default="draft",
-        track_visibility="onchange",
+        tracking=True,
         required=True,
     )
     note = fields.Text()
@@ -45,14 +48,12 @@ class Openg2pBeneficiaryException(models.Model):
         states={"draft": [("readonly", False)]},
     )
     user_id = fields.Many2one("res.users", string="Responsible")
-    confirmed = fields.Boolean(track_visibility="onchange", readonly=True)
+    confirmed = fields.Boolean(tracking=True, readonly=True)
     active = fields.Boolean(default=True)
 
-    @api.multi
     def action_confirm(self):
         self.write({"confirmed": True, "state": "open"})
 
-    @api.multi
     def action_close(self):
         self.write({"state": "closed", "active": False})
 

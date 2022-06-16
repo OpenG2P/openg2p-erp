@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="wizard_batch" model="ir.ui.view">
+         <field name="name">Create Transaction</field>
+         <field name="model">openg2p.beneficiary.transaction.wizard</field>
+         <field name="arch" type="xml">
+            <form string="Create Transaction">
+                <group>
+                    <group>
+                        <field name="batch_name"/>
+                        <button string="Create Batch Transaction" name="create_batch" type="object"
+                                class="btn-primary"/>
+
+                    </group>
+                    <group>
+                        <button string="Create Single Transactions" name="create_single" type="object"
+                                class="btn-primary"/>
+
+                    </group>
+                </group>
+                <footer>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+         </field>
+     </record>
+
+    <record id="create_transaction_wizard" model="ir.actions.act_window">
+        <field name="name">Create Transaction</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.beneficiary.transaction.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="wizard_batch"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

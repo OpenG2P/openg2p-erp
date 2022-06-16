@@ -36,7 +36,6 @@ class Openg2pMixinHasDocument(models.AbstractModel):
             rec.document_ids = result[rec.id]
             rec.documents_count = len(rec.document_ids)
 
-    @api.multi
     def action_get_attachment_tree_view(self):
         action = self.env.ref("base.action_attachment").read()[0]
         action["context"] = {

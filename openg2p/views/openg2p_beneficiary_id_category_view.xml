@@ -34,7 +34,7 @@
     <record id="action_beneficiary_id_category" model="ir.actions.act_window">
         <field name="name">Identifications</field>
         <field name="res_model">openg2p.beneficiary.id_category</field>
-        <field name="view_type">form</field>
+        <!-- <field name="view_type">form</field> -->
         <field name="view_mode">tree,form</field>
     </record>
 

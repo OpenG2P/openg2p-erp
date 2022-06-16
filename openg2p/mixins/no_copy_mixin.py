@@ -11,6 +11,5 @@ class NoCopyMixin(models.AbstractModel):
     _name = "openg2p.mixin.no_copy"
     _description = "OpenG2P Mixin: No Copy"
 
-    @api.multi
     def copy(self, default=None):
         raise UserError("Duplicate operation not supported")
