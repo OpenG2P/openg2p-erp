@@ -9,7 +9,7 @@
     "website": "https://openg2p.org",
     "category": "OpenG2P",
     "version": "0.1",
-    "depends": ["openg2p", "decimal_precision", "sms", "openg2p_registration"],
+    "depends": ["openg2p", "sms", "openg2p_registration"],
     "data": [
         "security/openg2p_banks_security.xml",
         "views/openg2p_beneficiary.xml",

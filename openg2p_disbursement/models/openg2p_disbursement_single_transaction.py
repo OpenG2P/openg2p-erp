@@ -2,7 +2,8 @@ import json
 import requests
 import logging
 import uuid
-import odoo.addons.decimal_precision as dp
+
+# import odoo.addons.decimal_precision as dp
 from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
@@ -16,7 +17,7 @@ _logger = logging.getLogger(__name__)
 class SingleTransaction(models.Model):
     _name = "openg2p.disbursement.single.transaction"
     _description = "Single Transaction"
-    _inherit = ["generic.mixin.no.unlink", "mail.thread", "openg2p.mixin.has_document"]
+    _inherit = ["mail.thread", "openg2p.mixin.has_document"]
     allow_unlink_domain = [("state", "=", "draft")]
 
     bank_account_id = fields.Many2one(
@@ -61,7 +62,7 @@ class SingleTransaction(models.Model):
     )
     amount = fields.Float(
         "Amount",
-        digits=dp.get_precision("Disbursement"),
+        digits="Disbursement",
         required=True,
     )
     company_id = fields.Many2one(
@@ -73,7 +74,7 @@ class SingleTransaction(models.Model):
         string="Date From",
         required=True,
         default=lambda self: fields.Date.to_string(date.today().replace(day=1)),
-        track_visibility="onchange",
+        tracking=True,
     )
     date_end = fields.Date(
         string="Date To",
@@ -81,7 +82,7 @@ class SingleTransaction(models.Model):
         default=lambda self: fields.Date.to_string(
             (datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()
         ),
-        track_visibility="onchange",
+        tracking=True,
     )
     request_id = fields.Char(string="Request ID", compute="_generate_uuid", store=True)
     transaction_status = fields.Char(readonly=True)
@@ -99,7 +100,6 @@ class SingleTransaction(models.Model):
                 }
             }
 
-    @api.multi
     def _transaction_execution_amount(self):
         """
         Get the amount to execute for this record

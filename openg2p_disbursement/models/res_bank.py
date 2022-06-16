@@ -10,7 +10,7 @@ class Bank(models.Model):
     _inherit = "res.bank"
 
     country = fields.Many2one(
-        "res.country", default=lambda self: self.env.user.company_id.country_id
+        "res.country", default=lambda self: self.env.company.country_id
     )
     validation_regex = fields.Char()
     type = fields.Selection(
