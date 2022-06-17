@@ -108,7 +108,6 @@
                                     <field name="country_id" placeholder="Country" class="o_address_country"
                                            options='{"no_open": True, "no_create": True}'/>
                                 </div>
-                                <field name="town_village" placeholder="Town Village"/>
                                </group>
                             <group string="Disbursement Details">
                                 <field name="regression_and_progression" string="Regression And Progression (A)"/>

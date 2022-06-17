@@ -217,8 +217,6 @@ class RegistrationService(models.Model):
                     data["kyc_id"] = odk_data["bban"]
                 elif k == "new_emis_code":
                     data["external_id"] = odk_data["new_emis_code"]
-                elif k == "town_village":
-                    data["town_village"] = odk_data["town_village"]
                 elif hasattr(self, k):
                     if k == "partner_id":
                         res = self.env["res.partner"].search(

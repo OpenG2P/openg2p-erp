@@ -336,7 +336,7 @@ class Beneficiary(models.Model):
     # newly added fields
     kyc_id = fields.Char("KYC ID", required=False, index=True)
     external_id = fields.Char("External ID", required=False, index=True)
-    town_village = fields.Char("Town Village", required=False)
+
 
     def api_json(self):
         return {

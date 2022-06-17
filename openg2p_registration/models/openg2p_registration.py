@@ -696,7 +696,6 @@ class Registration(models.Model):
             "odk_batch_id": self.odk_batch_id,
             "kyc_id": self.kyc_id,
             "external_id": self.external_id,
-            "town_village": self.town_village,
         }
         beneficiary = self.env["openg2p.beneficiary"].create(data)
 
