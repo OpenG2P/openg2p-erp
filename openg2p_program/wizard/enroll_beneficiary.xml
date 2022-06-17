@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="enroll_beneficiary_into_program" model="ir.actions.act_window">
-        <field name="name">Enroll Into Program</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">beneficiary.enroll.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="wizard_view"/>
-        <field name="target">new</field>
-    </record>
     <!-- wizard view -->
     <record id="wizard_view" model="ir.ui.view">
         <field name="name">Enroll Into Program</field>
@@ -57,5 +49,13 @@
                 </footer>
             </form>
         </field>
+    </record>
+     <record id="enroll_beneficiary_into_program" model="ir.actions.act_window">
+        <field name="name">Enroll Into Program</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">beneficiary.enroll.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="wizard_view"/>
+        <field name="target">new</field>
     </record>
 </odoo>
