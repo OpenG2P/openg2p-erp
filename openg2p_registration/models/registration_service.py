@@ -1,12 +1,30 @@
 from odoo import models
 from odoo.exceptions import UserError, ValidationError, _logger
 from odoo.tools.translate import _
-
+import os
+import requests
+import json
+import logging
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
 
 class RegistrationService(models.Model):
     _inherit = ["openg2p.registration"]
+
+    def demo_auth(self, data):
+        import os
+        DEMO_AUTHENTICATE_URL = os.getenv("DEMO_AUTHENTICATE_URL", "http://openg2p-mosip-auth-mediator.openg2p-mosip/demoAuth")
+        response = requests.post(DEMO_AUTHENTICATE_URL, json=data)
+        _logger.info("Demo Auth Response: " + str(response.content))
+        return json.loads(response.content)
+
+    def post_auth_find_duplicate_beneficiary(self, auth_id, auth_id_type):
+        type_code_id = self.env["openg2p.beneficiary.id_category"].search(
+            [("code", "=", auth_id_type)], limit=1).id
+        kycdup_list = (self.env["openg2p.beneficiary.id_number"].search(
+            [("name", "=", auth_id), ("category_id", "=", type_code_id)]))
+        _logger.info(f"auth_id : {auth_id}. Post Auth. Size of duplicates: {kycdup_list}")
+        return kycdup_list
 
     def create_registration_for_single_submission(self, odk_data):
         temp = {}
@@ -21,35 +39,33 @@ class RegistrationService(models.Model):
         autodedup_field = program_obj.autodedup_field
         action = program_obj.action
         stage_name = program_obj.stage_name
+        demo_auth_res = {}
+        if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
+            demo_auth_res = self.demo_auth(temp)
         if autodedup_field == "kyc":
-            kycdup_list = (
-                self.env["openg2p.registration"]
-                .search([("kyc_id", "=", temp["bban"])])
-                .ids
-            )
+            kycdup_list = self.post_auth_find_duplicate_beneficiary(
+                self, demo_auth_res["auth_id"],demo_auth_res["auth_id_type"])
 
-            if len(kycdup_list) != 0:
+
+            if len(kycdup_list.ids) != 0:
                 if action == "merge":
                     # merging the existing ones with new one and passing the existing_id and current_id as arguments
                     self.merge_registrations(temp, kycdup_list[0])
                 elif action == "del_old":
                     # deleting the old registration
-                    duplicate_kyc = self.env["openg2p.registration"].search(
-                        [("kyc_id", "=", temp["bban"])]
-                    )
+                    duplicate_kyc =kycdup_list
                     duplicate_kyc.active = False
                     # deleting the old beneficiary
-                    duplicate_kyc_bene = self.env["openg2p.beneficiary"].search(
-                        [("kyc_id", "=", temp["bban"])]
-                    )
+                    duplicate_kyc_bene = kycdup_list.beneficiary_id
+
                     duplicate_kyc_bene.active = False
                     # creating registration for new record
-                    self.create_fields_for_registration(temp, stage_name)
+                    self.create_fields_for_registration(temp, stage_name,demo_auth_res)
                 elif action == "del_new":
                     print("kyc and delete new")
                     # deleting the current record
             else:
-                self.create_fields_for_registration(temp, stage_name)
+                self.create_fields_for_registration(temp, stage_name,demo_auth_res)
         elif autodedup_field == "ext_id":
             externaldup_list = (
                 self.env["openg2p.registration"]
@@ -72,15 +88,15 @@ class RegistrationService(models.Model):
                     )
                     duplicate_external_bene.active = False
                     # creating registration for new record
-                    self.create_fields_for_registration(temp, stage_name)
+                    self.create_fields_for_registration(temp, stage_name,demo_auth_res)
                 elif action == "del_new":
                     print("External id & delete new")
             else:
-                self.create_fields_for_registration(temp, stage_name)
+                self.create_fields_for_registration(temp, stage_name,demo_auth_res)
         else:
-            self.create_fields_for_registration(temp, stage_name)
+            self.create_fields_for_registration(temp, stage_name,demo_auth_res)
 
-    def create_fields_for_registration(self, temp, stage_name):
+    def create_fields_for_registration(self, temp, stage_name,demo_auth_res):
         country_name = temp["country"] if "country" in temp.keys() else "Sierra Leone"
         state_name = temp["state"] if "state" in temp.keys() else "Freetown"
         country_id = self.env["res.country"].search([("name", "=", country_name)])[0].id
@@ -116,7 +132,7 @@ class RegistrationService(models.Model):
                 }
             )
             rid = regd.id
-            self.create_disbursement_fields(rid, temp, regd)
+            self.create_disbursement_fields(rid, temp, regd,demo_auth_res)
         except BaseException as e:
             _logger.error(e)
             return None
@@ -141,7 +157,7 @@ class RegistrationService(models.Model):
                 if not str(k).startswith("_"):
                     temp[str(k).replace("-", "_").lower()] = v
 
-    def create_disbursement_fields(self, rid, temp, regd):
+    def create_disbursement_fields(self, rid, temp, regd,demo_auth_res):
         from datetime import datetime
 
         data = {}
@@ -300,6 +316,8 @@ class RegistrationService(models.Model):
             regd.write(data)
             # Updating Program for Registration
             regd.program_ids = [(6, 0, temp["program_ids"])]
+            if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
+                regd.post_auth_create_id(demo_auth_res)
             if temp["stage_id"] == 6:
                 regd.create_beneficiary_from_registration()
 
@@ -332,3 +350,17 @@ class RegistrationService(models.Model):
 
         # Merging specfic fields to beneficiary
         existing_registration.write(cleaned_overwrite_data)
+
+    def post_auth_create_id(self, response):
+        return self.env["openg2p.registration.identity"].create({
+            "name": response["auth_id"],
+            "type": response["auth_id_type"],
+            "status": response["auth_id_status"],
+            "message": response["auth_id_message"],
+            "registration_id": self.id
+        })
+        res = self.env["openg2p.registration.identity"].search(
+            [("registration_id", "=", self.id)]
+        )
+        if res:
+            self.write({"identities": res.ids})
