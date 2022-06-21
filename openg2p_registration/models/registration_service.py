@@ -13,7 +13,8 @@ class RegistrationService(models.Model):
 
     def demo_auth(self, data):
         import os
-        DEMO_AUTHENTICATE_URL = os.getenv("DEMO_AUTHENTICATE_URL", "http://openg2p-mosip-auth-mediator.openg2p-mosip/demoAuth")
+        DEMO_AUTHENTICATE_URL = os.getenv("DEMO_AUTHENTICATE_URL",
+        "http://openg2p-mosip-auth-mediator.openg2p-mosip/demoAuth")
         response = requests.post(DEMO_AUTHENTICATE_URL, json=data)
         _logger.info("Demo Auth Response: " + str(response.content))
         return json.loads(response.content)
@@ -40,17 +41,19 @@ class RegistrationService(models.Model):
         action = program_obj.action
         stage_name = program_obj.stage_name
         demo_auth_res = {}
-        if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
-            demo_auth_res = self.demo_auth(temp)
+
+
+        # if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
+        #     demo_auth_res = self.demo_auth(temp)
+        #kyc_id is identity number and category type is kyc_type id number
         if autodedup_field == "kyc":
             kycdup_list = self.post_auth_find_duplicate_beneficiary(
-                self, demo_auth_res["auth_id"],demo_auth_res["auth_id_type"])
-
+                self,temp["bban"],"KYC_TYPE_CATEGORY_ID_NUMBER")
 
             if len(kycdup_list.ids) != 0:
                 if action == "merge":
                     # merging the existing ones with new one and passing the existing_id and current_id as arguments
-                    self.merge_registrations(temp, kycdup_list[0])
+                    self.merge_registrations(temp, kycdup_list.ids[0])
                 elif action == "del_old":
                     # deleting the old registration
                     duplicate_kyc =kycdup_list
