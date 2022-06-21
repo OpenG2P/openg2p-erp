@@ -34,10 +34,10 @@
         "disable_odoo_online",
         "report_xlsx",
         "report_xlsx_helper",
-        "field_image_preview",
         "base_currency_iso_4217",
         "module_auto_update",
         "web_notify",
+        # "field_image_preview", ## XML parse issue in bitnami odoo image
         # "generic_mixin", ## Both modules causing key error while installing
         # "base_export_async",
     ],
