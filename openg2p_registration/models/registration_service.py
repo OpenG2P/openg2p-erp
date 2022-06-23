@@ -5,168 +5,104 @@ import os
 import requests
 import json
 import logging
+from datetime import datetime
+format = "%Y-%m-%dT%H:%M:%SZ"
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
-
 
 class RegistrationService(models.Model):
     _inherit = ["openg2p.registration"]
 
-    def demo_auth(self, data):
-        import os
-        DEMO_AUTHENTICATE_URL = os.getenv("DEMO_AUTHENTICATE_URL",
-        "http://openg2p-mosip-auth-mediator.openg2p-mosip/demoAuth")
-        response = requests.post(DEMO_AUTHENTICATE_URL, json=data)
-        _logger.info("Demo Auth Response: " + str(response.content))
-        return json.loads(response.content)
-
     def post_auth_find_duplicate_beneficiary(self, auth_id, auth_id_type):
-        type_code_id = self.env["openg2p.beneficiary.id_category"].search(
-            [("code", "=", auth_id_type)], limit=1).id
-        kycdup_list = (self.env["openg2p.beneficiary.id_number"].search(
-            [("name", "=", auth_id), ("category_id", "=", type_code_id)]))
-        _logger.info(f"auth_id : {auth_id}. Post Auth. Size of duplicates: {kycdup_list}")
+        kycdup_list=self.env["openg2p.registration.identity"].search(
+            [("name","=",auth_id),("type","=",auth_id_type)]
+        )
         return kycdup_list
 
-    def create_registration_for_single_submission(self, odk_data):
-        temp = {}
-        # current program id of a registration
+    def create_registration_for_single_submission(self,regd, odk_data):
         current_program_id = int(
             odk_data["program_ids"][len(odk_data["program_ids"]) - 1]
         )
         program_obj = self.env["openg2p.program"].search(
             [("id", "=", current_program_id)]
         )
-        self.renaming_submission_data_fields(temp, odk_data)
         autodedup_field = program_obj.autodedup_field
         action = program_obj.action
         stage_name = program_obj.stage_name
-        demo_auth_res = {}
-
-
-        # if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
-        #     demo_auth_res = self.demo_auth(temp)
-        #kyc_id is identity number and category type is kyc_type id number
+        #creating a dictionary for KYC type Identity
+        auth_response={"authId":regd["kyc_id"],"authIdType":"KYC_TYPE"}
         if autodedup_field == "kyc":
             kycdup_list = self.post_auth_find_duplicate_beneficiary(
-                self,temp["bban"],"KYC_TYPE_CATEGORY_ID_NUMBER")
-
+                regd["kyc_id"],"KYC_TYPE")
+            print(kycdup_list)
             if len(kycdup_list.ids) != 0:
                 if action == "merge":
                     # merging the existing ones with new one and passing the existing_id and current_id as arguments
-                    self.merge_registrations(temp, kycdup_list.ids[0])
+                    self.merge_registrations(regd, kycdup_list.registration_id.id)
                 elif action == "del_old":
-                    # deleting the old registration
-                    duplicate_kyc =kycdup_list
+                    # finding the old registration id
+                    duplicate_kyc =kycdup_list.registration_id
+                    # finding the old registration identities of KYC TYPE
+                    res = self.env["openg2p.registration.identity"].search(
+                        [("registration_id", "=", duplicate_kyc.id)])
+                    #finding the beneficiary id from the registration id
+                    duplicate_kyc_bene = self.env["openg2p.registration"].search(
+                        [("id", "=", duplicate_kyc.id)])
+                    #deleting the old identities record
+                    res.unlink()
+                    #deleting the old registration
                     duplicate_kyc.active = False
                     # deleting the old beneficiary
-                    duplicate_kyc_bene = kycdup_list.beneficiary_id
-
-                    duplicate_kyc_bene.active = False
+                    duplicate_kyc_bene.beneficiary_id.active=False
                     # creating registration for new record
-                    self.create_fields_for_registration(temp, stage_name,demo_auth_res)
+                    self.create_registration(regd,odk_data,stage_name,auth_response)
                 elif action == "del_new":
                     print("kyc and delete new")
                     # deleting the current record
             else:
-                self.create_fields_for_registration(temp, stage_name,demo_auth_res)
+                self.create_registration(regd,odk_data,stage_name,auth_response)
         elif autodedup_field == "ext_id":
-            externaldup_list = (
-                self.env["openg2p.registration"]
-                .search([("external_id", "=", temp["new_emis_code"])])
-                .ids
-            )
+            externaldup_list = self.env["openg2p.registration"].search(
+                [("external_id", "=", regd["external_id"])]).ids
+
             if len(externaldup_list) != 0:
                 if action == "merge":
                     # merging the existing ones with new one and passing the existing_id and current_id as arguments
-                    self.merge_registrations(temp, externaldup_list[0])
+                    self.merge_registrations(regd, externaldup_list[0])
                 elif action == "del_old":
+
                     # deleting the old registration
                     duplicate_external = self.env["openg2p.registration"].search(
-                        [("external_id", "=", temp["new_emis_code"])]
-                    )
+                    [("external_id", "=", regd["external_id"])]
+                )
+                    res = self.env["openg2p.registration.identity"].search(
+                    [("registration_id", "=", duplicate_external.id)])
+                    print("Duplicate identity", res)
+                    res.unlink()
+
                     duplicate_external.active = False
+
                     # deleting the old beneficiary
                     duplicate_external_bene = self.env["openg2p.beneficiary"].search(
-                        [("external_id", "=", temp["new_emis_code"])]
-                    )
+                    [("external_id", "=", regd["external_id"])]
+                )
+
                     duplicate_external_bene.active = False
                     # creating registration for new record
-                    self.create_fields_for_registration(temp, stage_name,demo_auth_res)
+                    self.create_registration(regd,odk_data,stage_name,auth_response)
                 elif action == "del_new":
                     print("External id & delete new")
             else:
-                self.create_fields_for_registration(temp, stage_name,demo_auth_res)
+                self.create_registration(regd,odk_data,stage_name,auth_response)
+
         else:
-            self.create_fields_for_registration(temp, stage_name,demo_auth_res)
+            self.create_registration(regd,odk_data,stage_name,auth_response)
 
-    def create_fields_for_registration(self, temp, stage_name,demo_auth_res):
-        country_name = temp["country"] if "country" in temp.keys() else "Sierra Leone"
-        state_name = temp["state"] if "state" in temp.keys() else "Freetown"
-        country_id = self.env["res.country"].search([("name", "=", country_name)])[0].id
-        state_id = (
-            self.env["res.country.state"].search([("name", "=", state_name)])[0].id
-        )
-        # Creating registration in final stage
-        stage_id_default = 6
-        temp["stage_id"] = stage_name.id
-        try:
-            regd = self.create(
-                {
-                    "firstname": "_",
-                    "lastname": "_",
-                    "street": (temp["chiefdom"] if "chiefdom" in temp.keys() else "-"),
-                    "street2": (temp["district"] if "district" in temp.keys() else "-")
-                    + ", "
-                    + (temp["region"] if "region" in temp.keys() else "-"),
-                    "city": (
-                        (temp["city"] if "city" in temp.keys() else "Freetown")
-                        or "Freetown"
-                    )
-                    if "city" in temp.keys()
-                    else "Freetown",
-                    "country_id": country_id,
-                    "state_id": state_id,
-                    "gender": "male",
-                    # "stage_id": (
-                    #     temp["stage_id"]
-                    #     if "stage_id" in temp.keys()
-                    #     else stage_id_default
-                    # ),
-                }
-            )
-            rid = regd.id
-            self.create_disbursement_fields(rid, temp, regd,demo_auth_res)
-        except BaseException as e:
-            _logger.error(e)
-            return None
 
-    def renaming_submission_data_fields(self, temp, odk_data):
-        odk_map = (
-            odk_data["odk_map"]
-            if "odk_map" in odk_data.keys()
-            else self._get_default_odk_map()
-        )
-
-        for k, v in odk_data.items():
-            if k.startswith("group"):
-                for k2, v2 in v.items():
-                    if k2 in odk_map.keys():
-                        k2 = odk_map[k2]
-                    else:
-                        k2 = str(k2).replace("-", "_").lower()
-                    if not str(k2).startswith("_"):
-                        temp[k2] = v2
-            else:
-                if not str(k).startswith("_"):
-                    temp[str(k).replace("-", "_").lower()] = v
-
-    def create_disbursement_fields(self, rid, temp, regd,demo_auth_res):
-        from datetime import datetime
-
+    def create_disbursement_fields(self, rid, temp, regd,auth_response):
         data = {}
         odk_data = temp
         org_data = {}
-        format = "%Y-%m-%dT%H:%M:%SZ"
+
         for k, v in odk_data.items():
             try:
                 if k in [
@@ -198,106 +134,11 @@ class RegistrationService(models.Model):
                 ):
                     continue
                 if k == "bank_account_number":
-                    if len(str(v) or "") != 0:
-                        data["bank_account_number"] = str(v)
-                        res = self.env["res.partner.bank"].search(
-                            [("acc_number", "=", str(v))]
-                        )
-                        if res:
-                            raise Exception("Duplicate Bank Account Number!")
-                        if not res:
-                            bank_id = self.env["res.bank"].search(
-                                [("name", "=", odk_data["bank_name"])], limit=1
-                            )
-                            if len(bank_id) == 0:
-                                bank_id = self.env["res.bank"].create(
-                                    {
-                                        "execute_method": "manual",
-                                        "name": odk_data["bank_name"],
-                                        "type": "normal",
-                                    }
-                                )
-                            else:
-                                bank_id = bank_id[0]
-                            res = self.env["res.partner.bank"].create(
-                                {
-                                    "bank_id": bank_id.id,
-                                    "acc_number": str(v),
-                                    "payment_mode": "AFM",
-                                    "bank_name": odk_data["bank_name"],
-                                    "acc_holder_name": odk_data["name"],
-                                    "partner_id": self.env.ref("base.main_partner").id,
-                                }
-                            )
-                        data["bank_account_id"] = res.id
-                elif k == "phone":
-                    data["phone"] = odk_data["phone"]
-                elif k == "bban":
-                    data["kyc_id"] = odk_data["bban"]
-                elif k == "new_emis_code":
-                    data["external_id"] = odk_data["new_emis_code"]
+                    self.mapping_bank_account(v,odk_data,data)
+
                 elif hasattr(self, k):
-                    if k == "partner_id":
-                        res = self.env["res.partner"].search(
-                            [("partner_id", "=", v)], limit=1
-                        )
-                        if res:
-                            data[k] = res.id
-                    elif k == "registered_date":
-                        data["registered_date"] = datetime.strptime(v, format)
-                    elif k == "categ_ids":
-                        res = self.env["categ_ids"].search(
-                            [("categ_ids", "=", v)], limit=1
-                        )
-                        if res:
-                            data["categ_ids"] = res.ids
-                    elif k == "company_id":
-                        res = self.env["company_id"].search(
-                            [("company_id", "=", v)], limit=1
-                        )
-                        if res:
-                            data["company_id"] = res.id
-                    elif k == "user_id":
-                        res = self.env["user_id"].search([("user_id", "=", v)], limit=1)
-                        if res:
-                            data["user_id"] = res.id
-                    elif k == "priority":
-                        if v in [i[0] for i in AVAILABLE_PRIORITIES]:
-                            data["priority"] = v
-                    elif k == "beneficiary_id":
-                        res = self.env["openg2p.beneficiary"].search(
-                            [("beneficiary_id", "=", rid)], limit=1
-                        )
-                        if res:
-                            data["beneficiary_id"] = res.id
-                    elif k == "identities":
-                        for vi in v:
-                            self.env["openg2p.registration.identity"].create(
-                                {
-                                    "name": list(vi.keys())[0],
-                                    "type": list(vi.values())[0],
-                                    "registration_id": rid,
-                                }
-                            )
-                        res = self.env["openg2p.registration.identity"].search(
-                            [("registration_id", "=", rid)]
-                        )
-                        if res:
-                            data["identities"] = res.ids
-                    elif k == "state_id":
-                        state = self.env["res.country.state"].search([("name", "=", v)])
-                        if state:
-                            data["state_id"] = state.id
-                    else:
-                        if k == "name":
-                            if v is None:
-                                continue
-                            name_parts = v.split(" ")
-                            data["firstname"] = name_parts[0]
-                            if len(name_parts) > 1:
-                                data["lastname"] = " ".join(name_parts[1:])
-                        else:
-                            data.update({k: v})
+                    self.mapping_registration_attributes(k,v,data,odk_data,rid)
+
                 else:
                     org_data.update({k: v})
             except Exception as e:
@@ -319,17 +160,82 @@ class RegistrationService(models.Model):
             regd.write(data)
             # Updating Program for Registration
             regd.program_ids = [(6, 0, temp["program_ids"])]
-            if os.getenv("SHOULD_DEMO_AUTH", "true").lower() == "true":
-                regd.post_auth_create_id(demo_auth_res)
-            if temp["stage_id"] == 6:
+            #creating beneficiary for registration
+            if regd.stage_id.id == 6:
                 regd.create_beneficiary_from_registration()
+            #creating identities
+            regd.post_auth_create_id(auth_response)
 
         except BaseException as e:
             print(e)
 
         return regd
 
+    def mapping_bank_account(self,v,odk_data,data):
+        if len(str(v) or "") != 0:
+            data["bank_account_number"] = str(v)
+            res = self.env["res.partner.bank"].search(
+                [("acc_number", "=", str(v))]
+            )
+            if res:
+                raise Exception("Duplicate Bank Account Number!")
+            if not res:
+                bank_id = self.env["res.bank"].search(
+                    [("name", "=", odk_data["bank_name"])], limit=1
+                )
+                if len(bank_id) == 0:
+                    bank_id = self.env["res.bank"].create(
+                        {
+                            "name": odk_data["bank_name"],
+                            "type": "normal",
+                        }
+                    )
+                else:
+                    bank_id = bank_id[0]
+                res = self.env["res.partner.bank"].create(
+                    {
+                        "bank_id": bank_id.id,
+                        "acc_number": str(v),
+                        "payment_mode": "AFM",
+                        "bank_name": odk_data["bank_name"],
+                        "acc_holder_name": odk_data["name"],
+                        "partner_id": self.env.ref("base.main_partner").id,
+                    }
+                )
+            data["bank_account_id"] = res.id
+
+    def mapping_identities(self,v,rid):
+        for vi in v:
+            self.env["openg2p.registration.identity"].create(
+                {
+                    "name": list(vi.keys())[0],
+                    "type": list(vi.values())[0],
+                    "registration_id": rid,
+                }
+            )
+        res = self.env["openg2p.registration.identity"].search(
+            [("registration_id", "=", rid)]
+        )
+        if res:
+            return res.ids
+
+
+    def create_registration(self,data,temp,stage_name,auth_response):
+
+        try:
+            data["stage_id"]=stage_name.id
+            regd=self.create(data)
+            print(regd.stage_id.id)
+            rid = regd.id
+            self.create_disbursement_fields(rid, temp, regd,auth_response)
+        except BaseException as e:
+            _logger.error(e)
+            return None
+
+        return regd
+
     def merge_registrations(self, temp, old_id):
+        print("old id",old_id)
         # Browsing that existing beneficiary
         # existing_registration = self.env["openg2p.registration"].search([("id","=",int(old_id))])
         existing_registration = self.env["openg2p.registration"].browse(old_id)
@@ -338,14 +244,14 @@ class RegistrationService(models.Model):
         overwrite_data = {
             "street": (temp["chiefdom"] if "chiefdom" in temp.keys() else "-"),
             "street2": (temp["district"] if "district" in temp.keys() else "-")
-            + ", "
-            + (temp["region"] if "region" in temp.keys() else "-"),
+                       + ", "
+                       + (temp["region"] if "region" in temp.keys() else "-"),
             "city": (
-                (temp["city"] if "city" in temp.keys() else "Freetown") or "Freetown"
+                    (temp["city"] if "city" in temp.keys() else "Freetown") or "Freetown"
             ),
             "phone": temp["phone"] or None,
-            "kyc_id": temp["bban"] or None,
-            "external_id": temp["new_emis_code"] or None,
+
+            "external_id": temp["external_id"] or None,
         }
 
         # Removing None fields
@@ -355,11 +261,9 @@ class RegistrationService(models.Model):
         existing_registration.write(cleaned_overwrite_data)
 
     def post_auth_create_id(self, response):
-        return self.env["openg2p.registration.identity"].create({
-            "name": response["auth_id"],
-            "type": response["auth_id_type"],
-            "status": response["auth_id_status"],
-            "message": response["auth_id_message"],
+        self.env["openg2p.registration.identity"].create({
+            "name": response["authId"],
+            "type": response["authIdType"],
             "registration_id": self.id
         })
         res = self.env["openg2p.registration.identity"].search(
@@ -367,3 +271,56 @@ class RegistrationService(models.Model):
         )
         if res:
             self.write({"identities": res.ids})
+
+    def mapping_registration_attributes(self,k,v,data,odk_data,rid):
+
+        if k == "partner_id":
+            res = self.env["res.partner"].search(
+                [("partner_id", "=", v)], limit=1
+            )
+            if res:
+                data[k] = res.id
+        elif k == "registered_date":
+            data["registered_date"] = datetime.strptime(v, format)
+        elif k == "categ_ids":
+            res = self.env["categ_ids"].search(
+                [("categ_ids", "=", v)], limit=1
+            )
+            if res:
+                data["categ_ids"] = res.ids
+        elif k == "company_id":
+            res = self.env["company_id"].search(
+                [("company_id", "=", v)], limit=1
+            )
+            if res:
+                data["company_id"] = res.id
+        elif k == "user_id":
+            res = self.env["user_id"].search([("user_id", "=", v)], limit=1)
+            if res:
+                data["user_id"] = res.id
+        elif k == "priority":
+            if v in [i[0] for i in AVAILABLE_PRIORITIES]:
+                data["priority"] = v
+        elif k == "beneficiary_id":
+            res = self.env["openg2p.beneficiary"].search(
+                [("beneficiary_id", "=", rid)], limit=1
+            )
+            if res:
+                data["beneficiary_id"] = res.id
+        elif k == "identities":
+            data["identites"] = self.mapping_identities(v, rid)
+
+        elif k == "state_id":
+            state = self.env["res.country.state"].search([("name", "=", v)])
+            if state:
+                data["state_id"] = state.id
+        else:
+            if k == "name":
+                if v is None:
+                    pass
+                name_parts = v.split(" ")
+                data["firstname"] = name_parts[0]
+                if len(name_parts) > 1:
+                    data["lastname"] = " ".join(name_parts[1:])
+            else:
+                data.update({k: v})
