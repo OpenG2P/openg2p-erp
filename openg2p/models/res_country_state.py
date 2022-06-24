@@ -9,6 +9,4 @@ from odoo import models, fields
 class CountryState(models.Model):
     _inherit = "res.country.state"
 
-    country_id = fields.Many2one(
-        default=lambda self: self.env.company.country_id.id
-    )
+    country_id = fields.Many2one(default=lambda self: self.env.company.country_id.id)
