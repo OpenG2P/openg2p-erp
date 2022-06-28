@@ -1,4 +1,4 @@
-from odoo import models
+from odoo import models,fields
 from odoo.exceptions import UserError, ValidationError, _logger
 from odoo.tools.translate import _
 import os
@@ -172,6 +172,7 @@ class RegistrationService(models.Model):
         return regd
 
     def mapping_bank_account(self,v,odk_data,data):
+
         if len(str(v) or "") != 0:
             data["bank_account_number"] = str(v)
             res = self.env["res.partner.bank"].search(
@@ -192,7 +193,8 @@ class RegistrationService(models.Model):
                     )
                 else:
                     bank_id = bank_id[0]
-                res = self.env["res.partner.bank"].create(
+                try:
+                    res = self.env["res.partner.bank"].create(
                     {
                         "bank_id": bank_id.id,
                         "acc_number": str(v),
@@ -201,7 +203,10 @@ class RegistrationService(models.Model):
                         "acc_holder_name": odk_data["name"],
                         "partner_id": self.env.ref("base.main_partner").id,
                     }
-                )
+                    )
+                except BaseException as e:
+                    print(e)
+
             data["bank_account_id"] = res.id
 
     def mapping_identities(self,v,rid):
@@ -281,7 +286,7 @@ class RegistrationService(models.Model):
             if res:
                 data[k] = res.id
         elif k == "registered_date":
-            data["registered_date"] = datetime.strptime(v, format)
+            data["registered_date"] = datetime.strptime(v,format)
         elif k == "categ_ids":
             res = self.env["categ_ids"].search(
                 [("categ_ids", "=", v)], limit=1

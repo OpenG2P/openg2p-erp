@@ -148,6 +148,7 @@ class Beneficiary(models.Model):
         default=lambda self: self.env.user.company_id.country_id.id,
         tracking=True,
     )
+    #birthday should follow %Y-%m-%d format
     birthday = fields.Date("Birth Date", tracking=True)
     age = fields.Integer(
         string="Age",
