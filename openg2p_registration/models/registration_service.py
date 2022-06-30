@@ -1,5 +1,6 @@
 from odoo import models
 from odoo.exceptions import UserError, ValidationError, _logger
+from datetime import datetime
 
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 
@@ -53,6 +54,11 @@ class RegistrationService(models.Model):
             _logger.error(e)
             return None
 
+    def _get_default_odk_map(self):
+        from .openg2p_submission_registration_map import odk_map_data
+
+        return odk_map_data
+
     def renaming_submission_data_fields(self, temp, odk_data):
         odk_map = (
             odk_data["odk_map"]
@@ -74,8 +80,6 @@ class RegistrationService(models.Model):
                     temp[str(k).replace("-", "_").lower()] = v
 
     def create_disbursement_fields(self, rid, temp, regd):
-        from datetime import datetime
-
         data = {}
         odk_data = temp
         org_data = {}
@@ -125,7 +129,6 @@ class RegistrationService(models.Model):
                             if len(bank_id) == 0:
                                 bank_id = self.env["res.bank"].create(
                                     {
-                                        "execute_method": "manual",
                                         "name": odk_data["bank_name"],
                                         "type": "normal",
                                     }
@@ -214,7 +217,7 @@ class RegistrationService(models.Model):
 
         for k, v in org_data.items():
             try:
-                self.env["openg2p.registration.orgmap"].create(
+                self.env["openg2p.org.fields"].create(
                     {
                         "field_name": k,
                         "field_value": str(v) if v else "",

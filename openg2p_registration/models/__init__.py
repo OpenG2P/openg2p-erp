@@ -8,7 +8,7 @@ from . import openg2p_registration_stage
 from . import openg2p_location
 from . import openg2p_registration_widget
 from . import openg2p_submission_registration_map
-from . import openg2p_registration_org_map
 from . import openg2p_registration_api
 from . import openg2p_deduplication
 from . import registration_service
+from . import openg2p_custom_fields

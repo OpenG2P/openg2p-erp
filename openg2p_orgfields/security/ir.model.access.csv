@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_openg2p_org_fields,access.openg2p.org.fields,model_openg2p_org_fields,,1,1,1,1
