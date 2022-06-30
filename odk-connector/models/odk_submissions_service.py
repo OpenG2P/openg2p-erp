@@ -143,9 +143,7 @@ class ODKSubmissions(models.Model):
         # res.update(extra_data)
         # registration = self.env['openg2p.registration'].create(res)
         try:
-            registration = self.env[
-                "openg2p.registration"
-            ].mapping_and_creating_registration(data)
+            registration = self.mapping_and_creating_registration(data)
             return registration
         except BaseException as e:
             _logger.error(e)
