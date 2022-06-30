@@ -132,7 +132,7 @@ class Registration(models.Model):
     retained_id = fields.Integer(string="Retained_ID")
 
     org_custom_field = fields.One2many(
-        "openg2p.registration.orgmap",
+        "openg2p.org.fields",
         "regd_id",
     )
 
@@ -280,7 +280,7 @@ class Registration(models.Model):
     @api.depends("org_custom_field")
     def _compute_org_fields(self):
         for rec in self:
-            field = self.env["openg2p.registration.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 [
                     "&",
                     ("regd_id", "=", rec.id),
@@ -292,7 +292,7 @@ class Registration(models.Model):
             except BaseException as e:
                 rec.attendance = 0
 
-            field = self.env["openg2p.registration.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 [
                     "&",
                     ("regd_id", "=", rec.id),
@@ -304,7 +304,7 @@ class Registration(models.Model):
             except BaseException as e:
                 rec.regression_and_progression = 0
 
-            field = self.env["openg2p.registration.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 ["&", ("regd_id", "=", rec.id), ("field_name", "=", "total_quality")]
             )
             try:
@@ -312,7 +312,7 @@ class Registration(models.Model):
             except BaseException as e:
                 rec.total_quality = 0
 
-            field = self.env["openg2p.registration.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 ["&", ("regd_id", "=", rec.id), ("field_name", "=", "total_equity")]
             )
             try:
@@ -320,7 +320,7 @@ class Registration(models.Model):
             except BaseException as e:
                 rec.total_equity = 0
 
-            field = self.env["openg2p.registration.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 ["&", ("regd_id", "=", rec.id), ("field_name", "=", "grand_total_le")]
             )
             try:
@@ -328,7 +328,7 @@ class Registration(models.Model):
             except BaseException as e:
                 rec.grand_total = 0
 
-            field = self.env["openg2p.registration.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 [
                     "&",
                     ("regd_id", "=", rec.id),
@@ -493,11 +493,6 @@ class Registration(models.Model):
                 if val != val2:
                     res.append(rec.id)
         return [("id", "in", res)]
-
-    def _get_default_odk_map(self):
-        from .openg2p_submission_registration_map import odk_map_data
-
-        return odk_map_data
 
     @api.depends("date_open", "date_closed")
     def _compute_day(self):
@@ -699,17 +694,11 @@ class Registration(models.Model):
         # Updating Program for beneficiary
         beneficiary.program_ids = [(6, 0, self.program_ids.ids)]
 
-        org_fields = self.env["openg2p.registration.orgmap"].search(
-            [("regd_id", "=", self.id)]
-        )
+        org_fields = self.env["openg2p.org.fields"].search([("regd_id", "=", self.id)])
+
         for org_field in org_fields:
-            self.env["openg2p.beneficiary.orgmap"].create(
-                {
-                    "field_name": org_field.field_name,
-                    "field_value": org_field.field_value,
-                    "beneficiary_id": beneficiary.id,
-                }
-            )
+            org_field.beneficiary_id = beneficiary.id
+
         for code, number in self.get_identities():
             category = self.env["openg2p.beneficiary.id_category"].search(
                 [("type", "=", code)]

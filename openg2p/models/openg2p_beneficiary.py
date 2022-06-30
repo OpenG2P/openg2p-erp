@@ -332,7 +332,7 @@ class Beneficiary(models.Model):
 
     odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
 
-    org_custom_field = fields.One2many("openg2p.beneficiary.orgmap", "beneficiary_id")
+    org_custom_field = fields.One2many("openg2p.org.fields", "beneficiary_id")
 
     def api_json(self):
         return {
@@ -398,7 +398,7 @@ class Beneficiary(models.Model):
     @api.depends("org_custom_field")
     def _compute_org_fields(self):
         for rec in self:
-            field = self.env["openg2p.beneficiary.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 [
                     "&",
                     ("beneficiary_id", "=", rec.id),
@@ -410,7 +410,7 @@ class Beneficiary(models.Model):
             except BaseException as e:
                 rec.attendance = 0
 
-            field = self.env["openg2p.beneficiary.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 [
                     "&",
                     ("beneficiary_id", "=", rec.id),
@@ -422,7 +422,7 @@ class Beneficiary(models.Model):
             except BaseException as e:
                 rec.regression_and_progression = 0
 
-            field = self.env["openg2p.beneficiary.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 [
                     "&",
                     ("beneficiary_id", "=", rec.id),
@@ -434,7 +434,7 @@ class Beneficiary(models.Model):
             except BaseException as e:
                 rec.total_quality = 0
 
-            field = self.env["openg2p.beneficiary.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 [
                     "&",
                     ("beneficiary_id", "=", rec.id),
@@ -446,7 +446,7 @@ class Beneficiary(models.Model):
             except BaseException as e:
                 rec.total_equity = 0
 
-            field = self.env["openg2p.beneficiary.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 [
                     "&",
                     ("beneficiary_id", "=", rec.id),
@@ -458,7 +458,7 @@ class Beneficiary(models.Model):
             except BaseException as e:
                 rec.grand_total = 0
 
-            field = self.env["openg2p.beneficiary.orgmap"].search(
+            field = self.env["openg2p.org.fields"].search(
                 [
                     "&",
                     ("beneficiary_id", "=", rec.id),
