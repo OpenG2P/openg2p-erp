@@ -19,6 +19,7 @@ _logger = logging.getLogger(__name__)
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
 _logger = logging.getLogger(__name__)
 
+
 class Registration(models.Model):
     _name = "openg2p.registration"
     _description = "Registration"

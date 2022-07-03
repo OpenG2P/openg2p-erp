@@ -34,13 +34,12 @@
             <field name="sequence">0</field>
         </record>
         <record model="openg2p.registration.stage" id="stage_register2">
-            <field name="name">Verifying</field>
+            <field name="name">Deduplicating</field>
             <field name="sequence">1</field>
         </record>
         <record model="openg2p.registration.stage" id="stage_register3">
-            <field name="name">Deduplicating</field>
+            <field name="name">Verifying</field>
             <field name="sequence">2</field>
-        </record>
         </record>
         <record model="openg2p.registration.stage" id="stage_register4">
             <field name="name">Assessing</field>

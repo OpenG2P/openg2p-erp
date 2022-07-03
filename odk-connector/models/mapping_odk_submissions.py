@@ -1,14 +1,16 @@
 from odoo import models
 from odoo.exceptions import UserError, ValidationError, _logger
+
 AVAILABLE_PRIORITIES = [("0", "Urgent"), ("1", "High"), ("2", "Normal"), ("3", "Low")]
+
 
 class MappingService(models.Model):
     _inherit = "odk.submissions"
 
-    def mapping_and_creating_registration(self,odk_data):
+    def mapping_and_creating_registration(self, odk_data):
         temp = {}
         self.renaming_submission_data_fields(temp, odk_data)
-        regd=self.mapping_core_fields(temp)
+        regd = self.mapping_core_fields(temp)
         single_regd = self.env[
             "openg2p.registration"
         ].create_registration_for_single_submission(regd, temp)
@@ -54,25 +56,25 @@ class MappingService(models.Model):
         )
 
         regd = {
-                "firstname": "_",
-                "lastname": "_",
-                "street": (temp["chiefdom"] if "chiefdom" in temp.keys() else "-"),
-                "street2": (temp["district"] if "district" in temp.keys() else "-")
-                + ", "
-                + (temp["region"] if "region" in temp.keys() else "-"),
-                "city": (
-                    (temp["city"] if "city" in temp.keys() else "Freetown")
-                    or "Freetown"
-                )
-                if "city" in temp.keys()
-                else "Freetown",
-                "country_id": country_id,
-                "state_id": state_id,
-                "gender": "male",
-                "external_id":
-                     (temp["new_emis_code"] if "new_emis_code" in temp.keys() else None),
-                "phone":temp["phone"],
-            #TODO correct submission field to be mapped for kyc_id
-                "kyc_id":temp["bban"],
-            }
+            "firstname": "_",
+            "lastname": "_",
+            "street": (temp["chiefdom"] if "chiefdom" in temp.keys() else "-"),
+            "street2": (temp["district"] if "district" in temp.keys() else "-")
+            + ", "
+            + (temp["region"] if "region" in temp.keys() else "-"),
+            "city": (
+                (temp["city"] if "city" in temp.keys() else "Freetown") or "Freetown"
+            )
+            if "city" in temp.keys()
+            else "Freetown",
+            "country_id": country_id,
+            "state_id": state_id,
+            "gender": "male",
+            "external_id": (
+                temp["new_emis_code"] if "new_emis_code" in temp.keys() else None
+            ),
+            "phone": temp["phone"],
+            # TODO correct submission field to be mapped for kyc_id
+            "kyc_id": temp["bban"],
+        }
         return regd
