@@ -108,7 +108,7 @@
                                     <field name="country_id" placeholder="Country" class="o_address_country"
                                            options='{"no_open": True, "no_create": True}'/>
                                 </div>
-                            </group>
+                               </group>
                             <group string="Disbursement Details">
                                 <field name="regression_and_progression" string="Regression And Progression (A)"/>
                                 <field name="total_quality" string="Total Quality (B)"/>
@@ -144,6 +144,8 @@
                                 </field>
                             </group>
                             <group string="Internal Info" name="internal_notes_right">
+                                <field name="kyc_id" placeholder="Kyc ID"/>
+                                <field name="external_id" placeholder="External ID"/>
 
                             </group>
         

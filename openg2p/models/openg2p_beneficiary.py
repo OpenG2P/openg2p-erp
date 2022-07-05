@@ -148,6 +148,7 @@ class Beneficiary(models.Model):
         default=lambda self: self.env.user.company_id.country_id.id,
         tracking=True,
     )
+    # birthday should follow %Y-%m-%d format
     birthday = fields.Date("Birth Date", tracking=True)
     age = fields.Integer(
         string="Age",
@@ -333,6 +334,9 @@ class Beneficiary(models.Model):
     odk_batch_id = fields.Char(default=lambda *args: uuid.uuid4().hex)
 
     org_custom_field = fields.One2many("openg2p.beneficiary.orgmap", "beneficiary_id")
+    # newly added fields
+    kyc_id = fields.Char("KYC ID", required=False, index=True)
+    external_id = fields.Char("External ID", required=False, index=True)
 
     def api_json(self):
         return {
@@ -728,7 +732,7 @@ class Beneficiary(models.Model):
         for beneficiary in self:
             if beneficiary.email:
                 beneficiary.email_formatted = tools.formataddr(
-                    (beneficiary.name or u"False", beneficiary.email or u"False")
+                    (beneficiary.name or "False", beneficiary.email or "False")
                 )
             else:
                 beneficiary.email_formatted = ""

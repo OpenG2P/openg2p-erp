@@ -126,6 +126,7 @@
                                     <field name="country_id" placeholder="Country" class="o_address_country"
                                            options='{"no_open": True, "no_create": True}'/>
                                 </div>
+
                             </group>
                             <group>
                                 <field name="othernames" placeholder="Other Names"/>
@@ -173,6 +174,8 @@
                                 <group>
                                     <group name="internal_notes_left">
                                         <field name="create_date" widget="date" string="Created On"/>
+                                        <field name="kyc_id" placeholder="Kyc ID"/>
+                                        <field name="external_id" placeholder="External ID"/>
                                     </group>
                                     <group name="internal_notes_right">
 

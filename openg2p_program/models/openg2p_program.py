@@ -74,6 +74,24 @@ class Program(models.Model):
     color = fields.Integer(string="Color Index", default=lambda self: randint(1, 6))
     category_ids = fields.One2many("openg2p.program.enrollment_category", "program_id")
     category_count = fields.Integer(compute="_compute_category_count", store=True)
+    # Autodedup configuration
+    autodedup_field = fields.Selection(
+        [("kyc", "KYC"), ("ext_id", "External ID")],
+        string="Autodedup Field",
+        required=True,
+    )
+    action = fields.Selection(
+        [("merge", "Merge"), ("del_old", "Delete Old"), ("del_new", "Delete New")],
+        string="Action",
+        required=True,
+    )
+    stage_name = fields.Many2one(
+        "openg2p.registration.stage",
+        string="Stage Name",
+        store=True,
+        required=True,
+        domain=[("sequence", ">", "2")],
+    )
 
     _sql_constraints = [
         (

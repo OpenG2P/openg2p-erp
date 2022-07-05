@@ -58,6 +58,7 @@
         "views/openg2p_beneficiary_category.xml",
         "views/openg2p_beneficiary_exception.xml",
         "views/openg2p_beneficiary_exception_type.xml",
+        "views/openg2p_registration_stage.xml",
         "views/res_country_state.xml",
         "views/res_users.xml",
         "data/cron.xml",

@@ -4,10 +4,8 @@
         <record id="queue_job.menu_queue_job_root" model="ir.ui.menu">
             <field name="groups_id" eval="[(6,0,[ref('base.group_no_one')])]"/>
         </record>
-
-        <!-- <record id="base_rest.menu_rest_api" model="ir.ui.menu">
-            <field name="groups_id" eval="[(6,0,[ref('base.group_no_one')])]"/>
-        </record> -->
+    <menuitem id="menu_openg2p_registration_stage_configuration" name="RegistrationStage"
+                  sequence="100"/>
 
     </data>
 </odoo>

@@ -8,11 +8,11 @@
             <field name="code">Freetown</field>
         </record>
 
-        <record id="state_sl_2" model="res.country.state">
-            <field name="country_id" ref="base.sl"/>
-            <field name="name">Bo</field>
-            <field name="code">Bo</field>
-        </record>
+<!--    <record id="state_sl_2" model="res.country.state">-->
+<!--        <field name="country_id" ref="base.sl"/>-->
+<!--        <field name="name">Bo</field>-->
+<!--        <field name="code">Bo</field>-->
+<!--    </record>-->
 
         <!--
         Resource: openg2p.beneficiary.category

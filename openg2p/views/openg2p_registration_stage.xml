@@ -112,9 +112,9 @@
         <menuitem
                 id="menu_openg2p_registration_stage"
                 name="Stages"
-                parent="menu_openg2p_registration_configuration"
+                parent="menu_openg2p_root"
                 action="openg2p_registration_stage_act"
-                sequence="1"/>
+                sequence="111"/>
 
     </data>
 </odoo>

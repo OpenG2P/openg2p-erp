@@ -45,6 +45,11 @@
                                 -
                                 <field name="date_end" class="oe_inline" placeholder="Ends On..."/>
                             </div>
+                            <field name="autodedup_field"/>
+                            <field name="action"/>
+                         </group>
+                        <group>
+                            <field name="stage_name"/>
                         </group>
                     </group>
                     <notebook>
