@@ -90,7 +90,26 @@
                             </div>
                         </div>
                         <group>
+
+
                             <group>
+                                <field name="kanban_state" widget="kanban_state_selection"/>
+                                <field name="priority" widget="priority"/>
+                                <field name="create_date"/>
+                                <field name="registered_date"/>
+                            </group>
+                            <!-- <group string="Personal">
+                               <field name="gender"/>
+                               <field name="marital"/>
+                               <field name="emergency_contact"/>
+                               <field name="emergency_phone"/>
+                               <field name="birthday"/>
+                           </group> -->
+                        </group>
+                            <notebook>
+                                 <page name="contact_details" string="Contact Details">
+                                    <group colspan="4" col="4">
+                                    <group colspan="2" col="2" >
                                <field name="location_id" placeholder="Location"
                                       options="{'no_create_edit': True}" invisible="1"/>
                                 <label for="street" string="Address"/>
@@ -108,56 +127,60 @@
                                     <field name="country_id" placeholder="Country" class="o_address_country"
                                            options='{"no_open": True, "no_create": True}'/>
                                 </div>
+
                                </group>
-                            <group string="Disbursement Details">
-                                <field name="regression_and_progression" string="Regression And Progression (A)"/>
-                                <field name="total_quality" string="Total Quality (B)"/>
-                                <field name="total_equity" string="Total Equity (C)"/>
-                                <field name="grand_total" string="Grand Total (LE)"/>
-                            </group>
+                            
                             <group>
+                                    </group>
+                                        <group col="2" colspan="2" string="Phone">
+
                                 <field name="phone" widget="phone"/>
                                 <field name="mobile" widget="phone"/>
                                 <field name="email" widget="email" context="{'gravatar_image': True}"/>
                                 <field name="lang"/>
                             </group>
-                            <group>
-                                <field name="kanban_state" widget="kanban_state_selection"/>
-                                <field name="priority" widget="priority"/>
-                                <field name="create_date"/>
-                                <field name="registered_date"/>
                             </group>
-                            <!-- <group string="Personal">
-                               <field name="gender"/>
-                               <field name="marital"/>
-                               <field name="emergency_contact"/>
-                               <field name="emergency_phone"/>
-                               <field name="birthday"/>
-                           </group> -->
-
-                            <group string="Identifications">
-                                <field name="identities" nolabel="1">
+                                </page>
+                                <page name="identifications" string="Identifications">
+                                    <group colspan ="4" col="4" string="Identifications">
+                                        <field name="identities" nolabel="1">
                                     <tree string="Identifications" editable="bottom">
                                         <field name="type" string="ID Type"/>
                                         <field name="name"  string="ID Number"/>
                                     </tree>
                                 </field>
-                            </group>
-                            <group string="Internal Info" name="internal_notes_right">
-                                <field name="kyc_id" placeholder="Kyc ID"/>
-                                <field name="external_id" placeholder="External ID"/>
+                                    </group>
+                                </page>
+                                <page name="internal_info" string="Internal Info">
+                                    <group colspan="4" col="4" name="internal_notes_right"></group>
+                                </page>
+                                <page name="organization" string="Organization">
+                                    <group colspan="4" col="4" string="Organization">
 
-                            </group>
-        
-                        </group>
-                        <group string="Organization">
                             <field name="org_custom_field" nolabel="1">
                                 <tree editable="bottom">
                                     <field name="field_name"/>
                                     <field name="field_value"/>
                                 </tree>
                             </field>
-                        </group>
+
+                                    </group>
+                                </page>
+                                <page name="disbursement_details" string="Disbursement">
+                                    <group col="4" colspan="4" string="Disbursement Details">
+                                        <field name="regression_and_progression" string="Regression And Progression (A)"/>
+                                        <field name="total_quality" string="Total Quality (B)"/>
+                                        <field name="total_equity" string="Total Equity (C)"/>
+                                        <field name="grand_total" string="Grand Total (LE)"/>
+                                    </group>
+                                </page>
+
+                            </notebook>
+
+
+
+
+
                             <!-- Duplicate Beneficiaries -->
                         <group string="Potential Duplicates">
                             <field nolabel="1" readonly="1" name="duplicate_beneficiaries_ids" widget="many2many">
@@ -170,7 +193,7 @@
                                 </tree>
                             </field>
                             <group name="internal_notes_right">
-                                
+
                             </group>
 
                         </group>
