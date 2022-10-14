@@ -191,6 +191,7 @@ class BatchTransaction(models.Model):
                     "id",
                     "request_id",
                     "payment_mode",
+                    "account_number",
                     "amount",
                     "currency",
                     "note",
@@ -200,9 +201,10 @@ class BatchTransaction(models.Model):
                     entry = [
                         rec.id,
                         rec.beneficiary_request_id,
-                        "gsma",  # rec.payment_mode or "gsma",
+                        rec.payment_mode or "slcb",
+                        rec.bank_account_id.acc_number,
                         rec.amount,
-                        "LE",  # rec.currency_id.name,
+                        rec.currency_id.name or "LE",
                         rec.note,
                     ]
 
@@ -217,46 +219,28 @@ class BatchTransaction(models.Model):
                 [("batch_id", "=", self.id)], limit=limit, offset=offset
             )
 
-        url_token = "http://identity.ibank.financial/oauth/token"
-
-        headers_token = {
-            "Platform-TenantId": "ibank-usa",
-            "Authorization": "Basic Y2xpZW50Og==",
-            "Content-Type": "text/plain",
-        }
-        params_token = {
-            "username": os.environ.get("username"),
-            "password": os.environ.get("password"),
-            "grant_type": os.environ.get("grant_type"),
-        }
-
-        try:
-            response_token = requests.request(
-                "POST", url_token, headers=headers_token, params=params_token
-            )
-
-            response_token_data = response_token.json()
-            self.token_response = response_token_data["access_token"]
-
-        except BaseException as e:
-            _logger.exception(e)
-
         # Uploading to AWS bucket
         uploaded = self.upload_to_aws(csvname, "paymenthub-ee-dev")
 
-        headers = {"Platform-TenantId": "ibank-usa"}
+        # bulk transfer
+        url = "http://bulk-connector.sandbox.fynarfin.io/batchtransactions"
 
-        files = {
-            "data": (csvname, open(csvname, "rb"), "text/csv"),
-            "requestId": (None, str(self.request_id)),
-            "note": (None, "Bulk transfers"),
-            # "checksum": (None, str(self.generate_hash(csvname))),
+        params = {
+            'type': 'csv',
         }
-
-        url = "http://channel.ibank.financial/channel/bulk/transfer"
-
+        files = {
+            'data': open(csvname, 'rb'),
+        }
+        headers = {
+            'Purpose': 'test payment',
+            'filename': csvname,
+            'X-CorrelationID': 'bd85c0e3-b7bd-40aa-b00f-3240df9d69bd',
+            'Platform-TenantId': os.environ.get("tenantName"),
+        }
         try:
-            response = requests.post(url, headers=headers, files=files)
+            response = requests.request(
+                "POST", url, headers=headers, files=files,params=params,verify=False
+            )
             response_data = response.json()
 
             self.transaction_status = response_data["status"]
@@ -264,31 +248,51 @@ class BatchTransaction(models.Model):
         except BaseException as e:
             _logger.exception(e)
 
+    def get_auth_token(self):
+        try:
+            headers = {
+                'Platform-TenantId': os.environ.get("tenantName"),
+                'Authorization': 'Basic Y2xpZW50Og==',
+                'Content-Type': 'text/plain',
+            }
+            params = {
+                'username': os.environ.get("username"),
+                'password': os.environ.get("password"),
+                'grant_type': os.environ.get("grant_type"),
+            }
+            response = requests.post('http://ops-bk.sandbox.fynarfin.io/oauth/token', params=params, headers=headers,verify=False)
+            response_data = response.json()
+            return response_data["access_token"]
+        except BaseException as e:
+            _logger.exception(e)
+
     # detailed
     def bulk_transfer_status(self):
-        params = (("batchId", str(self.transaction_batch_id)),)
-
+        self.token_response = self.get_auth_token()
+        params = {
+            'batchId': str(self.transaction_batch_id),
+        }
         headers = {
-            "Platform-TenantId": "ibank-usa",
+            "Platform-TenantId": os.environ.get("tenantName"),
             "Authorization": "Bearer " + str(self.token_response),
         }
 
-        url = "http://ops-bk.ibank.financial/api/v1/batch"
+        url = "http://ops-bk.sandbox.fynarfin.io/api/v1/batch"
 
         try:
-            response = requests.get(url, params=params, headers=headers)
+            response = requests.get(url, params=params, headers=headers,verify=False)
             response_data = response.json()
 
             if response.status_code == 200:
                 self.transaction_status = "completed"
 
-                self.total_transactions = response_data["totalTransactions"]
+                self.total_transactions = response_data["total"]
                 self.ongoing = response_data["ongoing"]
                 self.failed = response_data["failed"]
-                self.total_amount = response_data["total_amount"]
-                self.completed_amount = response_data["completed_amount"]
-                self.ongoing_amount = response_data["ongoing_amount"]
-                self.failed_amount = response_data["failed_amount"]
+                self.total_amount = response_data["totalAmount"]
+                self.completed_amount = response_data["successfulAmount"]
+                self.ongoing_amount = response_data["pendingAmount"]
+                self.failed_amount = response_data["failedAmount"]
 
         except BaseException as e:
             _logger.exception(e)
@@ -311,7 +315,7 @@ class BatchTransaction(models.Model):
             s3.put_object(Bucket=bucket, Body=csv_buf.getvalue(), Key=local_file)
 
         except FileNotFoundError:
-            print("File not found")
+            _logger.error("File not found")
 
     def generate_hash(self, csvname):
         sha256 = hashlib.sha256()
