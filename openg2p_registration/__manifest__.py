@@ -17,6 +17,7 @@
         "data/cron.xml",
         "security/openg2p_registration_security.xml",
         "security/ir.model.access.csv",
+        "wizard/openg2p_registration_widget.xml",
         "views/menu.xml",
         "views/openg2p_beneficiary.xml",
         "views/openg2p_registration.xml",
