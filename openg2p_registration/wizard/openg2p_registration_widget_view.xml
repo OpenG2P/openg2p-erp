@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <odoo>
-    <record id="wizard_batch" model="ir.ui.view">
+    <record id="wizard_update" model="ir.ui.view">
          <field name="name">Bulk Update Registrations</field>
          <field name="model">openg2p.registration.update.regd</field>
          <field name="arch" type="xml">
@@ -17,17 +17,17 @@
                     <group>
                         <button string="Create Beneficiaries" name="registration_to_beneficiary" type="object" class="btn-primary"/>
                     </group>
-                    <footer></footer>
+                    <footer/>
                 </form>
             </field>
      </record>
 
-    <record id="create_transaction_wizard" model="ir.actions.act_window">
+    <record id="update_records_wizard" model="ir.actions.act_window">
         <field name="name">Update Records</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">openg2p.registration.update.regd</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="wizard_batch"/>
+        <field name="view_id" ref="wizard_update"/>
         <field name="target">new</field>
     </record>
 </odoo>
