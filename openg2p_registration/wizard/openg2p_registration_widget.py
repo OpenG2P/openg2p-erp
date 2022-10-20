@@ -2,7 +2,7 @@ from odoo import fields, models, api
 
 
 class UpdateWizard(models.TransientModel):
-    _name = "openg2p.registration.update_regd"
+    _name = "openg2p.registration.update.regd"
 
     def _default_stage_id(self):
         ids = (

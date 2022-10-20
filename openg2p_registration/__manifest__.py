@@ -22,6 +22,7 @@
         "views/openg2p_registration.xml",
         "views/openg2p_registration_category.xml",
         "views/openg2p_location.xml",
+        "wizard/openg2p_registration_widget_view.xml",
         #    'views/digest_views.xml',
     ],
     "demo": ["data/openg2p_registration_demo.xml"],

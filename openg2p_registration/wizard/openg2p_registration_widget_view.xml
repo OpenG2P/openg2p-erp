@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="wizard_update" model="ir.ui.view">
+         <field name="name">Bulk Update Registrations</field>
+         <field name="model">openg2p.registration.update.regd</field>
+         <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <group>
+                            <field name="stage_id"/>
+                        </group>
+                        <group>
+                            <button string="Stage Change" name="update_stage" type="object" class="btn-primary"/>
+                        </group>
+                    </group>
+                    <hr />
+                    <group>
+                        <button string="Create Beneficiaries" name="registration_to_beneficiary" type="object" class="btn-primary"/>
+                    </group>
+                    <footer/>
+                </form>
+            </field>
+     </record>
+
+    <record id="update_records_wizard" model="ir.actions.act_window">
+        <field name="name">Update Records</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.registration.update.regd</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="wizard_update"/>
+        <field name="target">new</field>
+    </record>
+</odoo>
