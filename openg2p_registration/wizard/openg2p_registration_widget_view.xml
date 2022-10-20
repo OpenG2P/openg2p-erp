@@ -2,7 +2,7 @@
 <odoo>
     <record id="wizard_batch" model="ir.ui.view">
          <field name="name">Bulk Update Registrations</field>
-         <field name="model">openg2p.registration.update_regd</field>
+         <field name="model">openg2p.registration.update.regd</field>
          <field name="arch" type="xml">
                 <form>
                     <group>
@@ -25,7 +25,7 @@
     <record id="create_transaction_wizard" model="ir.actions.act_window">
         <field name="name">Update Records</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">openg2p.registration.update_regd</field>
+        <field name="res_model">openg2p.registration.update.regd</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="wizard_batch"/>
         <field name="target">new</field>
