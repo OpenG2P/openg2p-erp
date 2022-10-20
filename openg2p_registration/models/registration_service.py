@@ -121,21 +121,25 @@ class RegistrationService(models.Model):
                 ]:
                     org_data[k] = v
                     continue
-                if k in [
-                    "Status",
-                    "AttachmentsExpected",
-                    "AttachmentsPresent",
-                    "SubmitterName",
-                    "SubmitterID",
-                    "KEY",
-                    "meta-instanceID",
-                    "__version__",
-                    "bank_name",
-                    "city",
-                    "district",
-                    "chiefdom",
-                    "region",
-                ] or k.startswith("_"):
+                if (
+                    k
+                    in [
+                        "Status",
+                        "AttachmentsExpected",
+                        "AttachmentsPresent",
+                        "SubmitterName",
+                        "SubmitterID",
+                        "KEY",
+                        "meta-instanceID",
+                        "__version__",
+                        "bank_name",
+                        "city",
+                        "district",
+                        "chiefdom",
+                        "region",
+                    ]
+                    or k.startswith("_")
+                ):
                     continue
                 if k == "bank_account_number":
                     self.mapping_bank_account(v, odk_data, data)
@@ -200,7 +204,7 @@ class RegistrationService(models.Model):
                         {
                             "bank_id": bank_id.id,
                             "acc_number": str(v),
-                            "payment_mode": "AFM",
+                            "payment_mode": "slcb",
                             "bank_name": odk_data["bank_name"],
                             "acc_holder_name": odk_data["name"],
                             "partner_id": self.env.ref("base.main_partner").id,

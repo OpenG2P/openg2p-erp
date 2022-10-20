@@ -32,13 +32,13 @@ class ResPartnerBank(models.Model):
 
     _allow_unlink_domain = [("state", "=", "draft")]
 
-    name = fields.Char(store=True, compute="_compute_name", readonly=True)
+    name = fields.Char(store=True, compute="_compute_name", readonly=False)
     acc_number = fields.Char(
         index=True,
         required=True,
         tracking=True,
     )
-    partner_id = fields.Many2one(related="beneficiary_id.partner_id")
+    partner_id = fields.Many2one(related="beneficiary_id.partner_id",readonly=False)
     beneficiary_id = fields.Many2one(
         "openg2p.beneficiary",
         "Account Holder",
@@ -54,7 +54,7 @@ class ResPartnerBank(models.Model):
         default=lambda self: self.env.company.currency_id, readonly=True
     )
     payment_mode = fields.Selection(
-        [("AFM", "AfriMoney"), ("SLB", "Sierra Leone Commercial Bank")], required=True
+        [("afrimoney", "AfriMoney"), ("slcb", "Sierra Leone Commercial Bank"),("gsma","GSMA")], required=True
     )
 
     @api.model

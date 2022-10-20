@@ -219,7 +219,7 @@ class Openg2pBeneficiaryApi(Controller):
                         {
                             "bank_id": bank_id.id,
                             "acc_number": data["acc_number"],
-                            "payment_mode": "AFM",
+                            "payment_mode": "slcb",
                             "bank_name": data["bank_name"],
                             "acc_holder_name": data["acc_holder_name"],
                             "partner_id": request.env.ref("base.main_partner").id,
