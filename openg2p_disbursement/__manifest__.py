@@ -18,6 +18,7 @@
         "views/res_partner_bank.xml",
         "views/action_menu.xml",
         "views/transaction_menu.xml",
+        "views/openg2p_disbursement_configuration.xml",
         "views/openg2p_disbursement_single_transaction.xml",
         "views/openg2p_disbursement_batch_transaction.xml",
         "views/openg2p_disbursement_main.xml",

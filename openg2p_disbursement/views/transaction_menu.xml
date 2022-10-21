@@ -6,6 +6,12 @@
         sequence="1"
         web_icon="openg2p_disbursement,static/description/icon.png"/>
 
+    <menuitem
+        id="batch_root"
+        name="Disbursement Batch Configuration"
+        sequence="4"
+        parent="transaction_menu"
+        action="action_batch_configuration"/>
     <menuitem 
         id="batch_root" 
         name="Disbursement Batch"

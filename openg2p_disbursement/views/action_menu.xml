@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+<!--    action batch configuration-->
+    <record id="action_batch_configuration" model="ir.actions.act_window">
+        <field name="name">Batch Configuration</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">openg2p.disbursement.configuration</field>
+        <field name="view_mode">form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your Batch Configuration !
+            </p>
+        </field>
+    </record>
     <!--action of the batch menu-->
     <record id="action_batch_transaction" model="ir.actions.act_window">
         <field name="name">Batch Transaction</field>

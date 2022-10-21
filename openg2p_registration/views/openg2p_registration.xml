@@ -215,40 +215,6 @@
             </field>
         </record>
 
-        <!-- <act_window id="action_update_regd"
-                name="Update Records"
-                binding_model="openg2p.registration"
-                res_model="openg2p.registration.update_regd"
-                view_type="tree" 
-                view_mode="form"
-                binding_views="list" 
-                target="fullscreen"
-                groups="openg2p_registration.group_openg2p_registration_user"/> -->
-
-<!--        <record id="wizard_view" model="ir.ui.view">-->
-<!--            <field name="name">Bulk Update Registrations</field>-->
-<!--            <field name="model">openg2p.registration.update_regd</field>-->
-<!--            &lt;!&ndash; <field name="target">inline</field> &ndash;&gt;-->
-<!--            <field name="arch" type="xml">-->
-<!--                <form>-->
-<!--                    <group>-->
-<!--                        <group>-->
-<!--                            <field name="stage_id"/>-->
-<!--                        </group>-->
-<!--                        <group>-->
-<!--                            <button string="Stage Change" name="update_stage" type="object" class="btn-primary"/>-->
-<!--                        </group>-->
-<!--                    </group>-->
-<!--                    <hr />-->
-<!--                    <group>-->
-<!--                        <button string="Create Beneficiaries" name="registration_to_beneficiary" type="object" class="btn-primary"/>-->
-<!--                    </group>-->
-<!--                    <footer></footer>-->
-<!--                </form>-->
-<!--            </field>-->
-<!--        </record>-->
-
-
         <record model="ir.ui.view" id="crm_case_pivot_view_beneficiary">
             <field name="name">Beneficiaries - Registration</field>
             <field name="model">openg2p.registration</field>
