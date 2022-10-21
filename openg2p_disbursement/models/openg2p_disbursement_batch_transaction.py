@@ -82,6 +82,8 @@ class BatchTransaction(models.Model):
 
     request_id = fields.Char(string="Request ID", compute="_generate_uuid", store=True)
 
+    batch_configuration=fields.Many2one(string="Batch Configuration",required=True)
+
     transaction_status = fields.Char(
         readonly=True,
     )
@@ -223,7 +225,7 @@ class BatchTransaction(models.Model):
         uploaded = self.upload_to_aws(csvname, "paymenthub-ee-dev")
 
         # bulk transfer
-        url = "http://bulk-connector.sandbox.fynarfin.io/batchtransactions"
+        url = str(self.batch_configuration.bulk_transfer_url)
 
         params = {
             "type": "csv",
@@ -235,7 +237,7 @@ class BatchTransaction(models.Model):
             "Purpose": "test payment",
             "filename": csvname,
             "X-CorrelationID": "bd85c0e3-b7bd-40aa-b00f-3240df9d69bd",
-            "Platform-TenantId": os.environ.get("tenantName"),
+            "Platform-TenantId": str(self.batch_configuration.tenant_name),
         }
         try:
             response = requests.request(
@@ -251,17 +253,17 @@ class BatchTransaction(models.Model):
     def get_auth_token(self):
         try:
             headers = {
-                "Platform-TenantId": os.environ.get("tenantName"),
+                "Platform-TenantId": str(self.batch_configuration.tenant_name),
                 "Authorization": "Basic Y2xpZW50Og==",
                 "Content-Type": "text/plain",
             }
             params = {
-                "username": os.environ.get("username"),
-                "password": os.environ.get("password"),
-                "grant_type": os.environ.get("grant_type"),
+                "username": str(self.batch_configuration.username),
+                "password": str(self.batch_configuration.password),
+                "grant_type": str(self.batch_configuration.grant_type),
             }
             response = requests.post(
-                "http://ops-bk.sandbox.fynarfin.io/oauth/token",
+                str(self.batch_configuration.auth_url),
                 params=params,
                 headers=headers,
                 verify=False,
@@ -278,11 +280,11 @@ class BatchTransaction(models.Model):
             "batchId": str(self.transaction_batch_id),
         }
         headers = {
-            "Platform-TenantId": os.environ.get("tenantName"),
+            "Platform-TenantId": str(self.batch_configuration.tenant_name),
             "Authorization": "Bearer " + str(self.token_response),
         }
 
-        url = "http://ops-bk.sandbox.fynarfin.io/api/v1/batch"
+        url = str(self.batch_configuration.batch_summary_url)
 
         try:
             response = requests.get(url, params=params, headers=headers, verify=False)
