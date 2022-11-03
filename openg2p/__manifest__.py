@@ -25,7 +25,6 @@
         "component",
         "crnd_web_button_box_full_width",
         "storage_backend",
-        "storage_backend_s3",
         "web_advanced_search",
         "web_m2x_options",
         "web_ir_actions_act_window_message",
@@ -37,6 +36,7 @@
         "base_currency_iso_4217",
         "module_auto_update",
         "web_notify",
+        # "storage_backend_s3", ## Deprecated module
         # "field_image_preview", ## XML parse issue in bitnami odoo image
         # "generic_mixin", ## Both modules causing key error while installing
         # "base_export_async",
