@@ -226,20 +226,20 @@ class BatchTransaction(models.Model):
         url = "http://bulk-connector.sandbox.fynarfin.io/batchtransactions"
 
         params = {
-            'type': 'csv',
+            "type": "csv",
         }
         files = {
-            'data': open(csvname, 'rb'),
+            "data": open(csvname, "rb"),
         }
         headers = {
-            'Purpose': 'test payment',
-            'filename': csvname,
-            'X-CorrelationID': 'bd85c0e3-b7bd-40aa-b00f-3240df9d69bd',
-            'Platform-TenantId': os.environ.get("tenantName"),
+            "Purpose": "test payment",
+            "filename": csvname,
+            "X-CorrelationID": "bd85c0e3-b7bd-40aa-b00f-3240df9d69bd",
+            "Platform-TenantId": os.environ.get("tenantName"),
         }
         try:
             response = requests.request(
-                "POST", url, headers=headers, files=files,params=params,verify=False
+                "POST", url, headers=headers, files=files, params=params, verify=False
             )
             response_data = response.json()
 
@@ -251,16 +251,21 @@ class BatchTransaction(models.Model):
     def get_auth_token(self):
         try:
             headers = {
-                'Platform-TenantId': os.environ.get("tenantName"),
-                'Authorization': 'Basic Y2xpZW50Og==',
-                'Content-Type': 'text/plain',
+                "Platform-TenantId": os.environ.get("tenantName"),
+                "Authorization": "Basic Y2xpZW50Og==",
+                "Content-Type": "text/plain",
             }
             params = {
-                'username': os.environ.get("username"),
-                'password': os.environ.get("password"),
-                'grant_type': os.environ.get("grant_type"),
+                "username": os.environ.get("username"),
+                "password": os.environ.get("password"),
+                "grant_type": os.environ.get("grant_type"),
             }
-            response = requests.post('http://ops-bk.sandbox.fynarfin.io/oauth/token', params=params, headers=headers,verify=False)
+            response = requests.post(
+                "http://ops-bk.sandbox.fynarfin.io/oauth/token",
+                params=params,
+                headers=headers,
+                verify=False,
+            )
             response_data = response.json()
             return response_data["access_token"]
         except BaseException as e:
@@ -270,7 +275,7 @@ class BatchTransaction(models.Model):
     def bulk_transfer_status(self):
         self.token_response = self.get_auth_token()
         params = {
-            'batchId': str(self.transaction_batch_id),
+            "batchId": str(self.transaction_batch_id),
         }
         headers = {
             "Platform-TenantId": os.environ.get("tenantName"),
@@ -280,7 +285,7 @@ class BatchTransaction(models.Model):
         url = "http://ops-bk.sandbox.fynarfin.io/api/v1/batch"
 
         try:
-            response = requests.get(url, params=params, headers=headers,verify=False)
+            response = requests.get(url, params=params, headers=headers, verify=False)
             response_data = response.json()
 
             if response.status_code == 200:
