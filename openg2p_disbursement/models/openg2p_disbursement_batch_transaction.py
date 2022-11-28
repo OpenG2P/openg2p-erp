@@ -220,10 +220,11 @@ class BatchTransaction(models.Model):
             )
 
         # Uploading to AWS bucket
-        uploaded = self.upload_to_aws(csvname, "paymenthub-ee-dev")
+        uploaded = self.upload_to_aws(csvname, os.environ.get("bucketName"))
+        _logger.info("Bucket name : {}".format(os.environ.get("bucketName")))
 
         # bulk transfer
-        url = "http://bulk-connector.sandbox.fynarfin.io/batchtransactions"
+        url = os.environ.get("bulkTransferUrl")
 
         params = {
             "type": "csv",
@@ -234,7 +235,7 @@ class BatchTransaction(models.Model):
         headers = {
             "Purpose": "test payment",
             "filename": csvname,
-            "X-CorrelationID": "bd85c0e3-b7bd-40aa-b00f-3240df9d69bd",
+            "X-CorrelationID": str(self.request_id),
             "Platform-TenantId": os.environ.get("tenantName"),
         }
         try:
@@ -261,7 +262,7 @@ class BatchTransaction(models.Model):
                 "grant_type": os.environ.get("grant_type"),
             }
             response = requests.post(
-                "http://ops-bk.sandbox.fynarfin.io/oauth/token",
+                os.environ.get("authUrl"),
                 params=params,
                 headers=headers,
                 verify=False,
@@ -282,7 +283,7 @@ class BatchTransaction(models.Model):
             "Authorization": "Bearer " + str(self.token_response),
         }
 
-        url = "http://ops-bk.sandbox.fynarfin.io/api/v1/batch"
+        url = os.environ.get("bulkTransferStatusUrl")
 
         try:
             response = requests.get(url, params=params, headers=headers, verify=False)
