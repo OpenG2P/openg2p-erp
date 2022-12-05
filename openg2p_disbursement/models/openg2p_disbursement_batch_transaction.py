@@ -253,7 +253,7 @@ class BatchTransaction(models.Model):
         try:
             headers = {
                 "Platform-TenantId": os.environ.get("tenantName"),
-                "Authorization": "Basic Y2xpZW50Og==",
+                "Authorization": os.environ.get("authHeader"),
                 "Content-Type": "text/plain",
             }
             params = {
