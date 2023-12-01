@@ -75,7 +75,7 @@ pypiwin32 ; sys_platform == 'win32'
 qrcode==6.1
 regex==2021.7.6
 reportlab==3.5.13; python_version < '3.8'
-reportlab==3.5.55; python_version >= '3.8'
+reportlab==3.6.13; python_version >= '3.8'
 requests==2.27.1
 s3transfer==0.5.0
 six==1.16.0
