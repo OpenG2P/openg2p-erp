@@ -82,7 +82,7 @@ six==1.16.0
 soupsieve==2.2.1
 tomli==1.1.0
 vobject==0.9.6.1
-Werkzeug==0.16.1
+Werkzeug==2.3.8
 xlrd==1.1.0; python_version < '3.8'
 xlrd==1.2.0; python_version >= '3.8'
 XlsxWriter==1.1.2
